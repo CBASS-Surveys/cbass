@@ -1,0 +1,617 @@
+\documentclass[10pt,letter]{report}
+\usepackage{IEEEtitlepage}
+
+\title{CBASS -- The Constraint Based Anonymizable Survey System}
+\subtitle{Specification}
+\author{David Carlson, Sam Flint, Kaleb Gaar, Hayden Pollmann}
+\company{UNL}
+\summary{}
+\date{\today}
+\version{2.0}
+
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+
+\usepackage{parskip}
+
+\def\TODO{\marginpar{\textbf{TODO}}}
+% \def\TODO{}
+
+\usepackage{color}
+\usepackage{xcolor}
+% \def\hl#1{\colorbox{yellow}{#1}}
+\def\hl#1{#1}
+
+% Setup hyperref.  Make sure to change the fields as needed
+\usepackage{hyperref}
+\hypersetup{
+  pdfauthor={David Carlson, Sam Flint, Kaleb Gaar, Hayden Pollmann},
+  pdftitle={CBASS -- The Constraint Based Anonymizable Survey System: Specification},
+  pdfsubject={Subject of Project},
+  pdflang={English},
+  pdfkeywords={keywords,comma,seperated},
+  colorlinks=true
+}
+
+\newenvironment{defns}{
+  \begin{description}
+    \newcommand{\defn}[2]{\item[##1] ##2}
+  }
+  {
+    \end{description}
+  }
+
+
+% Include a couple of packages for graphic and figures
+\usepackage{graphicx}
+\usepackage{morefloats}
+\usepackage{tabularx}
+
+% Change margins to 0.75 inches
+\usepackage[margin=0.75in]{geometry}
+
+\begin{document}
+
+\maketitle
+-
+\chapter*{Revision History}
+\label{sec:revisions}
+\addcontentsline{toc}{chapter}{Revision History}
+
+
+\begin{table}[h]
+  \centering
+  \begin{tabularx}{\textwidth}{c|X|c|r}
+    \textbf{Version}   & \textbf{Changes}                                                                                           & \textbf{Author}         & \textbf{Date} \\
+    \hline\hline
+    1.0                & Provide initial structure.                                                                                 & Sam Flint               & 2017-09-12    \\
+    1.1                & Add Initial Description of main functions.                                                                 & Sam Flint               & 2017-09-13    \\
+    1.2                & Added information in overall description                                                                   & Kaleb Gaar              & 2017-09-12    \\
+    1.3                & Added sections for sub-functions of main.                                                                  & Sam Flint               & 2017-09-14    \\
+    1.4                & Added data collection intro and associated requirements                                                    & David Carlson           & 2017-09-14    \\
+    1.5                & Added data retrieval associated requirements                                                               & Hayden Pollmann         & 2017-09-14    \\
+    1.6                & Completed description of Survey Designer requirements.                                                     & Sam Flint               & 2017-09-14    \\
+    1.7                & Switched ``Data Collection'' and ``Data Retrieval'' around.                                                & Sam Flint               & 2017-09-18    \\
+    1.8                & Finished ``Stimulus and Response'' sections in \S\ref{sec:survey-designer} and \S\ref{sec:data-retrieval}. & Sam Flint               & 2017-09-20    \\
+    1.9                & Finished ``External Interface Requirements`` sections, added frontend definition                           & Hayden Pollmann         & 2017-09-20    \\
+    1.10               & Completed Section 1.                                                                                       & David Carlson           & 2017-09-20    \\
+    1.11               & Completed Section 2.                                                                                       & Kaleb Gaar              & 2017-09-20    \\
+    1.12               & Completed remaining sections in Section 3, from \S 3.3 to \S 3.6.                                          & Sam Flint               & 2017-09-21    \\
+    2.0                & Made edits and polished for version 2.0, including for grammar and consistency.                            & Sam Flint \& Kaleb Gaar & 2017-09-22    \\
+    	             % &                                                                                                            &                         &               \\
+    \hline
+  \end{tabularx}
+  \caption{Revision History}
+  \label{tab:rev-hist}
+\end{table}
+\newpage
+
+% Table of Contents
+\hypersetup{linkcolor=black}
+\tableofcontents
+\hypersetup{linkcolor=red}
+\newpage
+
+% Optional List of Figures
+% \listoffigures
+% \newpage
+
+% Optional List of Tables
+% \listoftables
+% \newpage
+
+\chapter{Introduction}
+\label{cha:introduction}
+
+\section{Purpose}
+\label{sec:purpose}
+
+This document has been written to define the various functions needed
+to design and develop CBASS, the Constraint Based Anonymizable Survey
+System.  It is intended to be read by designers (for the purpose of
+design), developers (to best understand the design), testers (to
+develop complete and accurate tests), and clients (to ensure
+specification accuracy).
+
+\section{Scope}
+\label{sec:scope}
+
+This document provides the specification for CBASS, the Constraint
+Based Anonymizable Survey System.
+
+CBASS will provide a mechanism for researchers who use surveys to gather
+and collect data a mechanism to both a) ensure that the data gathered
+can be made anonymous; and b) apply certain classes of constraints to
+the data collected.  This will be to ensure that the data collected will
+always be consistent, and that it will be possible to easily fulfill
+the requirements of some human-related research programs.  CBASS will
+not, however, provide the ability to perform \emph{any} type of
+statistical analysis, but rather will provide a method for a standard,
+normalized form of the data to be downloaded.
+
+The classes of constraints possible will be as follows: a) answer X to
+question Y forbids answering of question Z; b) answer X to question Y
+requires answering question Z; and c) answer X to question Y removes
+possible answers n--m from question Z.
+
+\section{Definitions, Acronyms and Abbreviations}
+\label{sec:defin-acronyms-abbr}
+
+\begin{defns}
+   \defn{Constraints}{Limits such as the permission or refusal of a
+     question to be answered within the survey usually based on
+     information provided through other questions.}
+  \defn{CSV}{Stands for Comma Separated Values, a file which allows
+    the saving of data in table-like structures.}
+  \defn{Excel}{A Microsoft Excel file which is organized in a table
+    for use in many fields such as statistics.}
+  \defn{Forbids}{When said of a question constraint, the answer given
+    in a question disqualifies the respondent from answering an
+    upcoming question.}
+  \defn{Frontend}{A graphical user interface.}
+  \defn{JSON}{Stands for JavaScript Object Notation, a lightweight
+    data interchange format that allows data to be read by humans and
+    used by programs easily.}
+  \defn{Requires}{When said of a question constraint, the answer given
+    in a question necessitates the respondent to answer a question another
+    respondent might not need to answer.}
+  \defn{Respondents}{Individuals who take part in answering a survey
+    created on the system.}
+  \defn{Response Value}{A value that denotes what response was chosen,
+    used by statisticians for interpretation}
+  \defn{Restricts}{When said of a question constraint, the answer given in a
+    question disqualifies certain possible responses from appearing
+     to a user in an upcoming question, but not disqualifying them
+     from answering the question entirely.}
+  \defn{SQL}{Stands for Structured Query Language, a standard language
+    for relational database management and data manipulation.}
+  \defn{User Response Text}{The text displayed to a respondent as a
+    question response when he or she is completing the survey.}
+
+\end{defns}
+
+% \section{Reference}
+% \label{sec:reference}
+
+\section{Overview}
+\label{sec:overview}
+
+The remainder of this document contains an overview of the product,
+its functionality, the characteristics of users, and a detailed
+description of the interfaces between the software and other services.
+
+\chapter{Overall Description}
+\label{cha:overall-description}
+
+\section{Product Perspective}
+\label{sec:product-perspective}
+
+\subsection{System Interfaces}
+\label{sec:system-interfaces}
+
+The CBASS will be a web tool that uses a database to store
+survey information.
+
+\subsection{User Interfaces}
+\label{sec:user-interfaces}
+
+A user will navigate to the survey website, and will interact with
+it using websites.
+
+\subsection{Communications Interfaces}
+\label{sec:communications-interfaces}
+
+To ease the sharing of surveys, the system will optionally access
+social media sites to connect survey givers to respondents.
+
+\subsection{Site Adaptation Requirements}
+\label{sec:site-adaptation-requrements}
+
+Customization of a small number of visual components of surveys will
+be implemented to allow survey creators to represent their site.
+
+\section{Product Functions}
+\label{sec:product-functions}
+
+The primary function of the CBASS will be to allow users to create surveys online
+to collect information from survey takers. The system will allow constraints to
+be placed on questions so that changes in survey questions occur depending on
+earlier questions.
+
+\section{User Characteristics}
+\label{sec:user-characteristics}
+
+The CBASS will be designed for anyone seeking a constraint based
+survey system. However, in this general audience, academic and research based
+users are seen as the target users of this system. The implementation of
+constraints in surveys will allow researchers to better tailor a particular
+survey to their requirements.
+
+\section{Constraints}
+\label{sec:constraints}
+
+\subsection{Anonymizing Data}
+\label{sec:anonymizing-data}
+
+Since the system will be handling potentially sensitive data, the ability to
+make information anonymous is a very important consideration in the design.
+Failure to take this into consideration can lead to breach of information and
+potential legal issues.
+
+\subsection{Internet Browser Compatibility}
+\label{sec:internet-browser-compatibility}
+
+In order to allow users to access the system, considerations must be made to
+support most or all modern internet browsers. Failure to make such
+considerations may lead to potential users who are unable to use the system.
+
+\section{Assumptions and Dependencies}
+\label{sec:assumpt-depend}
+
+This system will be relying on several technologies for its implementation.
+These include internet protocols, libraries, and a hosted database. As these
+technologies age, there may be need to revise the system to comply with updates to
+these technologies.
+
+\chapter{Detailed Component Description}
+\label{cha:det-comp-desc}
+
+\section{External Interface Requirements}
+\label{sec:extern-interf-requ}
+
+\subsection{User Interfaces}
+\label{sec:user-interfaces}
+
+The User will use a frontend that will allow them to navigate through
+both the survey creation and the answering of surveys.
+
+\subsection{Software Interfaces}
+\label{sec:software-interfaces}
+
+The system will communicate with a web server for hosting of the
+application to the internet. The system will also use a SQL database
+for housing the survey data.
+
+\subsection{Communications Interfaces}
+\label{sec:comm-interf}
+
+The system will interface with the most or all modern web browsers.
+
+\section{Functions}
+\label{sec:functions}
+
+\subsection{Survey Designer}
+\label{sec:survey-designer}
+
+\subsubsection{Introduction}
+\label{sec:introduction-designer}
+
+The ability to create and design surveys, including not only various
+questions and the possible answers, but various forms of \hl{constraints},
+is vital.  This will be done through the use of a web frontend and will be
+composed of several sub-features.
+
+\subsubsection{Stimulus/Response}
+\label{sec:stim-resp-designer}
+
+Provided an authenticated User, the User will be able to create a
+survey, following a variety of steps, including adding questions,
+adding possible responses to questions, adding varying forms of
+constraints, and modifying the varying attributes previously
+mentioned.
+
+\subsubsection{Associated Requirements}
+\label{sec:assoc-req-designer}
+
+\paragraph{Create Survey}
+\label{sec:create-survey}
+
+A Survey will be created with the following information initially:
+Survey Name, Survey Giver, and Survey Description.  This information
+will be stored, a Survey ID returned, and the user prompted to edit
+details (\S \ref{sec:edit-survey-details}), add questions (\S
+\ref{sec:add-survey-question}), or add constraints (\S
+\ref{sec:add-quest-constr}).
+
+\paragraph{Edit Survey Details}
+\label{sec:edit-survey-details}
+
+With a Survey selected (by Survey ID), various information related to
+the survey will be editable, including theme data (Logo and Colors),
+Survey Description, Survey (URL) Short Code, Survey Authentication
+Requirements, and various in-survey messages (Survey Start Message,
+Survey End Message).  The changed information will be updated and
+stored for later use.
+
+\paragraph{Add Survey Question}
+\label{sec:add-survey-question}
+
+With a Survey selected (by Survey ID), a user will be able to add a
+Question.  There will be three types of responses to select from:
+multiple choice, numeric response and free-response.  The type of
+Question will be selected, and a Prompt (the Question Text) will be
+provided by the user.  This will be stored for later use, a Question
+ID returned, and in the event of a multiple-choice question, the user
+will be prompted to add possible responses (\S
+\ref{sec:add-quest-resp}).
+
+\paragraph{Add Question Response}
+\label{sec:add-quest-resp}
+
+With a Question selected (by Question ID), a user will be able to add
+possible responses, containing the following information: \hl{User
+Response Text} and \hl{Response Value}.  These will be stored for later use.
+
+\paragraph{Add Question Constraint}
+\label{sec:add-quest-constr}
+
+With a Survey selected (by Survey ID), a user will be able to create a
+question constraint.  As there are three types of constraints, there
+are three ways to add constraints: for when an answer \hl{forbids a
+question} (\S\ref{sec:answ-forb-quest}), for when an answer \hl{requires a
+question} (\S\ref{sec:answ-requ-quest}), and for when an \hl{answer
+restricts the possible answers for another question}
+(\S\ref{sec:answ-restr-quest}).
+
+\subparagraph{Answer Forbids Question}
+\label{sec:answ-forb-quest}
+
+The Forbidding Question and Answer will be selected (first by Question
+Text and then by Response Value), and a second question, the Forbidden
+Question, will be selected (again, by Question Text).  This
+information will then be stored for later use both in the removal of
+incomplete responses (\S \ref{sec:remove-responses}) and by constraint
+verification logic (\S \ref{sec:verify-constraints}).
+
+\subparagraph{Answer Requires Question}
+\label{sec:answ-requ-quest}
+
+The Requiring Question and Answer will be selected (first by Question
+Text and then by Response Value), and a second question, the Required
+Question will be selected (again, by Question Text).  This information
+will then be stored for later use both in the removal of incomplete
+responses (\S \ref{sec:remove-responses}) and by constraint
+verification logic (\S \ref{sec:verify-constraints}).
+
+\subparagraph{Answer Restricts Question Answers}
+\label{sec:answ-restr-quest}
+
+The Restricting Question and Answer will be selected (first by
+Question text and then by Response Value), a second question, the
+Restricted Question will be selected (again, by Question Text), and a
+series of Allowed Responses will be selected (by Response Values).
+This information will then be stored for later use both in the removal
+of incomplete responses (\S\ref{sec:remove-responses}) and by
+constraint verification logic (\S \ref{sec:verify-constraints}).
+
+\paragraph{Remove Survey Question}
+\label{sec:remove-surv-quest}
+
+A Question will be selected (by Question ID), and removed from the
+storage.  All responses for the question will be removed, as will all
+rules involved with the given Question.
+
+\paragraph{Remove Question Response}
+\label{sec:remove-quest-resp}
+
+A Question Response will be selected (by Question first, then by
+Response Value), and removed from the storage.  All REQUIRES and
+FORBIDS rules will be removed, RESTRICTS rules that match on the
+Question and Response will be removed and RESTRICTS rules that allow
+the given answer will have the allowance removed.
+
+\paragraph{Remove Question Constraint}
+\label{sec:remove-quest-constr}
+
+A Question Constraint will be selected (by Constraint ID), and removed
+from storage.
+
+\paragraph{Publish Survey}
+\label{sec:publish-survey}
+
+A Survey will be selected, and made public so that \hl{respondents} may
+submit data (\S\ref{sec:data-collection}).
+
+\subsection{Data Collection}
+\label{sec:data-collection}
+
+\subsubsection{Introduction}
+\label{sec:introduction-collection}
+
+The ability to follow a survey plan, apply the constraints, and
+collect and store data from a survey is a core feature.  This will be
+available to any and all respondents to submit responses.  This feature
+will be further composed of several sub-features.
+
+\subsubsection{Stimulus/Response}
+\label{sec:stim-resp-collection}
+
+This feature allows a potential respondent to access the survey through
+internet address or social media. His or her answers will be recorded and
+stored in a database for later access.
+
+\subsubsection{Associated Requirements}
+\label{sec:assoc-reqs-collection}
+
+\paragraph{Begin Survey}
+
+A possible respondent will click a link which takes them to the associated
+survey. Any intro page or message chosen by survey creator will show, allowing
+respondents to read any survey directions. The respondent must then click a
+ ``begin'' button to confirm their desire to take the survey.
+
+\paragraph{Verify Constraints}
+\label{sec:verify-constraints}
+
+After an answer has been submitted, the system will proceed to check
+for any constraints on the following question. It will then either
+present the question as is, present the question with modified response
+choices, or skip to the next question (\S\ref{sec:add-quest-constr}).
+
+\paragraph{Present Question}
+
+A question will be presented to the respondent. After they select an answer and
+click continue, the system will record it and proceed.
+
+\paragraph{End Survey}
+
+After the respondent completes the last question, the system will display
+any post survey message implemented by the survey creator.
+
+\subsection{Data Retrieval}
+\label{sec:data-retrieval}
+
+\subsubsection{Introduction}
+\label{sec:introduction-retrieval}
+
+The ability to retrieve the results of a survey, in one of several
+possible formats, is another core feature.  This will only be
+available to authorized users, and will provide output in four formats
+--- \hl{SQL}, \hl{CSV}, \hl{Excel} and \hl{JSON}.  This feature will be composed of several
+sub-features.
+
+
+\subsubsection{Stimulus/Response}
+\label{sec:stim-resp-retrieval}
+
+Having closed a survey, an authenticated User will be able to retrieve
+the data collected by the survey in various, user-selectable formats.
+The data will be cleaned, possibly anonymized, and exported to the
+selected format.
+
+\subsubsection{Associated Requirements}
+\label{sec:assoc-reqs-retrieval}
+
+\paragraph{Remove Incomplete Responses}
+\label{sec:remove-responses}
+
+In order to provide a clean, complete set of Survey data authorized
+users will be able to remove incomplete responses from their
+Survey. Incomplete Responses are defined by answers that do not follow
+the specific constraints tied to that question
+(\S\ref{sec:verify-constraints}).
+
+\paragraph{Anonymize Data}
+\label{sec:anonymize-data}
+
+Determined during survey creation (\S\ref{sec:create-survey}). Survey
+designers will decide whether the survey will be anonymous or
+non-anonymous. Anonymous data will have no links to any users taking
+the survey. Non-anonymous surveys will, when exported, provide the
+survey designer with an identifier for the respondent.
+
+\paragraph{Export as SQL}
+\label{sec:export-sql}
+
+Survey data will be exportable as a \hl{SQL} file. This option will
+provide users the option of having the data ready for use with their
+own database.
+
+\paragraph{Export as CSV}
+\label{sec:export-csv}
+
+Survey data will be exportable as a \hl{CSV} file. This option will provide
+users a widespread compatibility with other applications and allows
+for quick exportation and viewing.
+
+\paragraph{Export as Excel}
+\label{sec:export-excel}
+
+Survey data will be exportable as an \hl{Excel} file. This option will give
+the survey designer a fast and readable option for viewing the survey
+results.
+
+\paragraph{Export as JSON}
+\label{sec:export-json}
+
+Survey data will be exportable as a \hl{JSON} file. This option is
+intended for users who want to use the data from their Survey in
+programs, as JSON files are easily importable into most languages.
+
+\section{Performance}
+\label{sec:performance}
+
+This system, given the nature, must be able to support many concurrent
+users, in some situations on the order of several hundred at a time.
+Through good design and tool choice, this can be assured.
+
+\section{Logical Database Requirements}
+\label{sec:logic-datab-requ}
+
+The database used to store data for this system will be required to
+provide several specific and particular capabilities, including
+storage and retrieval of survey meta-data (the design of a survey,
+questions, survey constraints, etc.) and the storage and retrieval of
+survey responses.
+
+\section{Design Constraints}
+\label{sec:design-constraints}
+
+As with many systems, there are several major constraints on this
+application.  Highlighted here are two constraints of particular note:
+
+\begin{enumerate}
+\item For usability in academic research, the system will be required
+  to be usable by those with disabilities.  This necessitates a clean
+  and simple interface design that can be easily worked with a
+  screen-reader.
+\item For usability in academic research, the system must also be able
+  to ensure that data retrieved for use may be made anonymous.  This
+  in particular will be handled by a specific feature defined in
+  \S\ref{sec:anonymize-data}.
+\end{enumerate}
+
+\section{Software System Attributes}
+\label{sec:softw-syst-attr}
+
+\subsection{Reliability}
+\label{sec:reliability}
+
+Defining reliability as probability of operation without any system
+errors (those not caused by users or circumstances beyond system
+control), the software should be $95\%$ reliable.
+
+\subsection{Availability}
+\label{sec:availability}
+
+This software should be available $90\%$ of the time, barring
+catastrophic events outside of the control of the developers (hosting
+issues, for instance).
+
+\subsection{Security}
+\label{sec:security}
+
+To ensure that the system is secure, only certain classes of users may
+be able to access certain functions, in particular, only authenticated
+users may be able to either design surveys
+(\S\ref{sec:survey-designer}) or retrieve survey data
+(\S\ref{sec:data-retrieval}).  This will be handled through the use of
+Role-Based Access Control and data will be stored and maintained
+through the use of database internal authentication.
+
+\subsection{Maintainability}
+\label{sec:maintainability}
+
+To ensure that the software is maintainable, the design will be
+composed using techniques such as object-oriented design and
+interface-based design.
+
+\subsection{Portability}
+\label{sec:portability}
+
+To ensure that the software is portable, the Python programming
+language will be used, with code written to conform with PEP~8.
+For database access, a database-agnostic library will be used, and for
+interfacing with webservers, a webserver interface library (such as
+WSGI or CGI) will be used.
+
+\appendix
+
+% Add any appendices here, if so desired
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
