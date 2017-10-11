@@ -1,0 +1,11 @@
+ - Language -- python3
+ - database
+     - postgresql -- actual database
+     - psycopg2
+ - webserver
+     - nginx
+     - python wsgi for interface
+ - interface
+     - html
+     - css
+     - view.js/jquery
