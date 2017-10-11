@@ -1,0 +1,60 @@
+\ProvidesPackage{IEEEtitlepage}[2016/09/26] % Defines the package
+
+\RequirePackage[compact,sf,bf]{titlesec} % Ensures that titles are formatted properly, being compact, sans and bold
+\titleformat{\chapter}[hang]{\Huge\sf\bfseries}{\thechapter$\quad$}{0pt}{} % Use a more space-efficient display format for chapter
+
+\RequirePackage[nottoc,notlot,notlof]{tocbibind} % Put the bibliography in the Table of Contents
+\RequirePackage{tocloft}                         % Use an indented table of contents
+
+% Define a summary command and provide a default
+\newcommand*{\summary}[1]{\gdef\@summary{#1}%
+}
+\newcommand*{\@summary}{Project Summary.}
+
+% Define a version command and provide a default
+\newcommand*{\version}[1]{\gdef\@version{#1}%
+}
+\newcommand*{\@version}{1.0}
+
+% Define a subtitle command and provide a default (nothing)
+\newcommand*{\subtitle}[1]{\gdef\@subtitle{#1}%
+}
+\newcommand*{\@subtitle}{}
+
+% Define a company command and provide a default of nothing 
+\newcommand*{\company}[1]{\gdef\@company{#1}%
+}
+\newcommand*{\@company}{}
+
+% Redefine the maketitle command
+\renewcommand*{\maketitle}{%
+\begin{titlepage}
+  % Start with an hrule
+  \hrule
+  % Center much of the title page
+  \begin{centering}
+    % Include the name of the company
+    \vspace{2px}
+    \@company
+    % Vertically Center
+    \vfill
+    % Include Title and Subtitle
+    {\sf\huge\bfseries\@title\par}
+    \vspace{0.5em}
+    {\sf\Large\bfseries\@subtitle\par}
+    \vspace{0.5em}
+    \rule{.7\textwidth}{0.5pt}\par
+    \vspace{1em}
+    % Include Authors, date and version
+    {\large\bfseries\@author\unskip\strut\par}
+    {\large\@date\unskip\strut\par}
+    {\large Version \@version\unskip\strut\par}
+    % Finish vertically centering
+    \vfill
+  \end{centering}
+  % Include the project summary
+  {\parindent=0pt \@summary}
+  % And a final hrule
+  \vspace{0.5 em}
+  \hrule
+\end{titlepage}}
