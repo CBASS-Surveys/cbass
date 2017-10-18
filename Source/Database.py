@@ -61,3 +61,63 @@ class Database:
         self._connection.commit()
         cursor.close()
         return questionID
+
+    def createSurveyQuestionResponse(self, question, value, description):
+        cursor = self._connection.cursor()
+        cursor.execute("INSERT INTO question_response (survey, question, value, description) VALUES ((SELECT survey FROM survey_question WHERE question_id = %s), %s, %s, %s) RETURNING id;",
+                       (question, question, value, description))
+        (responseID) = cursor.fetchone()
+        self._connection.commit()
+        cursor.close()
+        return responseID
+
+    def createQuestionConstraintStandard(self, questionFrom, response, type, to):
+        cursor = self._connection.cursor()
+        cursor.execute("INSERT INTO question_constraints (question_from, response_from, type, question_affected) VALUES (%s, %s, %s, %s) RETURNING id;",
+                       (questionFrom, response, type, to))
+        (constraintID) = cursor.fetchone()
+        self._connection.commit()
+        cursor.close()
+        return constraintID
+
+    def createDisclusionConstraint(self, questionFrom, responseFrom, questionTo, responsesDiscluded):
+        cursor = self._connection.cursor()
+        cursor.execute("INSERT INTO question_constraint_modify (question_from, response_from, question_to, responses_discluded) VALUES (%s, %s, %s, %s) RETURNING id;",
+                       (questionFrom, responseFrom, questionTo, responsesDiscluded));
+        (constraintID) = cursor.fetchone()
+        self._connection.commit()
+        cursor.close()
+        return constraintID
+
+    def createSurveyResponse(self, survey, identifierString):
+        cursor = self._connection.cursor()
+        cursor.execute("INSERT INTO survey_response (survey, identifier_string) VALUES (%s, %s) RETURNING id, identifier_string;",
+                    (survey, identifierString))
+        (responseID, identString) = cursor.fetchone()
+        self._connection.commit()
+        cursor.close()
+        return (responseID, identString)
+
+    def insertSurveyQuestionResponse(self, responseID, questionID, response):
+        cursor = self._connection.cursor()
+        cursor.execute("INSERT INTO survey_response_entry (response_id, response_to, response) VALUES (%s, %s, %s);",
+                       (responseID, questionID, response))
+        self._connection.commit()
+        cursor.close()
+        return (responseID, questionID)
+
+    def insertSurveyQuestionMultiResponse(self, responseID, questionID, responses):
+        cursor = self._connection.cursor()
+        cursor.execute("INSERT INTO survey_multi_response (response_id, response_to, response) VALUES (%s, %s, %s);",
+                       (responseID, questionID, responses))
+        self._connection.commit()
+        cursor.close()
+        return (responseID, questionID)
+
+    def insertSurveyQuestionLongFormResponse(self, responseID, questionID, responseText):
+        cursor = self._connection.cursor()
+        cursor.execute("INSERT INTO survey_long_form_response (response_id, response_to, response) VALUES (%s, %s, %s);"
+                       (responseID, questionID, responseText))
+        self.connection.commit()
+        cursor.close()
+        return (responseID, questionID)
