@@ -1,16 +1,16 @@
 #!/bin/python
 # coding: utf-8
 
-import psycopg2
+import psycopg2 as psycopg
 from hashlib import pbkdf2_hmac
 from binascii import hexlify
 from os import urandom
 
 class Database:
 
-    _connection = false
+    _connection = False
 
-    def __init__(database, host, username, password):
+    def __init__(self, database, hostname, username, password):
         self._connection = psycopg.connect(dbname=database, user=username, password=password, host=hostname)
 
     def authenticateUser(self, username, password):
@@ -45,7 +45,7 @@ class Database:
         cursor = self._connection.cursor()
         cursor.execute("INSERT INTO surveys (name, author) VALUES (%s, (SELECT id FROM users WHERE username = %s)) RETURNING id;",
                        (name, authorName))
-        (surveyId) = cursor.fetchone()
+        (surveyID) = cursor.fetchone()
         for key in kwargs.keys():
             cursor.execute("INSERT INTO survey_properties (survey_id, name, value) VALUES (%s, %s, %s);",
                            (surveyID, key, kwargs[key]))
