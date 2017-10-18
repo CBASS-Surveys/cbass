@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS question_constraint_modify
         id SERIAL NOT NULL,
         question_from INTEGER REFERENCES survey_question NOT NULL,
         response_from INTEGER REFERENCES question_response NOT NULL,
+        question_to INTEGER REFERENCES survey_question NOT NULL,
         responses_discluded INTEGER ARRAY,
         PRIMARY KEY (id),
         UNIQUE (question_from, response_from)
