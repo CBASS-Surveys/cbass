@@ -49,4 +49,4 @@ flycheck_*.el
 .projectile
 
 #Config file
-.yml
+*.yml
