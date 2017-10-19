@@ -149,4 +149,36 @@ class Database:
             (values) = cursor.fetchone()
             return (response in values)
 
-    
+    def getQuestion(self, ID):
+        cursor = self._connection.cursor()
+        cursor.execute("SELECT question_text, question_type FROM survey_question WHERE question_id = %s;", (ID,))
+        question = cursor.fetchone()
+        cursor.close()
+        return question
+
+    def getResponses(self, questionID):
+        cursor = self._connection.cursor()
+        cursor.execute("SELECT value, description FROM question_response WHERE question = %s;", (questionID,))
+        return cursor
+
+    def getSurveyQuestions(self, surveyID):
+        cursor = self._connnection.cursor()
+        cursor.execute("SELECT question_id FROM survey_question WHERE survey = %s;", (surveyID,))
+        return cursor
+
+    def getSurveyProperties(self, surveyID):
+        cursor = self._connection.cursor()
+        cursor.execute("SELECT name, value FROM survey_properties WHERE survey_id = %s;", (surveyID,))
+        properties = {}
+        for response in cursor:
+            (name, value) = response
+            properties[name] = value
+        cursor.close()
+        return properties
+
+    def getSurveyName(self, surveyID):
+        cursor = self._connection.cursor()
+        cursor.execute("SELECT name FROM surveys WHERE id = %s;", (surveyID,))
+        (name) = cursor.fetchone()
+        cursor.close()
+        return name
