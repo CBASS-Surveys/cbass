@@ -121,3 +121,32 @@ class Database:
         self.connection.commit()
         cursor.close()
         return (responseID, questionID)
+
+    def getConstraints(self, affectedQuestion):
+        cursor = self._connection.cursor()
+        cursor.execute("SELECT question_from, response_from, type FROM question_constraints WHERE question_affected = %s;", (affectedQuestion,))
+        return cursor
+
+    def getModifyConstraints(self, affectedQuestion):
+        cursor = self._connection.cursor()
+        cursor.execute("SELECT question_from, response_from, responses_discluded FROM question_constraint_modify WHERE question_to = %s;", (affectedQuestion,))
+        return cursor
+
+    def hasResponse(self, question, response, id):
+        cursor = self._connection.cursor()
+        cursor.execute("SELECT question_type FROM survey_question WHERE question_id = %s;", (question,))
+        (type) = cursor.fetchone()
+        if (type == "single-response"):
+            cursor.execute("SELECT true FROM survey_response_entry WHERE response_to = %s AND response_id = %s AND response = %s;",
+            (question, id, response))
+            (value) = cursor.fetchone()
+            return value
+        elif (type == 'free-response'):
+            return false
+        else:
+            cursor.execute("SELECT response FROM survey_multi_response WHERE response_to = %s AND response_id = %s;",
+                           (question, id))
+            (values) = cursor.fetchone()
+            return (response in values)
+
+    
