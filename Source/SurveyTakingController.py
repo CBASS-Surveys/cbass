@@ -1,32 +1,46 @@
 #!/bin/python
 # coding: utf-8
-import Database
+from Database import Database
+import yaml
 
 
-class SuveyTakingController:
-
+class SurveyTakingController:
     _view = None
     _database = None
-    _qCounter = 0
 
-    def __init__(self, view, database):
-        self._view = view
-        self._database = database
-        # view.getUser, view.getPassword
-        if not database.authenticateUser():
-            database.authenticateUser()
+    def __init__(self):
+
+        with open("config.yml", 'r') as ymlfile:
+            cfg = yaml.load(ymlfile)
+        sql = cfg["mysql"]
+        db = sql['database']
+        hostname = sql["hostname"]
+        username = sql["username"]
+        password = sql["password"]
+        self._database = Database(db, hostname, username, password)
 
     def sendResponse(self):
+        form = self._view.getQuestionForm
         responseId = self._view.getResponseId()
         questionId = self._view.getQuestionId()
         response = self._view.getResponse()
-
-        if response:
-            self._database.createResponse(responseId,questionId,response)
+        if form == "single-response":
+            if response:
+                self._database.createSingleResponse(responseId, questionId, response)
+        elif form == "multi-choice-response":
+            if response:
+                self._database.createMultiResponse(responseId, questionId, response)
+        elif form == "free-response":
+            if response:
+                self._database.createLongResponse(responseId, questionId, response)
 
     def getNextQuestion(self):
-        self._qCounter += 1
+        current = self._view.getCurrentQuestion()
         surveyId = self._view.getSurveyId()
-        self._database.getNextQuestion(surveyId, self._qCounter)
+        self._database.getNextQuestion(surveyId, current)
 
 
+if __name__ == "__main__":
+    view = None
+    database = None
+    controller = SurveyTakingController()

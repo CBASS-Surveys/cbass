@@ -47,3 +47,6 @@ flycheck_*.el
 
 # projectiles files
 .projectile
+
+#Config file
+.yml

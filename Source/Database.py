@@ -1,7 +1,7 @@
 #!/bin/python
 # coding: utf-8
 
-import psycopg2 as psycopg
+import psycopg2
 from hashlib import pbkdf2_hmac
 from binascii import hexlify
 from os import urandom
@@ -11,7 +11,7 @@ class Database:
     _connection = False
 
     def __init__(self, database, hostname, username, password):
-        self._connection = psycopg.connect(dbname=database, user=username, password=password, host=hostname)
+        self._connection = psycopg2.connect(dbname=database, user=username, password=password, host=hostname)
 
     def authenticateUser(self, username, password):
         cursor = self._connection.cursor()
