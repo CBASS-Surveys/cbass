@@ -15,7 +15,7 @@ class Database:
 
     def authenticateUser(self, username, password):
         cursor = self._connection.cursor()
-        cursor.execute("SELECT password_hash, password_salt FROM users WHERE username=%s;", (username))
+        cursor.execute("SELECT password_hash, password_salt FROM users WHERE username=%s;", (username,))
         (hash, salt) = cursor.fetchone()
         cursor.close()
         if (hash == hexlify(pbkdf2_hmac('sha256', password, salt))):
