@@ -1,13 +1,16 @@
 #!/bin/python
 # coding: utf-8
 
-import flask
-
+import time
+from flask import Flask, jsonify
+from flask import render_template
+from werkzeug.contrib.cache import SimpleCache
 import logging
 
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
-app = flask.Flask(__name__, static_url_path='/static')
+app = application = Flask("VueFlask")
+cache = SimpleCache()
 
 
 def __init__(self):
@@ -16,18 +19,7 @@ def __init__(self):
 
 @app.route("/")
 def index():
-    return flask.render_template("index.html")
-
-
-@app.route("/get")
-def get():
-    return flask.jsonify(flask.request.args)
-
-
-@app.route("/post", methods=['POST'])
-def post():
-    return flask.jsonify(flask.request.get_json())
-
+    return render_template("index.html")
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8000, debug=True)
