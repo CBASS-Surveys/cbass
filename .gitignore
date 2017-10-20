@@ -50,3 +50,6 @@ flycheck_*.el
 
 #Config file
 *.yml
+
+#Python compiled files
+*.pyc
