@@ -5,7 +5,6 @@ import yaml
 
 
 class SurveyProperties:
-    
     def __init__(self):
         with open("config.yml", 'r') as ymlfile:
             cfg = yaml.load(ymlfile)
@@ -14,8 +13,10 @@ class SurveyProperties:
         hostname = sql["hostname"]
         username = sql["username"]
         password = sql["password"]
-        self._database = Database(db, hostname, username, password)
-        
-        def getSurveyName(self, surveyId)
-    	surveyName = self._database.getSurveyName(surveyId)
-    	return surveyName
+        #self._database = Database(db, hostname, username, password)
+
+    def get_survey_name(self, surveyId):
+
+        #surveyName = self._database.getSurveyName(surveyId)
+        #return surveyName
+        return("weather survey")

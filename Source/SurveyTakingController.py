@@ -7,13 +7,13 @@ import yaml
 class SurveyTakingController:
     _database = None
     responseId = None
-    surveyId = None
-    surveyQuestions = ()
-    questionNumber = 0
+    survey_id = None
+    survey_questions = ()
+    question_number = 0
 
-    def __init__(self, surveyId):
-        
-        self.surveyId = surveyId
+    def __init__(self, survey_id):
+
+        self.survey_id = survey_id
 
         with open("config.yml", 'r') as ymlfile:
             cfg = yaml.load(ymlfile)
@@ -23,57 +23,58 @@ class SurveyTakingController:
         username = sql["username"]
         password = sql["password"]
         self._database = Database(db, hostname, username, password)
-        
-    def startSurvey(self, sessionId):
-    	    responseStruct = self._database.createSurveyResponse(self.surveyId, sessionId)
-    	    self.responseId = responseStruct[0]
-    	    self.getSurveyQuestions()
-    	    # Return first question to the view
-    	    question = self.getQuestion(questionNumber)
-    	    return question 
-    	    
 
-    def sendResponse(self, response):
-        form = self.surveyQuestions(questionNumber).question_type
-        questionId = self.surveyQuestions(questionNumber).question_id
-        
+    def start_survey(self, session_id):
+        response_struct = self._database.createSurveyResponse(self.survey_id, session_id)
+        self.responseId = response_struct[0]
+        self.get_survey_questions()
+        # Return first question to the view
+        question = self.get_question(self.question_number)
+        return question
+
+    def send_response(self, response):
+        form = self.survey_questions[self.question_number].question_type
+        question_id = self.survey_questions[self.question_number].question_id
+
         if form == "single-response":
             if response:
-                self._database.insertSurveyQuestionResponse(self.responseId, questionId, response)
+                self._database.insertSurveyQuestionResponse(self.responseId, question_id, response)
         elif form == "multi-choice-response":
             if response:
-                self._database.insertSurveyQuestionMultiResponse(self.responseId, questionId, response)
+                self._database.insertSurveyQuestionMultiResponse(self.responseId, question_id, response)
         elif form == "free-response":
             if response:
-                self._database.insertSurveyQuestionLongFormResponse(self.responseId, questionId, response)
+                self._database.insertSurveyQuestionLongFormResponse(self.responseId, question_id, response)
 
-    def getSurveyQuestions(self):
-        surveyId = self.surveyId
-        cursor = self._database.getSurveyQuestions(surveyId)
-        questionIds = cursor.fetchall()
+    def get_survey_questions(self):
+        survey_id = self.survey_id
+        cursor = self._database.getSurveyQuestions(survey_id)
+        question_ids = cursor.fetchall()
         cursor.close()
-        
-        for qId in questionIds:
+
+        for qId in question_ids:
             data = self._database.getQuestion(qId)
             question = Question(qId, data[0], data[1])
-            self.surveyQuestions += question 
-        
-        
-    def getNextQuestion(self)
-    	questionNumber += 1
-    	question = surveyQuestions[questionNumber]
-    	return question
-    	
-    def getQuestion(q)
-    	self.questionNumber = q
-    	#Check for bounds later
-    	question = self.surveyQuestions[questionNumber]
-    	return question
+            self.survey_questions += question
+
+    def get_next_question(self):
+        self.question_number += 1
+        question = self.survey_questions[self.question_number]
+        return question
+
+    def get_question(self, q):
+        self.question_number = q
+        # Check for bounds later
+        question = self.survey_questions[self.question_number]
+        return question
+
 
 class Question:
     question_id = None
     question_text = None
     question_type = None
-    
-    def __init__(self, question_id, question_text, question_type)
-        
+
+    def __init__(self, question_id, question_text, question_type):
+        self.question_id = question_id
+        self.question_text = question_text
+        self.question_type = question_type
