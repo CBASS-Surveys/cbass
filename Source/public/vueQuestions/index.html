@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <script src="../../libs/vue.js"></script>
+
+</head>
+
+<body>
+
+  <script type="text/x-template" id="question-block">
+
+</script>
+
+<div id="app-4">
+  <div v-if="mode === 'start'">
+    <p>Hi</p>
+    <div style="background:blue; width:100px; height: 50px; color:white;" v-on:click="mode = 'survey'">start</div>
+  </div>
+  <div v-if="mode === 'survey'">
+    <div style="display:flex;">
+      <div style="background:red; width:100px; height: 50px" v-on:click="getLastQuestion">Back</div>
+      <div style="background:green; width:100px; height: 50px" v-on:click="getNextQuestion">Next</div>
+    </div>
+    <div>
+      <div>
+        <p> {{ question.text }} </p>
+
+        <div v-if="question.type ==='multi'">
+          <template v-for="answer in question.answers">
+            <input type="radio"
+              :id="answer"
+              :value="answer"
+              name="answer"
+              v-model="selectedAnswers">
+            <label :for="answer"> {{ answer }} </label> <br>
+          </template>
+        </div>
+
+        <div v-else-if="question.type ==='single'">
+          <template v-for="answer in question.answers">
+            <input type="checkbox"
+              :id="answer"
+              :value="answer"
+              name="answer"
+              v-model="selectedAnswers">
+            <label :for="answer">{{ answer }}</label> <br>
+          </template>
+        </div>
+
+        <div v-else-if="question.type ==='text'">
+          <textarea v-model="selectedAnswers" name="name" rows="8" cols="80"></textarea>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div v-if="mode === 'end'">BYE</div>
+
+  <div></div>
+</div>
+  <script src="./controller.js"></script>
+</body>
+</html>
