@@ -1,8 +1,9 @@
 #!/bin/python
 # coding: utf-8
 
-from flask import Flask, request, jsonify
-from flask import render_template
+import os
+from flask import Flask, request, jsonify, redirect
+from flask import render_template, url_for
 from werkzeug.contrib.cache import SimpleCache
 import logging
 from SurveyTakingController import SurveyTakingController
@@ -24,7 +25,8 @@ class Router:
 
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
-app = Flask("CBASS")
+template_dir = os.path.abspath('public')
+app = Flask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
 router = Router()
 sessionId = uuid.uuid4()
@@ -34,21 +36,21 @@ sessionId = uuid.uuid4()
 def main_page():
     properties = SurveyProperties()
     # Change this to get user's surveys later on
-    survey_name = properties.get_survey_name(1)
-    return render_template("test.html", name=survey_name)
+    survey_name = properties.get_survey_name(2)
+    return redirect(url_for('start_survey', survey_id=2))
 
 
-@app.route("/<surveyId>")
-def start_survey():
-    survey_id = request.form["surveyId"]
-
+@app.route("/<survey_id>")
+def start_survey(survey_id):
+    # survey_id = request.form["surveyId"]
+    print(survey_id)
     if survey_id:
         router.create_survey_taking_controller(survey_id)
     else:
         print("Error")
 
     first_question = router.survey_taking_controller.start_survey(sessionId)
-    return jsonify({'question': first_question})
+    return render_template("vueQuestions/index.html", question=first_question)
 
 
 @app.route("/<questionNumber>")

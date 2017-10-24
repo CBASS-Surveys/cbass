@@ -6,6 +6,7 @@ from hashlib import pbkdf2_hmac
 from binascii import hexlify
 from os import urandom
 
+
 class Database:
 
     _connection = False
@@ -142,7 +143,7 @@ class Database:
             (value) = cursor.fetchone()
             return value
         elif (type == 'free-response'):
-            return false
+            return False
         else:
             cursor.execute("SELECT response FROM survey_multi_response WHERE response_to = %s AND response_id = %s;",
                            (question, id))
@@ -162,7 +163,7 @@ class Database:
         return cursor
 
     def getSurveyQuestions(self, surveyID):
-        cursor = self._connnection.cursor()
+        cursor = self._connection.cursor()
         cursor.execute("SELECT question_id FROM survey_question WHERE survey = %s;", (surveyID,))
         return cursor
 

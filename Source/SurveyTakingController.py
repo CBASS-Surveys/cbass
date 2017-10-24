@@ -25,7 +25,7 @@ class SurveyTakingController:
         self._database = Database(db, hostname, username, password)
 
     def start_survey(self, session_id):
-        response_struct = self._database.createSurveyResponse(self.survey_id, session_id)
+        response_struct = self._database.createSurveyResponse(self.survey_id, str(session_id))
         self.responseId = response_struct[0]
         self.get_survey_questions()
         # Return first question to the view
@@ -55,7 +55,7 @@ class SurveyTakingController:
         for qId in question_ids:
             data = self._database.getQuestion(qId)
             question = Question(qId, data[0], data[1])
-            self.survey_questions += question
+            self.survey_questions += (question,)
 
     def get_next_question(self):
         self.question_number += 1
@@ -68,6 +68,14 @@ class SurveyTakingController:
         question = self.survey_questions[self.question_number]
         return question
 
+    def get_answers(self, question):
+        cursor = self._database.getResponses(question.question_id)
+        responses = []
+        for resp in cursor.fetchall():
+            responses += Response(resp[0],resp[1])
+        cursor.close()
+        return responses
+
 
 class Question:
     question_id = None
@@ -78,3 +86,13 @@ class Question:
         self.question_id = question_id
         self.question_text = question_text
         self.question_type = question_type
+
+
+class Response:
+    response_value = None
+    response_description = None
+
+    def __init__(self, response_value, response_description):
+        self.response_value = response_value
+        self.response_description = response_description
+
