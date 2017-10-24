@@ -1,0 +1,111 @@
+#+OPTIONS: toc:nil H:5 ':t *:t d:nil stat:nil todo:nil num:nil
+#+LATEX_CLASS_OPTIONS: [10pt,twocolumn]
+#+LATEX_HEADER: \usepackage[landscape,margin=0.25 in]{geometry}
+#+LATEX_HEADER: \pagestyle{empty}
+
+
+* Questions
+
+ 1. Are you male or female?
+    - Male
+    - Female
+    - Prefer Not to Answer
+ 2. What is your age?
+    - Choices from 18 to 30
+    - Other
+ 3. Where do you attend college
+    - UNL
+    - UNO
+    - UNK
+    - Another College within Nebraska
+    - Other
+    - I am not currently in college
+ 4. What category is your primary major in?
+    - Engineering
+    - Agricultural Sciences
+    - Physical Sciences
+    - Liberal Arts
+    - Mathematical Sciences
+    - Fine Arts
+ 5. Where do you live?
+    - On Campus
+    - Off Campus
+ 6. How many credit hours are you taking?
+    - Less than 9
+    - 9 to 15
+    - 16-21
+    - More than 21
+ 7. On average, how much time do you spend studying in a week?
+    - 5 hours or less
+    - 6-10
+    - 11-15
+    - 16-20
+    - More than 20
+ 8. Of this time, how much do you spend studying in your living area?
+    - None of it
+    - Some of it
+    - Most of it
+    - Nearly all of it
+ 9. Of this time, how much do you spend studying on campus?
+    - None of it
+    - Some of it
+    - Most of it
+    - Nearly all of it
+ 10. Of this time, how much do you spend studying off campus?
+     - None of it
+     - Some of it
+     - Most of it
+     - Nearly all of it
+ 11. Where is your favorite place to study?
+     - Room/Apartment/Dorm
+     - Library
+     - Department Building
+     - Other Campus Building
+     - Coffee Shop/Restaurant/Business
+     - Outside/Park
+     - Other
+ 12. If the place where you spend the majority of your time studying and your favorite place to study are not the same, why? -- Select all that apply
+     - Not Applicable
+     - Distractions
+     - Too Loud
+     - Too Quiet
+     - No Room
+     - Too far away
+     - Insufficient tools to study successfully (No computer, whiteboard, Etc.)
+     - Lacks desired comfortability (distant bathrooms, uncomfortable furniture)
+     - Other
+ 13. Please Explain what you mean by selecting "Lacks desired comfort".
+ 14. If there was a space dedicated to studying, would you use it?
+     - Yes
+     - No
+     - Maybe
+ 15. Do you use the UNL Learning Commons to study?
+     - Often
+     - Sometimes
+     - Rarely
+     - Never
+ 16. Are there any specific things you have found improve your ability to study?
+
+
+* Constraints
+
+** Standard
+
+| Question | Having Response | Does     |    On Question |
+|----------+-----------------+----------+----------------|
+|        2 | Other           | requires | 0 (End Survey) |
+|        3 | UNL             | forbids  |             14 |
+|        3 | UNL             | requires |             15 |
+|        3 | other           | requires |              0 |
+|        5 | on              | forbids  |              9 |
+|        5 | off             | forbids  |             10 |
+|       12 | lacks...        | requires |             13 |
+
+** Disallow
+
+| Question | Having Response | Removes Answers  | From |
+|----------+-----------------+------------------+------|
+|        8 | most            | Most, Nearly All |    9 |
+|        8 | most            | Most, Nearly All |   10 |
+|        8 | nearly all      | Most, Nearly All |    9 |
+|        8 | nearly all      | Most, Nearly All |   10 |
