@@ -76,6 +76,10 @@ class SurveyTakingController:
         cursor.close()
         return responses
 
+    def get_constraints(self, question):
+        cursor = self._database.getConstraints(question)
+        cursor.fetchall()
+
 
 class Question:
     question_id = None
