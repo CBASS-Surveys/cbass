@@ -8,7 +8,7 @@ class SurveyTakingController:
     _database = None
     responseId = None
     survey_id = None
-    survey_questions = ()
+    survey_questions = []
     question_number = 0
 
     def __init__(self, survey_id):
@@ -28,7 +28,6 @@ class SurveyTakingController:
         response_struct = self._database.createSurveyResponse(self.survey_id, str(session_id))
         self.responseId = response_struct[0]
         self.get_survey_questions()
-
 
     def send_response(self, response):
         form = self.survey_questions[self.question_number].question_type
@@ -53,13 +52,31 @@ class SurveyTakingController:
         for qId in question_ids[1:]:
             data = self._database.getQuestion(qId)
             question = Question(qId, data[0], data[1])
-            self.survey_questions += (question,)
-        end_question = Question(question_ids[0],"End Survey", "end")
+            self.get_answers_for_question(question)
+            self.get_constraints_for_question(question)
+            self.survey_questions[qId] = [question]
+        end_question[] = Question(question_ids[0], "End Survey", "end")
         self.survey_questions += (end_question,)
 
     def get_next_question(self):
         self.question_number += 1
         question = self.survey_questions[self.question_number]
+        
+        if question.has_constraints():
+            question_from = question.constraints.question_from
+            #mock up this method later
+            response = self.survey_questions[question_from].get_response
+            if response == question.constraints.response_from:
+                if question.constraints.type == 'forbids':
+                    return self.get_next_question()
+
+        elif question.has_modify_constraints():
+            question_from = question.modify_constraints.question_from
+            response = self.survey_questions[question_from].get_response
+            if response == question.modify_constraints.response_from:
+                for remove in question.modify_constraints.response_discluded:
+                    question.answers.remove(remove)
+
         return question
 
     def get_prev_question(self):
@@ -73,28 +90,63 @@ class SurveyTakingController:
         question = self.survey_questions[self.question_number]
         return question
 
-    def get_answers(self, question):
+    def get_answers_for_question(self, question):
         cursor = self._database.getResponses(question.question_id)
         responses = []
         for resp in cursor.fetchall():
-            responses += Response(resp[0],resp[1])
+            responses += Response(resp[0], resp[1])
         cursor.close()
-        return responses
+        question.set_answers(responses)
 
-    def get_constraints(self, question):
+    def get_constraints_for_question(self, question):
         cursor = self._database.getConstraints(question)
-        cursor.fetchall()
+        constraints = []
+        modify_constraints = []
+        rows = cursor.fetchall()
+        if rows > 0:
+            for con in rows:
+                constraints += Constraint(con[0], con[1], con[2])
+        else:
+            constraints = None
+            cursor = self._database.getModifyConstraints(question)
+            rows = cursor.fetchall()
+            if rows > 0:
+                for con in rows:
+                    modify_constraints += ModifyConstraint(con[0], con[1], con[2])
+            else:
+                modify_constraints = None
+        cursor.close()
+        question.set_constraints(constraints)
+        question.set_modify_constraints(modify_constraints)
 
 
 class Question:
     question_id = None
     question_text = None
     question_type = None
+    answers = None
+    constraints = None
+    modify_constraints = None
 
     def __init__(self, question_id, question_text, question_type):
         self.question_id = question_id
         self.question_text = question_text
         self.question_type = question_type
+
+    def set_answers(self, answers):
+        self.answers = list(answers)
+
+    def set_constraints(self, constraints):
+        self.constraints = constraints
+
+    def set_modify_constraints(self, modify_constraints):
+        self.modify_constraints = modify_constraints
+
+    def has_constraints(self):
+        return self.constraints is not None
+
+    def has_modify_constraints(self):
+        return self.modify_constraints is not None
 
 
 class Response:
@@ -105,3 +157,24 @@ class Response:
         self.response_value = response_value
         self.response_description = response_description
 
+
+class Constraint:
+    question_from = None
+    response_from = None
+    type = None
+
+    def __init__(self, question_from, response_from, type):
+        self.question_from = question_from
+        self.response_from = response_from
+        self.type = type
+
+
+class ModifyConstraint:
+    question_from = None
+    response_from = None
+    response_discluded = None
+
+    def __init__(self, question_from, response_from, response_discluded):
+        self.question_from = question_from
+        self.response_from = response_from
+        self.response_discluded = response_discluded

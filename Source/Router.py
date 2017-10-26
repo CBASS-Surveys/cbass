@@ -3,24 +3,27 @@
 
 import os
 from flask import Flask, request, jsonify, redirect
-from flask import render_template, url_for
+from flask import render_template, url_for, session
 from werkzeug.contrib.cache import SimpleCache
 import logging
 from SurveyTakingController import SurveyTakingController, Question
 import uuid
 from SurveyProperties import SurveyProperties
+from flask_socketio import SocketIO, emit
 
-#Avoid jinja and vue conflict
+
+# Avoid jinja and vue conflict
 class CustomFlask(Flask):
-  jinja_options = Flask.jinja_options.copy()
-  jinja_options.update(dict(
-    block_start_string='(%',
-    block_end_string='%)',
-    variable_start_string='((',
-    variable_end_string='))',
-    comment_start_string='(#',
-    comment_end_string='#)',
-  ))
+    jinja_options = Flask.jinja_options.copy()
+    jinja_options.update(dict(
+        block_start_string='(%',
+        block_end_string='%)',
+        variable_start_string='((',
+        variable_end_string='))',
+        comment_start_string='(#',
+        comment_end_string='#)',
+    ))
+
 
 class Router:
     survey_taking_controller = None
@@ -38,30 +41,30 @@ logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
 template_dir = os.path.abspath('public')
 app = CustomFlask("CBASS", template_folder=template_dir)
+socketio = SocketIO(app)
 cache = SimpleCache()
 router = Router()
-sessionId = uuid.uuid4()
-survey_id = None
+survey_id = 2
 
 
 @app.route("/")
 def main_page():
     properties = SurveyProperties()
     # Change this to get user's surveys later on
-    survey_name = properties.get_survey_name(1)
-    survey_id = 1
+    # survey_name = properties.get_survey_name(2)
+    survey_id = 2
     return redirect(url_for('start_survey', survey_id=survey_id))
 
 
-@app.route("/<survey_id>")
+@app.route("/survey_id=<survey_id>")
 def start_survey(survey_id):
     # survey_id = request.form["surveyId"]
-    print(survey_id)
+    print("survey_id = " + survey_id)
     if survey_id:
         router.create_survey_taking_controller(survey_id)
     else:
         print("Error")
-
+    sessionId = uuid.uuid4()
     router.survey_taking_controller.start_survey(sessionId)
     return render_template("vueQuestions/index.html")
 
@@ -71,26 +74,25 @@ def get_question(question_num):
     question = None
     answers = None
 
-    #question = router.survey_taking_controller.get_question(question_num)
-    #answers = router.survey_taking_controller.get_answers(question)
-    question = Question(1,"test","single-response")
+    question = router.survey_taking_controller.get_question(question_num)
+    answers = router.survey_taking_controller.get_answers(question)
+
+    return jsonify(text=question.question_text,
+                   type=question.question_type,
+                   answers=answers)
+
+
+@app.route("/get_next_question", methods=['GET', 'POST'])
+def get_next_question():
+    # question = router.survey_taking_controller.get_next_question()
+    # answers = router.survey_taking_controller.get_answers(question)
+    question = Question(1, "test", "single-response")
     answers = ["yes", "no", "maybe?"]
 
     return jsonify(text=question.question_text,
-               type=question.question_type,
-               answers=answers)
+                   type=question.question_type,
+                   answers=answers)
 
-@app.route("/get_next_question")
-def get_next_question():
-    question = None
-    answers = None
-    question = router.survey_taking_controller.get_next_question()
-    answers = router.survey_taking_controller.get_answers(question)
-
-
-    return jsonify(text=question.question_text,
-               type=question.question_type,
-               answers=answers)
 
 @app.route("/survey_id=<survey_id>/get_prev_question")
 def get_prev_question():
@@ -99,10 +101,10 @@ def get_prev_question():
     question = router.survey_taking_controller.get_prev_question()
     answers = router.survey_taking_controller.get_answers(question)
 
-
     return jsonify(text=question.question_text,
-               type=question.question_type,
-               answers=answers)
+                   type=question.question_type,
+                   answers=answers)
+
 
 @app.route("/submit-question-response")
 def submit_question():
@@ -113,9 +115,17 @@ def submit_question():
         print("Error: response given")
     redirect(url_for('get_question', survey_id=survey_id))
 
+
 @app.route("/testing")
 def testing():
     return render_template("vueQuestions/index.html")
+
+
+@socketio.on('disconnect')
+def clear_session():
+    print ("here?")
+    session.clear()
+
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8000, debug=True)

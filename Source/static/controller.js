@@ -22,8 +22,7 @@ var app = new Vue({
   el: "#app-4",
   data: {
     mode : "start",
-    question : exampleQuestions[0],
-    tempCounter : 0,
+    question : getNextQuestion()
     selectedAnswers: []
   },
   computed: {
@@ -33,7 +32,6 @@ var app = new Vue({
   },
   methods: {
     getNextQuestion: function(){
-
       var result = $.ajax({
         type: 'GET',
         url: '/get_next_question',
@@ -43,7 +41,7 @@ var app = new Vue({
       var callback = function(data){
         if(this.isAnswered){
           this.question = data
-
+          alert('Wow!')
           this.selectedAnswers = [];
 
           if(this.question.type === "end"){
@@ -79,5 +77,14 @@ var app = new Vue({
     noAnswersError: function(){
       $("#test").css("border", "10px solid red");
     }
+
+    function data() {
+    var data = $.ajax({
+        url : '/get_next_question',
+        type: 'GET'
+    });
+    this.question = data
+    }
+
   }
 })
