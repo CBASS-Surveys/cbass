@@ -26,16 +26,25 @@ var app = new Vue({
     tempCounter : 0,
     selectedAnswers: []
   },
+  computed: {
+    isAnswered: function(){
+      return this.selectedAnswers.length != 0;
+    }
+  },
   methods: {
     getNextQuestion: function(){
-      if(this.tempCounter < exampleQuestions.length-1){
-        this.tempCounter++
-        this.question = exampleQuestions[this.tempCounter]
-      }
-      console.log(this.selectedAnswers)
-      this.selectedAnswers = [];
-      if(this.question.type === "end"){
-        this.mode = 'end';
+      if(this.isAnswered){
+        if(this.tempCounter < exampleQuestions.length-1){
+          this.tempCounter++
+          this.question = exampleQuestions[this.tempCounter]
+        }
+        console.log(this.selectedAnswers)
+        this.selectedAnswers = [];
+        if(this.question.type === "end"){
+          this.mode = 'end';
+        }
+      } else {
+        this.noAnswersError();
       }
     },
     getLastQuestion: function(){
@@ -43,6 +52,9 @@ var app = new Vue({
         this.tempCounter--
         this.question = exampleQuestions[this.tempCounter]
       }
+    },
+    noAnswersError: function(){
+      $("#test").css("border", "10px solid red");
     }
   }
 })

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
 
   <script src="../../libs/vue.js"></script>
+  <script src="../../libs/jquery-3.2.1.js"></script>
 
 </head>
 
@@ -12,6 +13,13 @@
   <script type="text/x-template" id="question-block">
 
 </script>
+
+<style>
+
+.notAnswered{
+    border-bottom: red solid 5px;
+}
+</style>
 
 <div id="app-4">
   <div v-if="mode === 'start'">
@@ -25,7 +33,7 @@
     </div>
     <div>
       <div>
-        <p> {{ question.text }} </p>
+        <p :class= "{ notAnswered: !isAnswered }"> {{ question.text }} </p>
 
         <div v-if="question.type ==='multi'">
           <template v-for="answer in question.answers">
