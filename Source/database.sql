@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS question_constraint_modify
         question_to INTEGER REFERENCES survey_question NOT NULL,
         responses_discluded INTEGER ARRAY,
         PRIMARY KEY (id),
-        UNIQUE (question_from, response_from)
+        UNIQUE (question_from, response_from, question_to)
 );
 -- End Table question_constraint_modify
 
