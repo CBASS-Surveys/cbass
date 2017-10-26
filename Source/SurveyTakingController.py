@@ -28,9 +28,7 @@ class SurveyTakingController:
         response_struct = self._database.createSurveyResponse(self.survey_id, str(session_id))
         self.responseId = response_struct[0]
         self.get_survey_questions()
-        # Return first question to the view
-        question = self.get_question(self.question_number)
-        return question
+
 
     def send_response(self, response):
         form = self.survey_questions[self.question_number].question_type
@@ -52,14 +50,21 @@ class SurveyTakingController:
         question_ids = cursor.fetchall()
         cursor.close()
 
-        for qId in question_ids:
+        for qId in question_ids[1:]:
             data = self._database.getQuestion(qId)
             question = Question(qId, data[0], data[1])
             self.survey_questions += (question,)
+        end_question = Question(question_ids[0],"End Survey", "single-response")
+        self.survey_questions += (end_question,)
 
     def get_next_question(self):
         self.question_number += 1
         question = self.survey_questions[self.question_number]
+        return question
+
+    def get_prev_question(self):
+        question_num = self.question_number - 1
+        question = self.survey_questions[question_num]
         return question
 
     def get_question(self, q):
