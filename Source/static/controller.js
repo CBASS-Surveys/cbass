@@ -40,7 +40,7 @@ var app = new Vue({
         success: callback
       })
 
-      var callback(data){
+      var callback = function(data){
         if(this.isAnswered){
           this.question = data
 
@@ -62,7 +62,7 @@ var app = new Vue({
         success: callback
       })
 
-      var callback(data){
+      var callback = function(data){
         if(this.isAnswered){
           this.question = data
 
@@ -74,6 +74,7 @@ var app = new Vue({
         } else {
           this.noAnswersError();
         }
+       }
     },
     noAnswersError: function(){
       $("#test").css("border", "10px solid red");

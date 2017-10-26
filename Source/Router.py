@@ -10,6 +10,17 @@ from SurveyTakingController import SurveyTakingController, Question
 import uuid
 from SurveyProperties import SurveyProperties
 
+#Avoid jinja and vue conflict
+class CustomFlask(Flask):
+  jinja_options = Flask.jinja_options.copy()
+  jinja_options.update(dict(
+    block_start_string='(%',
+    block_end_string='%)',
+    variable_start_string='((',
+    variable_end_string='))',
+    comment_start_string='(#',
+    comment_end_string='#)',
+  ))
 
 class Router:
     survey_taking_controller = None
@@ -26,7 +37,7 @@ class Router:
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
 template_dir = os.path.abspath('public')
-app = Flask("CBASS", template_folder=template_dir)
+app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
 router = Router()
 sessionId = uuid.uuid4()
@@ -55,21 +66,21 @@ def start_survey(survey_id):
     return render_template("vueQuestions/index.html")
 
 
-@app.route("/survey_id=<survey_id>/question_num=<question_num>", methods=['GET', 'POST'])
+@app.route("/question_num=<question_num>", methods=['GET', 'POST'])
 def get_question(question_num):
     question = None
     answers = None
 
-    question = router.survey_taking_controller.get_question(question_num)
-    answers = router.survey_taking_controller.get_answers(question)
-
+    #question = router.survey_taking_controller.get_question(question_num)
+    #answers = router.survey_taking_controller.get_answers(question)
+    question = Question(1,"test","single-response")
+    answers = ["yes", "no", "maybe?"]
 
     return jsonify(text=question.question_text,
                type=question.question_type,
                answers=answers)
 
-
-@app.route("/survey_id=<survey_id>/get_next_question")
+@app.route("/get_next_question")
 def get_next_question():
     question = None
     answers = None
@@ -102,6 +113,9 @@ def submit_question():
         print("Error: response given")
     redirect(url_for('get_question', survey_id=survey_id))
 
+@app.route("/testing")
+def testing():
+    return render_template("vueQuestions/index.html")
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8000, debug=True)

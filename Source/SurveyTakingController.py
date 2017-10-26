@@ -54,7 +54,7 @@ class SurveyTakingController:
             data = self._database.getQuestion(qId)
             question = Question(qId, data[0], data[1])
             self.survey_questions += (question,)
-        end_question = Question(question_ids[0],"End Survey", "single-response")
+        end_question = Question(question_ids[0],"End Survey", "end")
         self.survey_questions += (end_question,)
 
     def get_next_question(self):
