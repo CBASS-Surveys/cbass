@@ -24,7 +24,7 @@
 <div id="app-4">
   <div v-if="mode === 'start'">
     <p>Hi</p>
-    <div style="background:blue; width:100px; height: 50px; color:white;" v-on:click="mode = 'survey'">start</div>
+    <div style="background:blue; width:100px; height: 50px; color:white;" v-on:click="mode = 'survey'" v-on:click="getNextQuestion">start</div>
   </div>
   <div v-if="mode === 'survey'">
     <div style="display:flex;">
@@ -35,7 +35,7 @@
       <div>
         <p :class= "{ notAnswered: !isAnswered }"> {{ question.text }} </p>
 
-        <div v-if="question.type ==='multi'">
+        <div v-if="question.type ==='multi-choice-response'">
           <template v-for="answer in question.answers">
             <input type="radio"
               :id="answer"
@@ -46,7 +46,7 @@
           </template>
         </div>
 
-        <div v-else-if="question.type ==='single'">
+        <div v-else-if="question.type ==='single-response'">
           <template v-for="answer in question.answers">
             <input type="checkbox"
               :id="answer"
@@ -57,7 +57,7 @@
           </template>
         </div>
 
-        <div v-else-if="question.type ==='text'">
+        <div v-else-if="question.type ==='free-reponse'">
           <textarea v-model="selectedAnswers" name="name" rows="8" cols="80"></textarea>
         </div>
 

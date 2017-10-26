@@ -1,17 +1,17 @@
 var exampleQuestions = [
   {
     "text": "What types of weather do you like?",
-    "type": "multi",
+    "type": "multi-choice-response",
     "answers": ["hot weather","warm weather","rainy weather","cool weather","windy weather"]
   },
   {
     "text": "What is your favorite color?",
-    "type": "single",
+    "type": "single-response",
     "answers": ["red","blue","green"]
   },
   {
     "text": "What do you like most about animals?",
-    "type": "text"
+    "type": "free-response"
   },
   {
     "type" : "end"
@@ -33,25 +33,47 @@ var app = new Vue({
   },
   methods: {
     getNextQuestion: function(){
-      if(this.isAnswered){
-        if(this.tempCounter < exampleQuestions.length-1){
-          this.tempCounter++
-          this.question = exampleQuestions[this.tempCounter]
+
+      var result = $.ajax({
+        type: 'GET',
+        url: '/get_next_question',
+        success: callback
+      })
+
+      var callback(data){
+        if(this.isAnswered){
+          this.question = data
+
+          this.selectedAnswers = [];
+
+          if(this.question.type === "end"){
+            this.mode = 'end';
+          }
+        } else {
+          this.noAnswersError();
         }
-        console.log(this.selectedAnswers)
-        this.selectedAnswers = [];
-        if(this.question.type === "end"){
-          this.mode = 'end';
-        }
-      } else {
-        this.noAnswersError();
       }
     },
+    //Change to "previous" question
     getLastQuestion: function(){
-      if(this.tempCounter > 0){
-        this.tempCounter--
-        this.question = exampleQuestions[this.tempCounter]
-      }
+      var result = $.ajax({
+        type: 'GET',
+        url: '/get_prev_question',
+        success: callback
+      })
+
+      var callback(data){
+        if(this.isAnswered){
+          this.question = data
+
+          this.selectedAnswers = [];
+
+          if(this.question.type === "end"){
+            this.mode = 'end';
+          }
+        } else {
+          this.noAnswersError();
+        }
     },
     noAnswersError: function(){
       $("#test").css("border", "10px solid red");
