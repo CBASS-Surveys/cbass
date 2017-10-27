@@ -23,6 +23,7 @@ var app = new Vue({
   data: {
     mode : "start",
     question : exampleQuestions[0],
+    testCounter : 0,
     selectedAnswers: []
   },
   computed: {
@@ -37,21 +38,30 @@ var app = new Vue({
 
       if(self.isAnswered){
 
-      var result = $.ajax({
-        type: 'GET',
-        url: '/get_next_question',
-        success: function(data){
+      $.post('/get_next_question',
+        self.selectedAnswers,
+        function(data){
           console.log("data")
-
-            self.question = data
-            alert('Wow!')
-            self.selectedAnswers = [];
-
-            if(self.question.type === "end"){
-              self.mode = 'end';
-            }
+          self.question = data
+          self.selectedAnswers = [];
+          if(self.question.type === "end"){
+            self.mode = 'end';
           }
       })
+      } else {
+        app.noAnswersError();
+      }
+    },
+    getNextTestQuestion: function(){
+      var self = this;
+
+      if(self.isAnswered){
+        self.testCounter++
+        self.question = exampleQuestions[self.testCounter]
+        self.selectedAnswers = [];
+        if(self.question.type === "end"){
+          self.mode = 'end';
+        }
       } else {
         app.noAnswersError();
       }
@@ -74,6 +84,15 @@ var app = new Vue({
           }
         }
       })
+    },
+    getLastTestQuestion: function(){
+      var self = this;
+
+      if(self.testCounter > 0){
+        self.testCounter--
+        self.question = exampleQuestions[self.testCounter]
+        self.selectedAnswers = [];
+      }
     },
     noAnswersError: function(){
       $("#test").css("border", "10px solid red");
