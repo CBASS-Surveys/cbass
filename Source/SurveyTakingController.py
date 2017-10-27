@@ -22,6 +22,7 @@ class SurveyTakingController:
         hostname = sql["hostname"]
         username = sql["username"]
         password = sql["password"]
+        #dump(hostname, username, password)
         self._database = Database(db, hostname, username, password)
 
     def start_survey(self, session_id):
@@ -55,13 +56,13 @@ class SurveyTakingController:
             self.get_answers_for_question(question)
             self.get_constraints_for_question(question)
             self.survey_questions[qId] = [question]
-        end_question[] = Question(question_ids[0], "End Survey", "end")
+        end_question = Question(question_ids[0], "End Survey", "end")
         self.survey_questions += (end_question,)
 
     def get_next_question(self):
         self.question_number += 1
         question = self.survey_questions[self.question_number]
-        
+
         if question.has_constraints():
             question_from = question.constraints.question_from
             #mock up this method later

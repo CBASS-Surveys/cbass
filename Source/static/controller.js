@@ -22,7 +22,7 @@ var app = new Vue({
   el: "#app-4",
   data: {
     mode : "start",
-    question : getNextQuestion()
+    question : exampleQuestions[0],
     selectedAnswers: []
   },
   computed: {
@@ -32,59 +32,59 @@ var app = new Vue({
   },
   methods: {
     getNextQuestion: function(){
+
+      var self = this;
+
+      if(self.isAnswered){
+
       var result = $.ajax({
         type: 'GET',
         url: '/get_next_question',
-        success: callback
-      })
+        success: function(data){
+          console.log("data")
 
-      var callback = function(data){
-        if(this.isAnswered){
-          this.question = data
-          alert('Wow!')
-          this.selectedAnswers = [];
+            self.question = data
+            alert('Wow!')
+            self.selectedAnswers = [];
 
-          if(this.question.type === "end"){
-            this.mode = 'end';
+            if(self.question.type === "end"){
+              self.mode = 'end';
+            }
           }
-        } else {
-          this.noAnswersError();
-        }
+      })
+      } else {
+        app.noAnswersError();
       }
     },
     //Change to "previous" question
     getLastQuestion: function(){
+      var self = this;
       var result = $.ajax({
         type: 'GET',
         url: '/get_prev_question',
-        success: callback
-      })
-
-      var callback = function(data){
-        if(this.isAnswered){
-          this.question = data
-
-          this.selectedAnswers = [];
-
-          if(this.question.type === "end"){
-            this.mode = 'end';
+        success: function(data){
+          //implement for what gets returned when there is no previous question
+          if(data.type != "error"){
+            console.log(data)
+            self.question = data
+            self.selectedAnswers = [];
+            if(self.question.type === "end"){
+              self.mode = 'end';
+            }
           }
-        } else {
-          this.noAnswersError();
         }
-       }
+      })
     },
     noAnswersError: function(){
       $("#test").css("border", "10px solid red");
-    }
+    },
 
-    function data() {
+    data: function() {
     var data = $.ajax({
         url : '/get_next_question',
         type: 'GET'
     });
     this.question = data
     }
-
   }
 })
