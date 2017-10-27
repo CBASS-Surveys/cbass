@@ -22,7 +22,7 @@ var app = new Vue({
   el: "#app-4",
   data: {
     mode : "start",
-    question : exampleQuestions[0],
+    question : {},
     testCounter : 0,
     selectedAnswers: []
   },
@@ -96,6 +96,21 @@ var app = new Vue({
     },
     noAnswersError: function(){
       $("#test").css("border", "10px solid red");
+    },
+    startSurvey: function(){
+      var self = this;
+
+      self.mode = 'survey'
+
+      $.get('/get_next_question',
+        function(data){
+          console.log("data")
+          self.question = data
+          self.selectedAnswers = [];
+          if(self.question.type === "end"){
+            self.mode = 'end';
+          }
+      })
     },
 
     data: function() {
