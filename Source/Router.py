@@ -9,7 +9,6 @@ import logging
 from SurveyTakingController import SurveyTakingController, Question
 import uuid
 from SurveyProperties import SurveyProperties
-from flask_socketio import SocketIO, emit
 
 
 # Avoid jinja and vue conflict
@@ -41,7 +40,6 @@ logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
 template_dir = os.path.abspath('public')
 app = CustomFlask("CBASS", template_folder=template_dir)
-socketio = SocketIO(app)
 cache = SimpleCache()
 router = Router()
 survey_id = 2
@@ -94,37 +92,31 @@ def get_next_question():
                    answers=answers)
 
 
-@app.route("/survey_id=<survey_id>/get_prev_question")
+@app.route("/get_prev_question", methods=['GET', 'POST'])
 def get_prev_question():
     question = None
     answers = None
     question = router.survey_taking_controller.get_prev_question()
-    answers = router.survey_taking_controller.get_answers(question)
+    answers = question.answers
 
     return jsonify(text=question.question_text,
                    type=question.question_type,
                    answers=answers)
 
 
-@app.route("/submit-question-response")
-def submit_question():
-    response = request.form["question-response"]
+@app.route("/submit-question-response", methods=['POST'])
+def submit_response(response):
+    response = request.form["response"]
     if response:
         router.survey_taking_controller.send_response(response)
     else:
         print("Error: response given")
-    redirect(url_for('get_question', survey_id=survey_id))
+
 
 
 @app.route("/testing")
 def testing():
     return render_template("vueQuestions/index.html")
-
-
-@socketio.on('disconnect')
-def clear_session():
-    print ("here?")
-    session.clear()
 
 
 if __name__ == "__main__":

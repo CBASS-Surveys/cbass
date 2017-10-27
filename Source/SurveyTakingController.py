@@ -32,7 +32,9 @@ class SurveyTakingController:
 
     def send_response(self, response):
         form = self.survey_questions[self.question_number].question_type
-        question_id = self.survey_questions[self.question_number].question_id
+        question = self.survey_questions[self.question_number]
+        question.set_response(response)
+        question_id = question.question_id
 
         if form == "single-response":
             if response:
@@ -65,8 +67,7 @@ class SurveyTakingController:
 
         if question.has_constraints():
             question_from = question.constraints.question_from
-            #mock up this method later
-            response = self.survey_questions[question_from].get_response
+            response = self.survey_questions[question_from].response
             if response == question.constraints.response_from:
                 if question.constraints.type == 'forbids':
                     return self.get_next_question()
@@ -128,6 +129,7 @@ class Question:
     answers = None
     constraints = None
     modify_constraints = None
+    response = None
 
     def __init__(self, question_id, question_text, question_type):
         self.question_id = question_id
@@ -149,6 +151,8 @@ class Question:
     def has_modify_constraints(self):
         return self.modify_constraints is not None
 
+    def set_response(self, response):
+        self.response = response
 
 class Response:
     response_value = None
