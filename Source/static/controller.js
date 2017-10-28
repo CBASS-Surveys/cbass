@@ -29,6 +29,13 @@ var app = new Vue({
   computed: {
     isAnswered: function(){
       return this.selectedAnswers.length != 0;
+    },
+    formatedAnswers: function(){
+      var temp = [];
+      for(var i = 0; i < selectedAnswers.length; i++){
+        temp.push(selectedAnswers[i]);
+        return temp;
+      }
     }
   },
   methods: {
@@ -39,7 +46,7 @@ var app = new Vue({
       if(self.isAnswered){
 
       $.post('/get_next_question',
-        self.selectedAnswers,
+        self.formatedAnswers,
         function(data){
           console.log("data")
           self.question = data
