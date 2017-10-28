@@ -9,6 +9,8 @@ import logging
 from SurveyTakingController import SurveyTakingController, Question
 import uuid
 from SurveyProperties import SurveyProperties
+import json
+import re
 
 
 # Avoid jinja and vue conflict
@@ -82,11 +84,27 @@ def get_question(question_num):
 
 @app.route("/get_next_question", methods=['GET', 'POST'])
 def get_next_question():
-    # question = router.survey_taking_controller.get_next_question()
-    # answers = router.survey_taking_controller.get_answers(question)
-    question = Question(1, "test", "single-response")
-    answers = ["yes", "no", "maybe?"]
+    form = request
 
+    if request.method == 'POST':
+        type = router.survey_taking_controller.current_question.question_type
+        answers = []
+        if type in ("single-response", "free-response"):
+            answer = re.sub('(^"|"$)', '', request.data)
+            answers = [answer]
+        else:
+            for answer in json.loads(request.data):
+                answers += [answer]
+        submit_response(answers)
+
+    question = router.survey_taking_controller.get_next_question()
+
+    if question.question_type == "end":
+        return jsonify(text=question.question_text,
+                       type=question.question_type)
+    answers = []
+    for resp in question.answers:
+        answers += [resp.response_description]
     return jsonify(text=question.question_text,
                    type=question.question_type,
                    answers=answers)
@@ -104,13 +122,8 @@ def get_prev_question():
                    answers=answers)
 
 
-@app.route("/submit-question-response", methods=['POST'])
 def submit_response(response):
-    response = request.form["response"]
-    if response:
-        router.survey_taking_controller.send_response(response)
-    else:
-        print("Error: response given")
+    router.survey_taking_controller.send_response(response)
 
 
 

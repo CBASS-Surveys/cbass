@@ -40,7 +40,7 @@
         </div>
         <div id="answerContainer">
 
-          <div v-if="question.type ==='multi-choice-response'">
+          <div v-if="question.type ==='single-response'">
             <template v-for="answer in question.answers">
               <input type="radio"
                 :id="answer"
@@ -51,7 +51,7 @@
             </template>
           </div>
 
-          <div v-else-if="question.type ==='single-response'">
+          <div v-else-if="question.type ==='multi-choice-response'">
             <template v-for="answer in question.answers">
               <input type="checkbox"
                 :id="answer"

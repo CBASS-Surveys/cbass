@@ -117,9 +117,9 @@ class Database:
 
     def insertSurveyQuestionLongFormResponse(self, responseID, questionID, responseText):
         cursor = self._connection.cursor()
-        cursor.execute("INSERT INTO survey_long_form_response (response_id, response_to, response) VALUES (%s, %s, %s);"
+        cursor.execute("INSERT INTO survey_long_form_response (response_id, response_to, response) VALUES (%s, %s, %s);",
                        (responseID, questionID, responseText))
-        self.connection.commit()
+        self._connection.commit()
         cursor.close()
         return (responseID, questionID)
 
@@ -136,7 +136,7 @@ class Database:
     def hasResponse(self, question, response, id):
         cursor = self._connection.cursor()
         cursor.execute("SELECT question_type FROM survey_question WHERE question_id = %s;", (question,))
-        (type) = cursor.fetchone()
+        (type,) = cursor.fetchone()
         if (type == "single-response"):
             cursor.execute("SELECT true FROM survey_response_entry WHERE response_to = %s AND response_id = %s AND response = %s;",
             (question, id, response))
@@ -147,7 +147,7 @@ class Database:
         else:
             cursor.execute("SELECT response FROM survey_multi_response WHERE response_to = %s AND response_id = %s;",
                            (question, id))
-            (values) = cursor.fetchone()
+            values = cursor.fetchone()
             return (response in values)
 
     def getQuestion(self, ID):
@@ -159,7 +159,7 @@ class Database:
 
     def getResponses(self, questionID):
         cursor = self._connection.cursor()
-        cursor.execute("SELECT value, description FROM question_response WHERE question = %s;", (questionID,))
+        cursor.execute("SELECT id, value, description FROM question_response WHERE question = %s;", (questionID,))
         return cursor
 
     def getSurveyQuestions(self, surveyID):

@@ -9,7 +9,8 @@ class SurveyTakingController:
     responseId = None
     survey_id = None
     survey_questions = []
-    question_number = 0
+    question_number = -1
+    current_question = None
 
     def __init__(self, survey_id):
 
@@ -32,19 +33,29 @@ class SurveyTakingController:
 
     def send_response(self, response):
         form = self.survey_questions[self.question_number].question_type
-        question = self.survey_questions[self.question_number]
-        question.set_response(response)
+        question = self.current_question
         question_id = question.question_id
-
-        if form == "single-response":
-            if response:
-                self._database.insertSurveyQuestionResponse(self.responseId, question_id, response)
-        elif form == "multi-choice-response":
-            if response:
-                self._database.insertSurveyQuestionMultiResponse(self.responseId, question_id, response)
-        elif form == "free-response":
+        if form == "free-response":
             if response:
                 self._database.insertSurveyQuestionLongFormResponse(self.responseId, question_id, response)
+        else:
+            response_ids = []
+            for resp in response:
+                for answer in question.answers:
+                    if resp == answer.response_description:
+                        response_ids += [answer.response_id]
+                question.add_response(resp)
+
+
+            if len(response_ids):
+                if form == "single-response":
+                    if response:
+                        self._database.insertSurveyQuestionResponse(self.responseId, question_id, response_ids[0])
+                elif form == "multi-choice-response":
+                    if response:
+                        self._database.insertSurveyQuestionMultiResponse(self.responseId, question_id, response_ids)
+
+
 
     def get_survey_questions(self):
         survey_id = self.survey_id
@@ -52,33 +63,37 @@ class SurveyTakingController:
         question_ids = cursor.fetchall()
         cursor.close()
 
-        for qId in question_ids[1:]:
+        for (qId,) in question_ids:
             data = self._database.getQuestion(qId)
             question = Question(qId, data[0], data[1])
             self.get_answers_for_question(question)
             self.get_constraints_for_question(question)
-            self.survey_questions[qId] = [question]
-        end_question = Question(question_ids[0], "End Survey", "end")
-        self.survey_questions += (end_question,)
+            self.survey_questions.insert(qId,question)
 
     def get_next_question(self):
         self.question_number += 1
+        if(self.question_number >= len(self.survey_questions)):
+            return Question(0,"end of survey", "end")
         question = self.survey_questions[self.question_number]
 
         if question.has_constraints():
-            question_from = question.constraints.question_from
-            response = self.survey_questions[question_from].response
-            if response == question.constraints.response_from:
-                if question.constraints.type == 'forbids':
-                    return self.get_next_question()
-
-        elif question.has_modify_constraints():
-            question_from = question.modify_constraints.question_from
-            response = self.survey_questions[question_from].get_response
-            if response == question.modify_constraints.response_from:
-                for remove in question.modify_constraints.response_discluded:
-                    question.answers.remove(remove)
-
+            for constraint in question.constraints:
+                question_from = constraint.question_from
+                if self._database.hasResponse(question_from, constraint.response_from, self.responseId):
+                    if constraint.type == 'forbid':
+                        return self.get_next_question()
+        if question.has_modify_constraints():
+            responses = {}
+            for response in question.answers:
+                responses[response.response_id] = response
+            for constraint in question.modify_constraints:
+                question_from = constraint.question_from
+                if self._database.hasResponse(question_from, constraint.response_from, self.responseId):
+                    for remove in constraint.response_discluded:
+                        if remove in responses:
+                            del responses[remove]
+            question.answers = responses.values()
+        self.current_question = question
         return question
 
     def get_prev_question(self):
@@ -96,28 +111,23 @@ class SurveyTakingController:
         cursor = self._database.getResponses(question.question_id)
         responses = []
         for resp in cursor.fetchall():
-            responses += Response(resp[0], resp[1])
+            responses += [Response(resp[0], resp[1], resp[2])]
         cursor.close()
         question.set_answers(responses)
 
     def get_constraints_for_question(self, question):
-        cursor = self._database.getConstraints(question)
+
         constraints = []
         modify_constraints = []
-        rows = cursor.fetchall()
-        if rows > 0:
-            for con in rows:
-                constraints += Constraint(con[0], con[1], con[2])
-        else:
-            constraints = None
-            cursor = self._database.getModifyConstraints(question)
-            rows = cursor.fetchall()
-            if rows > 0:
-                for con in rows:
-                    modify_constraints += ModifyConstraint(con[0], con[1], con[2])
-            else:
-                modify_constraints = None
+        cursor = self._database.getConstraints(question.question_id)
+        for con in cursor:
+            constraints += [Constraint(con[0], con[1], con[2])]
+
+        cursorMod = self._database.getModifyConstraints(question.question_id)
+        for (qFrom, rFrom, discluded) in cursorMod:
+            modify_constraints += [ModifyConstraint(qFrom, rFrom, discluded)]
         cursor.close()
+        cursorMod.close()
         question.set_constraints(constraints)
         question.set_modify_constraints(modify_constraints)
 
@@ -129,7 +139,7 @@ class Question:
     answers = None
     constraints = None
     modify_constraints = None
-    response = None
+    response = []
 
     def __init__(self, question_id, question_text, question_type):
         self.question_id = question_id
@@ -146,19 +156,21 @@ class Question:
         self.modify_constraints = modify_constraints
 
     def has_constraints(self):
-        return self.constraints is not None
+        return len(self.constraints)
 
     def has_modify_constraints(self):
-        return self.modify_constraints is not None
+        return len(self.modify_constraints)
 
-    def set_response(self, response):
-        self.response = response
+    def add_response(self, response):
+        self.response += [response]
 
 class Response:
+    response_id = None
     response_value = None
     response_description = None
 
-    def __init__(self, response_value, response_description):
+    def __init__(self, response_id, response_value, response_description):
+        self.response_id = response_id
         self.response_value = response_value
         self.response_description = response_description
 
