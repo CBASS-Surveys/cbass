@@ -46,13 +46,12 @@ var app = new Vue({
 
       if(self.isAnswered){
 
-        console.log('/get_next_question?answers='+self.formatedAnswers.toString());
-
-      $.ajax(
+      $.ajax({
         url:'/get_next_question',
         type: "POST",
         data: JSON.stringify(this.selectedAnswers),
         dataType: "JSON",
+        contentType: "application/json; charset=utf-8",
         success: function(data){
           console.log("data")
           self.question = data
