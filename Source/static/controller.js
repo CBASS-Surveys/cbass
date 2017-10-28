@@ -31,11 +31,12 @@ var app = new Vue({
       return this.selectedAnswers.length != 0;
     },
     formatedAnswers: function(){
-      var temp = [];
-      for(var i = 0; i < selectedAnswers.length; i++){
-        temp.push(selectedAnswers[i]);
+      return JSON.stringify(this.selectedAnswers)
+      /*var temp = [];
+      for(var i = 0; i < this.selectedAnswers.length; i++){
+        temp.push(this.selectedAnswers[i]);
         return temp;
-      }
+      }*/
     }
   },
   methods: {
@@ -44,6 +45,8 @@ var app = new Vue({
       var self = this;
 
       if(self.isAnswered){
+
+        console.log('/get_next_question?answers='+self.formatedAnswers.toString());
 
       $.post('/get_next_question',
         self.formatedAnswers,
