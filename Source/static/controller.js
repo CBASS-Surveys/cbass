@@ -60,6 +60,7 @@ var app = new Vue({
           if(self.question.type === "end"){
             self.mode = 'end';
           }
+        }
       })
       } else {
         app.noAnswersError();
