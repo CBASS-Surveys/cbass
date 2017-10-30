@@ -31,7 +31,7 @@ INSERT INTO survey_question (question_id, survey, question_text, question_type) 
        (13, 2, 'Please explain what you mean by selecting "Lacks desired comfort".', 'free-response'),
        (14, 2, 'If there was a space dedicated to studying, would you use it?', 'single-response'),
        (15, 2, 'Do you use the UNL Learning Commons to study?', 'single-response'),
-       (16, 2, 'Are there any specific things that you hav found improve your ability to study?', 'free-response');
+       (16, 2, 'Are there any specific things that you have found improve your ability to study?', 'free-response');
 
 
 INSERT INTO question_response (id, survey, question, value, description) VALUES
