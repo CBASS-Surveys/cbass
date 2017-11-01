@@ -11,6 +11,7 @@ import uuid
 from SurveyProperties import SurveyProperties
 import json
 import re
+import config
 
 
 # Avoid jinja and vue conflict
@@ -44,7 +45,6 @@ template_dir = os.path.abspath('public')
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
 router = Router()
-survey_id = 2
 
 
 @app.route("/")
@@ -84,12 +84,12 @@ def get_question(question_num):
 
 @app.route("/get_next_question", methods=['GET', 'POST'])
 def get_next_question():
-    form = request
 
     if request.method == 'POST':
         type = router.survey_taking_controller.current_question.question_type
         answers = []
         if type in ("single-response", "free-response"):
+            # won't need this after the change to returning just a number
             answer = re.sub('(^"|"$)', '', request.data)
             answers = [answer]
         else:
@@ -102,9 +102,10 @@ def get_next_question():
     if question.question_type == "end":
         return jsonify(text=question.question_text,
                        type=question.question_type)
-    answers = []
+
+    answers = {}
     for resp in question.answers:
-        answers += [resp.response_description]
+        answers[resp.response_id] = [resp.response_description]
     return jsonify(text=question.question_text,
                    type=question.question_type,
                    answers=answers)
@@ -112,10 +113,22 @@ def get_next_question():
 
 @app.route("/get_prev_question", methods=['GET', 'POST'])
 def get_prev_question():
-    question = None
-    answers = None
+
+    if request.method == 'POST':
+        type = router.survey_taking_controller.current_question.question_type
+        answers = []
+        if type in ("single-response", "free-response"):
+            answer = re.sub('(^"|"$)', '', request.data)
+            answers = [answer]
+        else:
+            for answer in json.loads(request.data):
+                answers += [answer]
+        submit_response(answers)
+
     question = router.survey_taking_controller.get_prev_question()
-    answers = question.answers
+    answers = {}
+    for resp in question.answers:
+        answers[resp.response_id] = [resp.response_description]
 
     return jsonify(text=question.question_text,
                    type=question.question_type,
@@ -126,11 +139,11 @@ def submit_response(response):
     router.survey_taking_controller.send_response(response)
 
 
-
 @app.route("/testing")
 def testing():
     return render_template("vueQuestions/index.html")
 
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1', port=8000, debug=True)
+    app.config.from_object(config.TestingConfig)
+    app.run(host='127.0.0.1', port=8000)
