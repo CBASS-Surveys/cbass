@@ -35,10 +35,10 @@ class SurveyTakingController:
         self.get_survey_questions()
 
     def send_response(self, response):
-        form = self.survey_questions[self.question_number].question_type
+        type = self.survey_questions[self.question_number].question_type
         question = self.current_question
         question_id = question.question_id
-        if form == "free-response":
+        if type == "free-response":
             if response:
                 self._database.insertSurveyQuestionLongFormResponse(self.responseId, question_id, response)
         else:
@@ -50,10 +50,10 @@ class SurveyTakingController:
                 question.add_response(resp)
 
             if len(response_ids):
-                if form == "single-response":
+                if type == "single-response":
                     if response:
                         self._database.insertSurveyQuestionResponse(self.responseId, question_id, response_ids[0])
-                elif form == "multi-choice-response":
+                elif type == "multi-choice-response":
                     if response:
                         self._database.insertSurveyQuestionMultiResponse(self.responseId, question_id, response_ids)
 
@@ -97,14 +97,18 @@ class SurveyTakingController:
         return question
 
     def get_prev_question(self):
-        question_num = self.question_number - 1
-        question = self.survey_questions[question_num]
-        return question
+        if self.question_number == 0:
+            return None
+        else:
+            self.question_number += -1
+            question = self.survey_questions[self.question_number]
+            self.current_question = question
+            return question
 
     def get_question(self, q):
         self.question_number = q
-        # Check for bounds later
         question = self.survey_questions[self.question_number]
+        self.current_question = question
         return question
 
     def get_answers_for_question(self, question):
