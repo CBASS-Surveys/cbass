@@ -35,10 +35,10 @@ class SurveyTakingController:
         self.get_survey_questions()
 
     def send_response(self, response):
-        type = self.survey_questions[self.question_number].question_type
+        question_type = self.survey_questions[self.question_number].question_type
         question = self.current_question
         question_id = question.question_id
-        if type == "free-response":
+        if question_type == "free-response":
             if response:
                 self._database.insertSurveyQuestionLongFormResponse(self.responseId, question_id, response)
         else:
@@ -50,10 +50,10 @@ class SurveyTakingController:
                 question.add_response(resp)
 
             if len(response_ids):
-                if type == "single-response":
+                if question_type == "single-response":
                     if response:
                         self._database.insertSurveyQuestionResponse(self.responseId, question_id, response_ids[0])
-                elif type == "multi-choice-response":
+                elif question_type == "multi-choice-response":
                     if response:
                         self._database.insertSurveyQuestionMultiResponse(self.responseId, question_id, response_ids)
 
@@ -68,12 +68,12 @@ class SurveyTakingController:
             question = Question(qId, data[0], data[1])
             self.get_answers_for_question(question)
             self.get_constraints_for_question(question)
-            self.survey_questions.insert(qId,question)
+            self.survey_questions.insert(qId, question)
 
     def get_next_question(self):
         self.question_number += 1
         if self.question_number >= len(self.survey_questions):
-            return Question(0,"end of survey", "end")
+            return Question(0, "end of survey", "end")
         question = self.survey_questions[self.question_number]
 
         if question.has_constraints():
@@ -134,12 +134,3 @@ class SurveyTakingController:
         cursor_mod.close()
         question.set_constraints(constraints)
         question.set_modify_constraints(modify_constraints)
-
-
-
-
-
-
-
-
-

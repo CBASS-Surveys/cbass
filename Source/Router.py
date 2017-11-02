@@ -3,12 +3,12 @@
 
 import os
 from flask import Flask, request, jsonify, redirect
-from flask import render_template, url_for, session
+from flask import render_template, url_for
 from werkzeug.contrib.cache import SimpleCache
 import logging
-from SurveyTakingController import SurveyTakingController, Question
+from SurveyTakingController import SurveyTakingController
 import uuid
-from SurveyProperties import SurveyProperties
+# from SurveyProperties import SurveyProperties
 import json
 import re
 import config
@@ -49,7 +49,7 @@ router = Router()
 
 @app.route("/")
 def main_page():
-    properties = SurveyProperties()
+    # properties = SurveyProperties()
     # Change this to get user's surveys later on
     # survey_name = properties.get_survey_name(2)
     survey_id = 2
@@ -64,18 +64,18 @@ def start_survey(survey_id):
         router.create_survey_taking_controller(survey_id)
     else:
         print("Error")
-    sessionId = uuid.uuid4()
-    router.survey_taking_controller.start_survey(sessionId)
+    session_id = uuid.uuid4()
+    router.survey_taking_controller.start_survey(session_id)
     return render_template("vueQuestions/index.html")
 
 
 @app.route("/question_num=<question_num>", methods=['GET', 'POST'])
 def get_question(question_num):
-    question = None
-    answers = None
 
     question = router.survey_taking_controller.get_question(question_num)
-    answers = router.survey_taking_controller.get_answers(question)
+    answers = []
+    for resp in question.answers:
+        answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
 
     return jsonify(text=question.question_text,
                    type=question.question_type,
@@ -86,9 +86,9 @@ def get_question(question_num):
 def get_next_question():
 
     if request.method == 'POST':
-        type = router.survey_taking_controller.current_question.question_type
+        question_type = router.survey_taking_controller.current_question.question_type
         answers = []
-        if type in ("single-response", "free-response"):
+        if question_type in ("single-response", "free-response"):
             # won't need this after the change to returning just a number
             answer = re.sub('(^"|"$)', '', request.data)
             answers = [answer]
@@ -103,9 +103,10 @@ def get_next_question():
         return jsonify(text=question.question_text,
                        type=question.question_type)
 
-    answers = {}
+    answers = []
     for resp in question.answers:
-        answers[resp.response_id] = [resp.response_description]
+        answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
+
     return jsonify(text=question.question_text,
                    type=question.question_type,
                    answers=answers)
@@ -115,9 +116,9 @@ def get_next_question():
 def get_prev_question():
 
     if request.method == 'POST':
-        type = router.survey_taking_controller.current_question.question_type
+        question_type = router.survey_taking_controller.current_question.question_type
         answers = []
-        if type in ("single-response", "free-response"):
+        if question_type in ("single-response", "free-response"):
             answer = re.sub('(^"|"$)', '', request.data)
             answers = [answer]
         else:
@@ -126,9 +127,9 @@ def get_prev_question():
         submit_response(answers)
 
     question = router.survey_taking_controller.get_prev_question()
-    answers = {}
+    answers = []
     for resp in question.answers:
-        answers[resp.response_id] = [resp.response_description]
+        answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
 
     return jsonify(text=question.question_text,
                    type=question.question_type,
@@ -145,5 +146,5 @@ def testing():
 
 
 if __name__ == "__main__":
-    app.config.from_object(config.TestingConfig)
+    app.config.from_object(config.DevelopmentConfig)
     app.run(host='127.0.0.1', port=8000)

@@ -3,10 +3,10 @@ class Constraint:
     response_from = None
     type = None
 
-    def __init__(self, question_from, response_from, type):
+    def __init__(self, question_from, response_from, constraint_type):
         self.question_from = question_from
         self.response_from = response_from
-        self.type = type
+        self.type = constraint_type
 
 
 class ModifyConstraint:
