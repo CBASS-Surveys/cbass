@@ -5,7 +5,14 @@ import yaml
 
 
 class SurveyProperties:
-    def __init__(self):
+    
+    before_text = None
+    after_text = None
+    survey_id = None
+    
+    def __init__(self, survey_id):
+        
+        self.survey_id = survey_id
         with open("config.yml", 'r') as ymlfile:
             cfg = yaml.load(ymlfile)
         sql = cfg["mysql"]
@@ -15,7 +22,13 @@ class SurveyProperties:
         password = sql["password"]
         self._database = Database(db, hostname, username, password)
 
-    def get_survey_name(self, survey_id):
+    def get_survey_name(self):
 
-        survey_name = self._database.getSurveyName(survey_id)
+        survey_name = self._database.getSurveyName(self.survey_id)
         return survey_name
+    
+    def set_survey_properties(self):
+        
+        properties = self._database.getSurveyProperties(self.survey_id)
+        for prop in properties:
+            print (prop)
