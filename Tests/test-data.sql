@@ -30,44 +30,44 @@ INSERT INTO survey_question (question_id, survey, question_text, question_type) 
 -- Define some responses for the various questions
 INSERT INTO question_response (id, survey, question, value, description) VALUES
        -- Question 1
-       (0, 1, 'foo', 'Foo'),
-       (1, 1, 'barfoo', 'Bar'),
+       (1, 1, 1, 'foo', 'Foo'),
+       (2, 1, 1, 'barfoo', 'Bar'),
        -- Question 2
-       (2, 2, 'blahfoo', 'blah'),
-       (3, 2, 'tweetfoo', 'moo'),
-       (4, 2, 'bazfoo', 'quux'),
+       (3, 1, 2, 'blahfoo', 'blah'),
+       (4, 1, 2, 'tweetfoo', 'moo'),
+       (5, 1, 2, 'bazfoo', 'quux'),
        -- Question 4
-       (5, 4, 'moo', 'Cow'),
-       (6, 4, 'blue', 'green'),
-       (7, 4, 'orange', 'Blue'),
-       (8, 4, 'blab', 'Moo'),
+       (6, 1, 4, 'moo', 'Cow'),
+       (7, 1, 4, 'blue', 'green'),
+       (8, 1, 4, 'orange', 'Blue'),
+       (9, 1, 4, 'blab', 'Moo'),
        -- Question 5
-       (9, 5, 'zippidy', 'doo-dah'),
-       (10, 5, 'zippity', 'hey'),
-       (11, 5, 'my', 'oh my'),
-       (12, 5, 'what', 'a wonderful day');
+       (10, 1, 5, 'zippidy', 'doo-dah'),
+       (11, 1, 5, 'zippity', 'hey'),
+       (12, 1, 5, 'my', 'oh my'),
+       (13, 1, 5, 'what', 'a wonderful day');
 
 -- Add some basic constraints
 INSERT INTO question_constraints (question_from, response_from, type, question_affected) VALUES
-       (1, 0, 'require', 3),    -- If question one has answer Foo, don't ask question 3
-       (1, 1, 'forbid', 3);     -- If question one has answer Bar, ask question 3 (should be done immediately)
+       (1, 1, 'require', 3),    -- If question one has answer Foo, don't ask question 3
+       (1, 2, 'forbid', 3);     -- If question one has answer Bar, ask question 3 (should be done immediately)
 
 -- And add some modification constraints
 INSERT INTO question_constraint_modify (question_from, response_from, question_to, responses_discluded) VALUES
-       (1, 1, 4, '{5, 6}'),     -- If question one has answer Bar, remove Cow and green from question 4
-       (2, 3, 5, '{10, 11}');   -- If question two has answer blah, remove doo-dah and hey from question 5
+       (1, 2, 4, '{5, 6}'),     -- If question one has answer Bar, remove Cow and green from question 4
+       (2, 4, 5, '{10, 11}');   -- If question two has answer blah, remove doo-dah and hey from question 5
 
 -- Add some actual test data
 INSERT INTO survey_response (survey, identifier_string) VALUES
        (1, 'a849c7d14099380f2905f643c678b87b');
 
 INSERT INTO survey_response_entry (response_id, response_to, response) VALUES
-       (1, 1, 0),
-       (1, 4, 5);
+       (1, 1, 1),
+       (1, 4, 6);
 
 INSERT INTO survey_multi_response (response_id, response_to, response) VALUES
-       (1, 2, '{2, 3}'),
-       (1, 5, '{11, 12}');
+       (1, 2, '{3, 4}'),
+       (1, 5, '{12, 13}');
 
-INSERT INTO survey_long_form_response (response_if, response_to, response) VALUES
+INSERT INTO survey_long_form_response (response_id, response_to, response) VALUES
        (1, 6, 'fooo');
