@@ -9,8 +9,9 @@ import logging
 from SurveyTakingController import SurveyTakingController
 import uuid
 from SurveyProperties import SurveyProperties
-import config
+import Config
 from Errors import NoResponse
+
 
 # Avoid jinja and vue conflict
 class CustomFlask(Flask):
@@ -47,8 +48,9 @@ template_dir = os.path.abspath('public')
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
 
-session_id = uuid.uuid4()
-router = Router(session_id)
+session = uuid.uuid4()
+router = Router(session)
+
 
 @app.route("/")
 def main_page():
@@ -122,17 +124,20 @@ def get_prev_question():
                    type=question.question_type,
                    answers=answers)
 
+
 def submit_response(response):
     try:
         router.survey_taking_controller.send_response_v2(response)
     except Exception:
-        raise NoResponse('No response to submit', status_code = 410)
-        
+        raise NoResponse('No response to submit', status_code=410)
+
+
 @app.errorhandler(NoResponse)
 def handle_no_response(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response        
+
 
 @app.route("/testing")
 def testing():
@@ -141,5 +146,5 @@ def testing():
 
 
 if __name__ == "__main__":
-    app.config.from_object(config.DevelopmentConfig)
+    app.config.from_object(Config.DevelopmentConfig)
     app.run(host='127.0.0.1', port=8000)
