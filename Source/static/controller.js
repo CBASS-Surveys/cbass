@@ -53,8 +53,8 @@ var app = new Vue({
         dataType: "JSON",
         contentType: "application/json; charset=utf-8",
         success: function(data){
-          console.log("data")
-          self.question = data
+          console.log(data)
+          self.question = data;
           self.selectedAnswers = [];
           if(self.question.type === "end"){
             self.mode = 'end';
@@ -117,8 +117,7 @@ var app = new Vue({
 
       $.get('/get_next_question',
         function(data){
-          console.log("data")
-          self.question = data
+          self.question = data;
           self.selectedAnswers = [];
           if(self.question.type === "end"){
             self.mode = 'end';

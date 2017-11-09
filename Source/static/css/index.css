@@ -1,9 +1,13 @@
-body{
-  margin: 0px;
+html, body{
+  margin:0;
+  padding:0;
+  height:100%;
 }
 
 #app-4 {
-    margin-top: 90px;
+    /*margin-top: 90px;*/
+    min-height: 100%;
+    position:relative;
 }
 
 .bigText {
@@ -24,9 +28,14 @@ body{
   width: 60%;
 }
 
+.contentContainer{
+  padding:10px;
+  padding-bottom:60px;
+}
+
 .navButton{
    width:50%;
-   height: 100px;
+   height: 60px;
    color:white;
    font-size:50px;
    font-family: sans-serif;

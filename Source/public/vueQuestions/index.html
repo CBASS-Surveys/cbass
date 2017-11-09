@@ -24,16 +24,19 @@
 
 <div id="app-4">
   <div v-if="mode === 'start'">
-    <div class="topTextContainer">
-      <p class="bigText">Hi</p>
+    <div class="contentContainer">
+      <div class="topTextContainer">
+        <p class="bigText">Hi</p>
+      </div>
     </div>
+
     <div class="buttonContainer">
       <div class="navButton" style="background:blue;" v-on:click="startSurvey">START</div>
     </div>
   </div>
   <div v-if="mode === 'survey'">
 
-    <div>
+    <div class="contentContainer">
       <div>
         <div class="topTextContainer">
           <p class="bigText" :class= "{ notAnswered: !isAnswered }"> {{ question.text }} </p>
@@ -43,11 +46,10 @@
           <div v-if="question.type ==='single-response'">
             <template v-for="answer in question.answers">
               <input type="radio"
-                :id="answer"
-                :value="answer"
+                :value="answer.response_id"
                 name="answer"
                 v-model="selectedAnswers">
-              <label class="littleText" :for="answer"> {{ answer }} </label> <br>
+              <label class="littleText" :for="answer"> {{ answer.response_value }} </label> <br>
             </template>
           </div>
 
@@ -55,10 +57,10 @@
             <template v-for="answer in question.answers">
               <input type="checkbox"
                 :id="answer"
-                :value="answer"
+                :value="answer.response_id"
                 name="answer"
                 v-model="selectedAnswers">
-              <label class="littleText" :for="answer">{{ answer }}</label> <br>
+              <label class="littleText" :for="answer">{{ answer.response_value }}</label> <br>
             </template>
           </div>
 
