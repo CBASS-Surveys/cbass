@@ -5,6 +5,7 @@ import yaml
 from Response import Response
 from Constraints import Constraint, ModifyConstraint
 from Question import Question
+from Utils import deprecated
 
 
 class SurveyTakingController:
@@ -34,6 +35,7 @@ class SurveyTakingController:
         self.responseId = response_struct[0]
         self.get_survey_questions()
 
+    @deprecated
     def send_response(self, response):
         question_type = self.survey_questions[self.question_number].question_type
         question = self.current_question
@@ -56,6 +58,25 @@ class SurveyTakingController:
                 elif question_type == "multi-choice-response":
                     if response:
                         self._database.insertSurveyQuestionMultiResponse(self.responseId, question_id, response_ids)
+    
+    def send_response_v2(self, responses):
+        question_type = self.survey_questions[self.question_number].question_type
+        question = self.current_question
+        question_id = question.question_id
+        # ensure an answer was sent
+        if len(responses) == 1:
+            if question_type == "free-response":
+                # send the text
+                self._database.insertSurveyQuestionLongFormResponse(self.responseId, question_id, responses)
+            elif question_type == "single-response":
+                # send the answer
+                self._database.insertSurveyQuestionResponse(self.responseId, question_id, responses)
+        elif len(responses) > 1:
+            # "multi-response send all items selected
+            self._database.insertSurveyQuestionMultiResponse(self.responseId, question_id, responses)
+        else:
+            raise Exception
+            
 
     def get_survey_questions(self):
         survey_id = self.survey_id

@@ -9,10 +9,8 @@ import logging
 from SurveyTakingController import SurveyTakingController
 import uuid
 from SurveyProperties import SurveyProperties
-import json
-import re
 import config
-
+from Errors import NoResponse
 
 # Avoid jinja and vue conflict
 class CustomFlask(Flask):
@@ -28,11 +26,15 @@ class CustomFlask(Flask):
 
 
 class Router:
+    
+    session_id = None
     survey_taking_controller = None
 
     # Future Controllers here
 
-    def __init__(self):
+    def __init__(self, session_id):
+        
+        self.session_id = session_id
         print("Starting Router...")
 
     def create_survey_taking_controller(self, survey_id):
@@ -44,14 +46,16 @@ logging.basicConfig(
 template_dir = os.path.abspath('public')
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
-router = Router()
 
+session_id = uuid.uuid4()
+router = Router(session_id)
 
 @app.route("/")
 def main_page():
-    properties = SurveyProperties()
+    properties = SurveyProperties(2)
     # Change this to get user's surveys later on
-    survey_name = properties.get_survey_name(2)
+    survey_name = properties.get_survey_name()
+    print (survey_name)
     survey_id = 2
     return redirect(url_for('start_survey', survey_id=survey_id))
 
@@ -64,8 +68,8 @@ def start_survey(survey_id):
         router.create_survey_taking_controller(survey_id)
     else:
         print("Error")
-    session_id = uuid.uuid4()
-    router.survey_taking_controller.start_survey(session_id)
+    
+    router.survey_taking_controller.start_survey(router.session_id)
     return render_template("vueQuestions/index.html")
 
 
@@ -86,15 +90,7 @@ def get_question(question_num):
 def get_next_question():
 
     if request.method == 'POST':
-        question_type = router.survey_taking_controller.current_question.question_type
-        answers = []
-        if question_type in ("single-response", "free-response"):
-            answer = re.sub('(^"|"$)', '', request.data)
-            answers = [answer]
-        else:
-            for answer in json.loads(request.data):
-                answers += [answer]
-        submit_response(answers)
+        submit_response(request.data)
 
     question = router.survey_taking_controller.get_next_question()
 
@@ -115,15 +111,7 @@ def get_next_question():
 def get_prev_question():
 
     if request.method == 'POST':
-        question_type = router.survey_taking_controller.current_question.question_type
-        answers = []
-        if question_type in ("single-response", "free-response"):
-            answer = re.sub('(^"|"$)', '', request.data)
-            answers = [answer]
-        else:
-            for answer in json.loads(request.data):
-                answers += [answer]
-        submit_response(answers)
+        submit_response(request.data)
 
     question = router.survey_taking_controller.get_prev_question()
     answers = []
@@ -134,14 +122,22 @@ def get_prev_question():
                    type=question.question_type,
                    answers=answers)
 
-
 def submit_response(response):
-    router.survey_taking_controller.send_response(response)
-
+    try:
+        router.survey_taking_controller.send_response_v2(response)
+    except Exception:
+        raise NoResponse('No response to submit', status_code = 410)
+        
+@app.errorhandler(NoResponse)
+def handle_no_response(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response        
 
 @app.route("/testing")
 def testing():
-    return render_template("vueQuestions/index.html")
+    print ("Not much testing going on here")
+    # you can put stuff here for quick tests
 
 
 if __name__ == "__main__":
