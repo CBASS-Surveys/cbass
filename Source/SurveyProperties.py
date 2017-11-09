@@ -13,10 +13,9 @@ class SurveyProperties:
         hostname = sql["hostname"]
         username = sql["username"]
         password = sql["password"]
-        #self._database = Database(db, hostname, username, password)
+        self._database = Database(db, hostname, username, password)
 
-    def get_survey_name(self, surveyId):
+    def get_survey_name(self, survey_id):
 
-        #surveyName = self._database.getSurveyName(surveyId)
-        #return surveyName
-        return("weather survey")
+        survey_name = self._database.getSurveyName(survey_id)
+        return survey_name
