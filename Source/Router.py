@@ -8,7 +8,7 @@ from werkzeug.contrib.cache import SimpleCache
 import logging
 from SurveyTakingController import SurveyTakingController
 import uuid
-# from SurveyProperties import SurveyProperties
+from SurveyProperties import SurveyProperties
 import json
 import re
 import config
@@ -49,9 +49,9 @@ router = Router()
 
 @app.route("/")
 def main_page():
-    # properties = SurveyProperties()
+    properties = SurveyProperties()
     # Change this to get user's surveys later on
-    # survey_name = properties.get_survey_name(2)
+    survey_name = properties.get_survey_name(2)
     survey_id = 2
     return redirect(url_for('start_survey', survey_id=survey_id))
 
@@ -89,7 +89,6 @@ def get_next_question():
         question_type = router.survey_taking_controller.current_question.question_type
         answers = []
         if question_type in ("single-response", "free-response"):
-            # won't need this after the change to returning just a number
             answer = re.sub('(^"|"$)', '', request.data)
             answers = [answer]
         else:
