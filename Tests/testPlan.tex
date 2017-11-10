@@ -40,14 +40,61 @@ Collection testing.
 
 \section{Test Cases}
 
-\subsection{User Authentification}
+\subsection{User Authentication}
+
+We will be testing the following (to support \docsec{3.2.1.2}):
+
+\begin{itemize}
+\item User authentication by valid password
+\item User authentication by invalid password
+\item User authentication with invalid username
+\item User password change
+\item User creation
+\end{itemize}
 
 \subsection{Interfaces}
 
+\subsubsection{Database}
+
+To support \docsec{3.2.1.3.1--9}:
+
+\begin{itemize}
+\item Survey Data Retrieval (name, properties)
+\item Survey Question Retrieval
+\item Question Response Retrieval
+\item Question Constraint Retrieval
+\item Survey Creation (name, properties)
+\item Survey Question Creation
+\item Question Response Creation
+\item Question Constraint Retrieval
+\item Survey Question Removal
+\item Question Response Removal
+\item Question Constraint Removal
+\end{itemize}
+
+To support \docsec{3.2.2.3.1--4}:
+
+\begin{itemize}
+\item Survey Response Insertion
+\item Question Response Insertion
+\item Question Response Checking (See particularly \docsec{3.2.2.3.2})
+\end{itemize}
+
 \subsection{Constraints}
 
-\subsection{Data Collection}
+To support in particular \docsec{3.2.2.3.2}:
 
+\begin{itemize}
+\item When a FORBID constraint must be applied
+\item When a REQUIRES constraint must be applied
+\item When a MODIFIES constraint must be applied
+\end{itemize}
+
+% \subsection{Data Collection}
+
+\subsection{Data Retrieval}
+
+Not currently implemented at this time.
 
 \end{document}
 %%% Local Variables:
