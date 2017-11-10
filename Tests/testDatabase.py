@@ -21,7 +21,7 @@ def testIncorrectPassword():
 @TestCase(auth, "Invalid Username")
 def testInvalidUsername():
     try:
-        return myDB.authenticateUser('cow', 'pig')
+        return not myDB.authenticateUser('cow', 'pig')
     except:
         return False
 
