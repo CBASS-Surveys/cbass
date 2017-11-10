@@ -32,6 +32,8 @@ class TestSuite:
                 self._passedTests += 1
             else:
                 self._failedTests += 1
+            if test.getOutput() != "":
+                print(test.getOutput())
 
     def showReport(self):
         if not self._testsRun:
@@ -48,14 +50,25 @@ class TestCase:
         self._name = name
         self._args = args
         self._kwargs = kwargs
+        self._output = ""
+        self._seenOutput = False
         testSuite.addTest(self)
 
     def __call__(self, function):
         self._function = function
         return function
 
+    def __printer__(self, value):
+        if self._seenOutput:
+            self._output = self._output + "\n     %s"%(value)
+        else:
+            self._output = "     %s"%(value)
+            
     def test(self):
-        return self._function(*self._args, **self._kwargs)
+        return self._function(self.__printer__, *self._args, **self._kwargs)
 
     def getName(self):
         return self._name
+
+    def getOutput(self):
+        return self._output
