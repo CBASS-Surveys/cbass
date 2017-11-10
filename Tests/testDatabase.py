@@ -1,6 +1,7 @@
 #!/bin/python
 # coding: utf-8
 
+import sys
 from Database import Database
 from Test import TestSuite, TestCase
 from os import urandom
@@ -23,7 +24,8 @@ def testInvalidUsername(printer):
     try:
         return not myDB.authenticateUser('cow', 'pig')
     except:
-        printer("Raises error.")
+        e = sys.exc_info()[0]
+        printer("Raises error: %s" % (e))
         return False
 
 uname = hexlify(urandom(8))
