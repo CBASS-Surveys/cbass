@@ -43,7 +43,7 @@ def testUserPasswordChange(printer, user, password):
     myDB.updatePassword(user, password)
     return myDB.authenticateUser(user, password)
 
-    
+
 auth.showReport()
 
 print("")
@@ -132,7 +132,6 @@ def testQuestionConstraintRetrievalModify(printer):
         printer("Retrieved constraint (%s, %s, %s) not expected." % value)
     return ret
     
-    
 surveyContents.showReport()
 
 print("")
@@ -170,22 +169,53 @@ print("")
 
 surveyResponseInsertion = TestSuite("Survey Response Insertion")
 
-def testSurveyResponseInsertion(printer):
-    pass
+responseString = hexlify(urandom(32))
+responseID = 0
 
-def testQuestionResponseInsertionNormal(printer):
-    pass
+@TestCase(surveyResponseInsertion, "Survey Response Insertion", responseString)
+def testSurveyResponseInsertion(printer, responseString):
+    (temp1, temp2) = myDB.createSurveyResponse(1, responseString)
+    responseID = temp1
+    return temp2 == responseString
 
-def testQuestionResponseInsertionMulti(printer):
-    pass
+@TestCase(surveyResponseInsertion, "Insert Single Response", responseID)
+def testQuestionResponseInsertionNormal(printer, responseID):
+    try:
+        (temp1, temp2) = myDB.insertSurveyQuestionResponse(responseID, 1, 1)
+        return temp2 == 1
+    except:
+        e = sys.exc_info()[0]
+        printer("Raises error: %s" % (e))
+        return False
 
-def testQuestionResponseInsertionUser(printer):
-    pass
+@TestCase(surveyResponseInsertion, "Insert Multi Response", responseID)
+def testQuestionResponseInsertionMulti(printer, responseID):
+    try:
+        (temp1, temp2) = myDB.insertSurveyQuestionResponse(responseID, 2, [3, 4])
+        return temp2 == [3, 4]
+    except:
+        e = sys.exc_info()[0]
+        printer("Raises error: %s" % (e))
+        return False
 
-def testQuestionResponseCheckNormal(printer):
-    pass
+@TestCase(surveyResponseInsertion, "Insert Long Form Response", responseID)
+def testQuestionResponseInsertionLongFormResponse(printer, responseID):
+    try:
+        (temp1, temp2) = myDB.insertSurveyQuestionLongFormResponse(responseID, 3, "Some Text")
+        return temp2 == "Some Text"
+    except:
+        e = sys.exc_info()[0]
+        printer("Raises error: %s" % (e))
+        return False
 
-def testQuestionResponseCheckMulti(printer):
-    pass
+@TestCase(surveyResponseInsertion, "Check Single Response", responseID)
+def testQuestionResponseCheckNormal(printer, responseID):
+    printer("No method to get question single responses")
+    return False
+
+@TestCase(surveyResponseInsertion, "Check Mulit Response", responseID)
+def testQuestionResponseCheckMulti(printer, responseID):
+    printer("No method to get question multi responses")
+    return False
 
 surveyResponseInsertion.showReport()
