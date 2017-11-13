@@ -138,12 +138,16 @@ surveyContents.showReport()
 print("")
 
 surveyInsertion = TestSuite("Survey Data Insertion/Survey Creation")
-
+@TestCase(surveyContents, "Survey Is Created Correctly")
+surveyID = 0
 def testSurveyCreation(printer):
-    pass
+    surveyID = myDB.createSurvey("Survey 1", 1)
+    retrievedName = myDB.getSurveyName(surveyID)
+    return retrievedName == "Survey 1" 
 
 def testQuestionCreation(printer):
-    pass
+    printer("Can do - fix")
+    return False
 
 def testQuestionResponseCreation(printer):
     pass
