@@ -78,4 +78,64 @@ def testSurveyProperties(printer):
             return False
     return True
 
+def testSurveyQuestionRetrieval(printer):
+    pass
+
+def testQuestionResponseRetrieval(printer):
+    pass
+
+def testQuestionConstraintRetrieval(printer):
+    pass
+    
 surveyContents.showReport()
+
+print("")
+
+surveyInsertion = TestSuite("Survey Data Insertion/Survey Creation")
+
+def testSurveyCreation(printer):
+    pass
+
+def testQuestionCreation(printer):
+    pass
+
+def testQuestionResponseCreation(printer):
+    pass
+
+def testQuestionConstraintCreation(printer):
+    pass
+
+def testQuestionRemoval(printer):
+    pass
+
+def testQuestionResponseRemoval(printer):
+    pass
+
+def testQuestionConstraintRemoval(printer):
+    pass
+
+surveyInsertion.showReport()
+
+print("")
+
+surveyResponseInsertion = TestSuite("Survey Response Insertion")
+
+def testSurveyResponseInsertion(printer):
+    pass
+
+def testQuestionResponseInsertionNormal(printer):
+    pass
+
+def testQuestionResponseInsertionMulti(printer):
+    pass
+
+def testQuestionResponseInsertionUser(printer):
+    pass
+
+def testQuestionResponseCheckNormal(printer):
+    pass
+
+def testQuestionResponseCheckMulti(printer):
+    pass
+
+surveyResponseInsertion.showReport()
