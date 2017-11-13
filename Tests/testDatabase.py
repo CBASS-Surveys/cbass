@@ -137,31 +137,48 @@ surveyContents.showReport()
 print("")
 
 surveyInsertion = TestSuite("Survey Data Insertion/Survey Creation")
-@TestCase(surveyContents, "Survey Is Created Correctly")
+
 surveyID = 0
+questionID = 0
+@TestCase(surveyContents, "Survey Is Created Correctly")
 def testSurveyCreation(printer):
     surveyID = myDB.createSurvey("Survey 1", 1)
     retrievedName = myDB.getSurveyName(surveyID)
     return retrievedName == "Survey 1" 
 
-def testQuestionCreation(printer):
-    printer("Can do - fix")
+@TestCase(surveyContents, "Question Is Created Correctly")
+def testQuestionCreation(printer):	#I don't know the system well, are there numbers that denote different question types?
+    questionID = myDB.createSurveyQuestion(surveyID, "What is Question 1?", single-response)
+	retrievedID = myDB.getSurveyQuestions(surveyID)
+    return retrievedID == questionID
+
+question = 0; # not sure this is right, but i need to use question outside of just testQuestionResponseCreation
+@TestCase(surveyContents, "Question Response Is Created Correctly")
+def testQuestionResponseCreation(printer):
+	question = getQuestion(questionID)
+	responseID = createSurveyQuestionResponse(question, 1, "Response 1")
+    return hasResponse(question, getResponse(questionID), responseID)	#not sure if this is right either
+
+	#need help with this one - how are constraints 'Constraint Standard' and 'Disclusion Constraint' defined?
+@TestCase(surveyContents, "Question Constraint Is Created Correctly")
+def testQuestionConstraintCreation(printer):
+	printer("TO DO: define constraints, complete test for Question Constraint Created")
+    pass
+	
+@TestCase(surveyContents, "Question Is Removed Correctly")
+def testQuestionRemoval(printer):
+	printer("No method defined to Remove Question")
+	return False
+	
+@TestCase(surveyContents, "Question Response Is Removed Correctly")
+def testQuestionResponseRemoval(printer):
+	printer("No method defined to Remove Question Response")
     return False
 
-def testQuestionResponseCreation(printer):
-    pass
-
-def testQuestionConstraintCreation(printer):
-    pass
-
-def testQuestionRemoval(printer):
-    pass
-
-def testQuestionResponseRemoval(printer):
-    pass
-
+@TestCase(surveyContents, "Quesiton Constraint Is Removed Correctly")
 def testQuestionConstraintRemoval(printer):
-    pass
+	printer("No method defined to Remove Question Constraint")
+    return False
 
 surveyInsertion.showReport()
 
