@@ -8,6 +8,7 @@ from Question import Question
 from Utils import deprecated
 import json
 
+
 class SurveyTakingController:
     _database = None
     responseId = None
@@ -69,7 +70,7 @@ class SurveyTakingController:
         elif isinstance(answers, list):
                     # "multi-response send all items selected
                     self._database.insertSurveyQuestionMultiResponse(self.responseId, question_id, answers)
-        elif isinstance(answers, unicode):
+        elif isinstance(answers, unicode) or isinstance(answers, str):
             # send the text
             self._database.insertSurveyQuestionLongFormResponse(self.responseId, question_id, str(answers))
         else:
