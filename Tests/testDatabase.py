@@ -78,15 +78,67 @@ def testSurveyProperties(printer):
             return False
     return True
 
+@TestCase(surveyContents, "Question Retrieved Correctly")
 def testSurveyQuestionRetrieval(printer):
-    pass
+    (text, qType) = myDB.getQuestion(1)
+    value = (text == "Single Response 1") and (qType == 'single-response')
+    if not value:
+        printer(text)
+        printer(qType)
+    return value
 
+@TestCase(surveyContents, "Responses Retrieved Correctly")
 def testQuestionResponseRetrieval(printer):
-    pass
+    expectedValues = [(1, 'foo', 'Foo'), (2, 'barfoo', 'Bar')]
+    retrievedValues = []
+    cursor = myDB.getResponses(1)
+    for val in cursor:
+        retVal = val in expectedValues
+        retrievedValues.append(val)
+        if not retVal:
+            printer("Retrieved value (%s, '%s', '%s') not in expected values." % (val[0], val[1], val[2]))
+            return False
+    for val in expectedValues:
+        retVal = val in retrievedValues
+        if not retVal:
+            printer("Expected value (%s, '%s', '%s') not in retrieved values." % (val[0], val[1], val[2]))
+            return False
+    return True
 
+<<<<<<< HEAD
 def testQuestionConstraintRetrieval(printer):
     pass
 
+=======
+@TestCase(surveyContents, "Normal Constraints Retrieved Correctly")
+def testQuestionConstraintRetrievalNormal(printer):
+    expectedConstraints = [(1, 1, 'require'), (1, 2, 'forbid')]
+    retrievedConstraints = []
+    cursor = myDB.getConstraints(3)
+    for val in cursor:
+        retVal = val in expectedConstraints
+        retrievedConstraints.append(val)
+        if not retVal:
+            printer("Retrieved constraint (%s, %s, '%s') not in expected constraints." % (val[0], val[1], val[2]))
+            return False
+    for val in expectedConstraints:
+        retVal = val in retrievedConstraints
+        if not retVal:
+            printer("Expected constraint (%s, %s, '%s') not in retrieved constraints." % (val[0], val[1], val[2]))
+            return False
+    return True
+
+@TestCase(surveyContents, "Modify Constraints Retrieved Correctly")
+def testQuestionConstraintRetrievalModify(printer):
+    expectedConstraint = (1, 2, [5, 6])
+    value = myDB.getModifyConstraints(4).fetchone()
+    ret = value == expectedConstraint
+    if not value:
+        printer("Retrieved constraint (%s, %s, %s) not expected." % value)
+    return ret
+    
+    
+>>>>>>> 8f650a5c4aaaaf7ebbeddbf43d65d06560cb99ea
 surveyContents.showReport()
 
 print("")
