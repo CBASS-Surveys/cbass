@@ -3,7 +3,7 @@
 
 import psycopg2
 from hashlib import pbkdf2_hmac
-from binascii import hexlify
+from binascii import hexlify, unhexlify
 from os import urandom
 
 
@@ -19,26 +19,26 @@ class Database:
         cursor.execute("SELECT password_hash, password_salt FROM users WHERE username=%s;", (username,))
         (hash, salt) = cursor.fetchone()
         cursor.close()
-        if (hash == hexlify(pbkdf2_hmac('sha256', password, salt))):
+        if (hash == hexlify(pbkdf2_hmac('sha256', password, unhexlify(salt), 5))):
             return True
         else:
             return False
 
     def createUser(self, username, email, password):
         salt = urandom(32)
-        hash = hexlify(pbkdf2_hmac('sha256', password, salt))
+        hash = hexlify(pbkdf2_hmac('sha256', password, salt, 5))
         cursor = self._connection.cursor()
         cursor.execute("INSERT INTO users (username, user_email, password_hash, password_salt) VALUES (%s, %s, %s, %s);",
-                       (username, email, hash, salt))
+                       (username, email, hash, hexlify(salt)))
         self._connection.commit()
         cursor.close()
 
     def updatePassword(self, username, password):
         cursor = self._connection.cursor()
         salt = urandom(32)
-        hash = hexlify(pbkdf2_hmac('sha256', password, salt))
+        hash = hexlify(pbkdf2_hmac('sha256', password, salt, 5))
         cursor.execute("UPDATE users SET password_hash=%s, password_salt=%s WHERE username = %s;",
-                       (hash, salt, username))
+                       (hash, hexlify(salt), username))
         self._connection.commit()
         cursor.close()
 
