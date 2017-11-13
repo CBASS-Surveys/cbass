@@ -36,6 +36,9 @@ class TestSuite:
                 print(test.getOutput())
 
     def showReport(self):
+        if len(self._tests) == 0:
+            print("No Tests defined.")
+            return
         if not self._testsRun:
             self.runTests()
         print("Report:")
