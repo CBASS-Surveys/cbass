@@ -81,6 +81,10 @@ var app = new Vue({
     },
     //Change to "previous" question
     getLastQuestion: function(){
+      /*
+
+      TODO: Implement previous question functionality
+
       var self = this;
       var result = $.ajax({
         type: 'GET',
@@ -95,7 +99,7 @@ var app = new Vue({
               self.mode = 'end';
             }
           }
-        }
+        }*/
       })
     },
     getLastTestQuestion: function(){

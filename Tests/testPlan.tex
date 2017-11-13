@@ -1,0 +1,114 @@
+\documentclass[10pt]{article}
+\usepackage[medium]{mymemo}
+\title{CBASS Testing Plan}
+\author{David Carlson \and Sam Flint \and Kaleb Gaar \and Hayden
+  Pollmann}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+As with all software systems, CBASS must be tested. This will be done
+primarily through blackbox testing performed on the system through a
+test runner. Tests will cover all areas of the system completed up to
+this point. There areas are defined in the following section.
+
+\section{Requirements}
+
+\subsection{Interfaces}
+Testing of the Interfaces (User, Software, and Communications) will
+consist of using a browser to load a default survey that demonstrates
+constraint functionality (\docsec{3.2.1.3.5}). The survey will then be
+completed and exited (\docsec{3.2.2}).
+
+\subsection{Data Collection}
+Testing of the Data Collection process will consist of the same
+process as described in the previous section, but will occur multiple
+times with a different set of responses each time to probe the various
+constraint functionalities of the survey (\docsec{3.2.1.3.5}). The
+Data Collection will be fully tested once Database testing is also
+completed, as this will allow results recorded to be checked for
+authenticity.
+
+\subsection{Database}
+Testing of the Database will occur after completion of the many
+responses of the Data Collection testing. It will consist of pulling
+the recorded response data (\docsec{3.2.2.2}) out of the database to
+ensure that it was securely stored, and outputting it in a readable
+manner. It will also be checked for correctness, completing the Data
+Collection testing.
+
+\section{Test Cases}
+
+\subsection{User Authentication}
+
+We will be testing the following (to support \docsec{3.2.1.2}):
+
+\begin{itemize}
+\item User authentication by valid password
+\item User authentication by invalid password
+\item User authentication with invalid username
+\item User creation
+\item User password change
+\end{itemize}
+
+\subsection{Interfaces}
+
+We will be testing the following (to suport \docsec{}):
+
+\begin{itemize}
+\item Begin Survey
+\item Next question with answer
+\item Next question without answer
+\item Quit survey early
+\item Quit survey
+\end{itemize}
+
+\subsubsection{Database}
+
+To support \docsec{3.2.1.3.1--9}:
+
+\begin{itemize}
+\item Survey Data Retrieval (name, properties)
+\item Survey Question Retrieval
+\item Question Response Retrieval
+\item Question Constraint Retrieval
+\item Survey Creation (name, properties)
+\item Survey Question Creation
+\item Question Response Creation
+\item Question Constraint Retrieval
+\item Survey Question Removal
+\item Question Response Removal
+\item Question Constraint Removal
+\end{itemize}
+
+To support \docsec{3.2.2.3.1--4}:
+
+\begin{itemize}
+\item Survey Response Insertion
+\item Question Response Insertion
+\item Question Response Checking (See particularly \docsec{3.2.2.3.2})
+\end{itemize}
+
+\subsection{Constraints}
+
+To support in particular \docsec{3.2.2.3.2}:
+
+\begin{itemize}
+\item When a FORBID constraint must be applied
+\item When a REQUIRES constraint must be applied
+\item When a MODIFIES constraint must be applied
+\end{itemize}
+
+% \subsection{Data Collection}
+
+\subsection{Data Retrieval}
+
+Not currently implemented at this time.
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
