@@ -11,7 +11,7 @@ import json
 
 class SurveyTakingController:
     _database = None
-    responseId = None
+    response_id = None
     survey_id = None
     survey_questions = []
     question_number = -1
@@ -20,8 +20,9 @@ class SurveyTakingController:
     def __init__(self, survey_id):
 
         self.survey_id = survey_id
+        self.survey_questions = []
 
-        with open("config.yml", 'r') as ymlfile:
+        with open("config-test.yml", 'r') as ymlfile:
             cfg = yaml.load(ymlfile)
         sql = cfg["mysql"]
         db = sql['database']
@@ -33,7 +34,7 @@ class SurveyTakingController:
 
     def start_survey(self, session_id):
         response_struct = self._database.createSurveyResponse(self.survey_id, str(session_id))
-        self.responseId = response_struct[0]
+        self.response_id = response_struct[0]
         self.get_survey_questions()
 
     @deprecated
@@ -43,7 +44,7 @@ class SurveyTakingController:
         question_id = question.question_id
         if question_type == "free-response":
             if response:
-                self._database.insertSurveyQuestionLongFormResponse(self.responseId, question_id, response)
+                self._database.insertSurveyQuestionLongFormResponse(self.response_id, question_id, response)
         else:
             response_ids = []
             for resp in response:
@@ -55,10 +56,10 @@ class SurveyTakingController:
             if len(response_ids):
                 if question_type == "single-response":
                     if response:
-                        self._database.insertSurveyQuestionResponse(self.responseId, question_id, response_ids[0])
+                        self._database.insertSurveyQuestionResponse(self.response_id, question_id, response_ids[0])
                 elif question_type == "multi-choice-response":
                     if response:
-                        self._database.insertSurveyQuestionMultiResponse(self.responseId, question_id, response_ids)
+                        self._database.insertSurveyQuestionMultiResponse(self.response_id, question_id, response_ids)
     
     def send_response_v2(self, response):
         question_type = self.survey_questions[self.question_number].question_type
@@ -66,13 +67,13 @@ class SurveyTakingController:
         question_id = question.question_id
         answers = json.loads(response)
         if isinstance(answers, int):
-                self._database.insertSurveyQuestionResponse(self.responseId, question_id, answers)
+                self._database.insertSurveyQuestionResponse(self.response_id, question_id, answers)
         elif isinstance(answers, list):
                     # "multi-response send all items selected
-                    self._database.insertSurveyQuestionMultiResponse(self.responseId, question_id, answers)
+                    self._database.insertSurveyQuestionMultiResponse(self.response_id, question_id, answers)
         elif isinstance(answers, unicode) or isinstance(answers, str):
             # send the text
-            self._database.insertSurveyQuestionLongFormResponse(self.responseId, question_id, str(answers))
+            self._database.insertSurveyQuestionLongFormResponse(self.response_id, question_id, str(answers))
         else:
             raise Exception
 
@@ -89,16 +90,18 @@ class SurveyTakingController:
             self.get_constraints_for_question(question)
             self.survey_questions.insert(qId, question)
 
+        self.current_question = self.survey_questions[0]
+
     def get_next_question(self):
         self.question_number += 1
         if self.question_number >= len(self.survey_questions):
             return Question(0, "end of survey", "end")
-        question = self.survey_questions[self.question_number]
+        question = self.current_question
 
         if question.has_constraints():
             for constraint in question.constraints:
                 question_from = constraint.question_from
-                if self._database.hasResponse(question_from, constraint.response_from, self.responseId):
+                if self._database.hasResponse(question_from, constraint.response_from, self.response_id):
                     if constraint.type == 'forbid':
                         return self.get_next_question()
         if question.has_modify_constraints():
@@ -107,7 +110,7 @@ class SurveyTakingController:
                 responses[response.response_id] = response
             for constraint in question.modify_constraints:
                 question_from = constraint.question_from
-                if self._database.hasResponse(question_from, constraint.response_from, self.responseId):
+                if self._database.hasResponse(question_from, constraint.response_from, self.response_id):
                     for remove in constraint.response_discluded:
                         if remove in responses:
                             del responses[remove]

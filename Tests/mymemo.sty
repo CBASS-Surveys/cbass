@@ -1,0 +1,48 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{mymemo}[2017/10/30 Personal Memo Class]
+\RequirePackage{geometry}
+\RequirePackage{hyperref}
+\RequirePackage{graphicx}
+\RequirePackage{amssymb,amsmath}
+\RequirePackage{titlesec}
+\titlelabel{}
+\RequirePackage{tocloft}
+\RequirePackage{parskip}
+
+\DeclareOption{wide}{
+  \newgeometry{margin=1.0in}
+}
+
+\DeclareOption{medium}{
+  \newgeometry{margin=0.75in}
+}
+
+\DeclareOption{thin}{
+  \newgeometry{margin=0.5in}
+}
+
+\ExecuteOptions{wide}
+\ProcessOptions
+\relax
+
+\newcommand*{\pauthor}[1]{\gdef\@pauthor{#1}%
+}
+\newcommand*{\@pauthor}{}
+
+\def\replace#1#2#3{%
+ \def\tmp##1#2{##1#3\tmp}%
+   \tmp#1\stopreplace#2\stopreplace}
+\def\stopreplace#1\stopreplace{}
+
+\AtBeginDocument{
+\hypersetup{
+  pdfauthor={\@pauthor},
+  pdftitle={\@title},
+  colorlinks=true
+}
+}
+
+\newcommand{\docsec}[1]{\S~#1}
+
+
+\endinput
