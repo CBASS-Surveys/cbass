@@ -105,11 +105,6 @@ def testQuestionResponseRetrieval(printer):
             return False
     return True
 
-<<<<<<< HEAD
-def testQuestionConstraintRetrieval(printer):
-    pass
-
-=======
 @TestCase(surveyContents, "Normal Constraints Retrieved Correctly")
 def testQuestionConstraintRetrievalNormal(printer):
     expectedConstraints = [(1, 1, 'require'), (1, 2, 'forbid')]
@@ -137,8 +132,6 @@ def testQuestionConstraintRetrievalModify(printer):
         printer("Retrieved constraint (%s, %s, %s) not expected." % value)
     return ret
     
-    
->>>>>>> 8f650a5c4aaaaf7ebbeddbf43d65d06560cb99ea
 surveyContents.showReport()
 
 print("")
