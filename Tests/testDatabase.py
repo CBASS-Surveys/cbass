@@ -43,7 +43,7 @@ def testUserPasswordChange(printer, user, password):
     myDB.updatePassword(user, password)
     return myDB.authenticateUser(user, password)
 
-    
+
 auth.showReport()
 
 print("")
@@ -86,7 +86,7 @@ def testQuestionResponseRetrieval(printer):
 
 def testQuestionConstraintRetrieval(printer):
     pass
-    
+
 surveyContents.showReport()
 
 print("")
@@ -120,22 +120,38 @@ print("")
 
 surveyResponseInsertion = TestSuite("Survey Response Insertion")
 
-def testSurveyResponseInsertion(printer):
-    pass
+responseString = hexlify(urandom(32))
+responseID = 0
 
-def testQuestionResponseInsertionNormal(printer):
-    pass
+@TestCase(surveyResponseInsertion, "Survey Response Insertion", responseString)
+def testSurveyResponseInsertion(printer, responseString):
+    (temp1, temp2) = myDB.createSurveyResponse(1, responseString)
+    responseID = temp2
+    return temp1 == responseString
 
-def testQuestionResponseInsertionMulti(printer):
-    pass
+@TestCase(surveyResponseInsertion, "Insert Single Response", responseID)
+def testQuestionResponseInsertionNormal(printer, responseID):
+    (temp1, temp2) = myDB.insertSurveyQuestionResponse(responseID, 1, 1)
+    return temp2 == 1
 
-def testQuestionResponseInsertionUser(printer):
-    pass
+@TestCase(surveyResponseInsertion, "Insert Multi Response", responseID)
+def testQuestionResponseInsertionMulti(printer, responseID):
+    (temp1, temp2) = myDB.insertSurveyQuestionResponse(responseID, 2, [3, 4])
+    return temp2 == [3, 4]
 
+@TestCase(surveyResponseInsertion, "Insert Long Form Response", responseID)
+def testQuestionResponseInsertionLongFormResponse(printer, responseID):
+    (temp1, temp2) = myDB.insertSurveyQuestionLongFormResponse(responseID, 3, "Some Text")
+    return temp2 == "Some Text"
+
+@TestCase(surveyResponseInsertion, "Check Single Response", responseID)
 def testQuestionResponseCheckNormal(printer):
-    pass
+    printer.("No method to get question single responses")
+    return false
 
+@TestCase(surveyResponseInsertion, "Check Mulit Response", responseID)
 def testQuestionResponseCheckMulti(printer):
-    pass
+    printer.("No method to get question multi responses")
+    return false
 
 surveyResponseInsertion.showReport()
