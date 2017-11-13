@@ -171,32 +171,47 @@ responseID = 0
 @TestCase(surveyResponseInsertion, "Survey Response Insertion", responseString)
 def testSurveyResponseInsertion(printer, responseString):
     (temp1, temp2) = myDB.createSurveyResponse(1, responseString)
-    responseID = temp2
-    return temp1 == responseString
+    responseID = temp1
+    return temp2 == responseString
 
 @TestCase(surveyResponseInsertion, "Insert Single Response", responseID)
 def testQuestionResponseInsertionNormal(printer, responseID):
-    (temp1, temp2) = myDB.insertSurveyQuestionResponse(responseID, 1, 1)
-    return temp2 == 1
+    try:
+        (temp1, temp2) = myDB.insertSurveyQuestionResponse(responseID, 1, 1)
+        return temp2 == 1
+    except:
+        e = sys.exc_info()[0]
+        printer("Raises error: %s" % (e))
+        return False
 
 @TestCase(surveyResponseInsertion, "Insert Multi Response", responseID)
 def testQuestionResponseInsertionMulti(printer, responseID):
-    (temp1, temp2) = myDB.insertSurveyQuestionResponse(responseID, 2, [3, 4])
-    return temp2 == [3, 4]
+    try:
+        (temp1, temp2) = myDB.insertSurveyQuestionResponse(responseID, 2, [3, 4])
+        return temp2 == [3, 4]
+    except:
+        e = sys.exc_info()[0]
+        printer("Raises error: %s" % (e))
+        return False
 
 @TestCase(surveyResponseInsertion, "Insert Long Form Response", responseID)
 def testQuestionResponseInsertionLongFormResponse(printer, responseID):
-    (temp1, temp2) = myDB.insertSurveyQuestionLongFormResponse(responseID, 3, "Some Text")
-    return temp2 == "Some Text"
+    try:
+        (temp1, temp2) = myDB.insertSurveyQuestionLongFormResponse(responseID, 3, "Some Text")
+        return temp2 == "Some Text"
+    except:
+        e = sys.exc_info()[0]
+        printer("Raises error: %s" % (e))
+        return False
 
 @TestCase(surveyResponseInsertion, "Check Single Response", responseID)
-def testQuestionResponseCheckNormal(printer):
-    printer.("No method to get question single responses")
-    return false
+def testQuestionResponseCheckNormal(printer, responseID):
+    printer("No method to get question single responses")
+    return False
 
 @TestCase(surveyResponseInsertion, "Check Mulit Response", responseID)
-def testQuestionResponseCheckMulti(printer):
-    printer.("No method to get question multi responses")
-    return false
+def testQuestionResponseCheckMulti(printer, responseID):
+    printer("No method to get question multi responses")
+    return False
 
 surveyResponseInsertion.showReport()
