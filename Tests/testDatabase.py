@@ -149,21 +149,21 @@ def testSurveyCreation(printer):
 @TestCase(surveyContents, "Question Is Created Correctly")
 def testQuestionCreation(printer):	#I don't know the system well, are there numbers that denote different question types?
     questionID = myDB.createSurveyQuestion(surveyID, "What is Question 1?", single-response)
-	retrievedID = myDB.getSurveyQuestions(surveyID)
+    retrievedID = myDB.getSurveyQuestions(surveyID)
     return retrievedID == questionID
 
 question = 0; # not sure this is right, but i need to use question outside of just testQuestionResponseCreation
 @TestCase(surveyContents, "Question Response Is Created Correctly")
 def testQuestionResponseCreation(printer):
-	question = getQuestion(questionID)
-	responseID = createSurveyQuestionResponse(question, 1, "Response 1")
+    question = getQuestion(questionID)
+    responseID = createSurveyQuestionResponse(question, 1, "Response 1")
     return hasResponse(question, getResponse(questionID), responseID)	#not sure if this is right either
 
 	#need help with this one - how are constraints 'Constraint Standard' and 'Disclusion Constraint' defined?
 @TestCase(surveyContents, "Question Constraint Is Created Correctly")
 def testQuestionConstraintCreation(printer):
-	printer("TO DO: define constraints, complete test for Question Constraint Created")
-    pass
+    printer("TO DO: define constraints, complete test for Question Constraint Created")
+    return False
 	
 @TestCase(surveyContents, "Question Is Removed Correctly")
 def testQuestionRemoval(printer):
@@ -172,12 +172,12 @@ def testQuestionRemoval(printer):
 	
 @TestCase(surveyContents, "Question Response Is Removed Correctly")
 def testQuestionResponseRemoval(printer):
-	printer("No method defined to Remove Question Response")
+    printer("No method defined to Remove Question Response")
     return False
 
 @TestCase(surveyContents, "Quesiton Constraint Is Removed Correctly")
 def testQuestionConstraintRemoval(printer):
-	printer("No method defined to Remove Question Constraint")
+    printer("No method defined to Remove Question Constraint")
     return False
 
 surveyInsertion.showReport()
