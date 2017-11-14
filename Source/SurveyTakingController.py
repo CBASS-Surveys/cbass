@@ -14,7 +14,7 @@ class SurveyTakingController:
     response_id = None
     survey_id = None
     survey_questions = []
-    question_number = -1
+    question_number = 0
     current_question = None
 
     def __init__(self, survey_id):
@@ -37,41 +37,17 @@ class SurveyTakingController:
         self.response_id = response_struct[0]
         self.get_survey_questions()
 
-    @deprecated
-    def send_response(self, response):
-        question_type = self.survey_questions[self.question_number].question_type
-        question = self.current_question
-        question_id = question.question_id
-        if question_type == "free-response":
-            if response:
-                self._database.insertSurveyQuestionLongFormResponse(self.response_id, question_id, response)
-        else:
-            response_ids = []
-            for resp in response:
-                for answer in question.answers:
-                    if resp == answer.response_description:
-                        response_ids += [answer.response_id]
-                question.add_response(resp)
-
-            if len(response_ids):
-                if question_type == "single-response":
-                    if response:
-                        self._database.insertSurveyQuestionResponse(self.response_id, question_id, response_ids[0])
-                elif question_type == "multi-choice-response":
-                    if response:
-                        self._database.insertSurveyQuestionMultiResponse(self.response_id, question_id, response_ids)
-    
     def send_response_v2(self, response):
-        question_type = self.survey_questions[self.question_number].question_type
+        question_type = self.current_question.question_type
         question = self.current_question
         question_id = question.question_id
         answers = json.loads(response)
-        if isinstance(answers, int):
+        if question_type == 'single-response':
                 self._database.insertSurveyQuestionResponse(self.response_id, question_id, answers)
-        elif isinstance(answers, list):
+        elif question_type == 'multi-choice-response':
                     # "multi-response send all items selected
                     self._database.insertSurveyQuestionMultiResponse(self.response_id, question_id, answers)
-        elif isinstance(answers, unicode) or isinstance(answers, str):
+        elif question_type == 'free-response':
             # send the text
             self._database.insertSurveyQuestionLongFormResponse(self.response_id, question_id, str(answers))
         else:
@@ -82,6 +58,7 @@ class SurveyTakingController:
         cursor = self._database.getSurveyQuestions(survey_id)
         question_ids = cursor.fetchall()
         cursor.close()
+        self.survey_questions.insert(0, Question(0, "end of survey", "end"))
 
         for (qId,) in question_ids:
             data = self._database.getQuestion(qId)
@@ -90,13 +67,15 @@ class SurveyTakingController:
             self.get_constraints_for_question(question)
             self.survey_questions.insert(qId, question)
 
-        self.current_question = self.survey_questions[0]
+        self.question_number = 1
+        # load up the first question
+        self.current_question = self.survey_questions[1]
 
     def get_next_question(self):
         self.question_number += 1
         if self.question_number >= len(self.survey_questions):
-            return Question(0, "end of survey", "end")
-        question = self.current_question
+            return self.survey_questions[0]
+        question = self.get_question(self.question_number)
 
         if question.has_constraints():
             for constraint in question.constraints:
@@ -119,7 +98,7 @@ class SurveyTakingController:
         return question
 
     def get_prev_question(self):
-        if self.question_number == 0:
+        if self.question_number < 0:
             return None
         else:
             self.question_number += -1

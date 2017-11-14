@@ -21,7 +21,8 @@ def question_length(printer):
     cursor = myDB.getSurveyQuestions(1)
     rowcount = cursor.rowcount
     cursor.close
-    return rowcount == len(svc.survey_questions)
+    # subtract for null question
+    return rowcount == (len(svc.survey_questions) -1)
 
 
 @TestCase(question, "Test if questions match DB")
@@ -31,7 +32,7 @@ def first_question(printer):
     fq.start_survey(session_id)
     cursor = myDB.getSurveyQuestions(1)
     flag = True
-    i = 0
+    i = 1
     for (qId,) in cursor:
         data = myDB.getQuestion(qId)
         check_q = fq.get_question(i)
@@ -47,7 +48,7 @@ def get_response(printer):
     session_id = "test " + str(uuid.uuid4())
     svc.start_survey(session_id)
     cursor = myDB.getSurveyQuestions(1)
-    i = 0
+    i = 1
     for (qId,) in cursor:
         cursor2 = myDB.getResponses(qId)
         check_q = svc.get_question(i)
@@ -62,32 +63,46 @@ def get_response(printer):
     return flag
 
 
-@TestCase(question, "Verify response was recorded to DB")
+@TestCase(question, "Verify single-response was recorded to DB")
 def has_response(printer):
     svc = SurveyTakingController(1)
     session_id = "test " + str(uuid.uuid4())
     svc.start_survey(session_id)
-    svc.get_next_question()
     response_id = svc.response_id
-    question_id = svc.get_question(0).question_id
+    question_id = svc.current_question.question_id
     response = '2'
     svc.send_response_v2(response)
     return myDB.hasResponse(question_id, 2, response_id)
+
+
+@TestCase(question, "Verify multi-response was recorded to DB")
+def has_response(printer):
+    svc = SurveyTakingController(1)
+    session_id = "test " + str(uuid.uuid4())
+    svc.start_survey(session_id)
+    response_id = svc.response_id
+    response = '2'
+    svc.send_response_v2(response)
+
+    svc.get_next_question()
+    question_id = svc.current_question.question_id
+    svc.send_response_v2('[4,5]')
+    return myDB.hasResponse(question_id, 4, response_id) and myDB.hasResponse(question_id, 5, response_id)
+
 
 @TestCase(question, "Verify constraint-modify works")
 def test_constraint(printer):
     svc = SurveyTakingController(1)
     session_id = "test " + str(uuid.uuid4())
     svc.start_survey(session_id)
-    svc.get_next_question()
+    svc.send_response_v2('1')
     response_id = svc.response_id
-    question_id = svc.get_question(0).question_id
-
-    svc.send_response_v2('2')
     svc.get_next_question()
     svc.send_response_v2('[4]')
     svc.get_next_question()
-    svc.send_response_v2(json.dumps("free-reponse"))
+    svc.send_response_v2(json.dumps("free-response"))
+    svc.get_next_question()
+    svc.send_response_v2('8')
 
     question = svc.get_next_question()
     return True
