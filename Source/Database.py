@@ -183,3 +183,20 @@ class Database:
         (name,) = cursor.fetchone()
         cursor.close()
         return name
+
+    def getIndividualResponseToQuestion(self, questionID, responseID):
+        cursor = self._connection.cursor()
+        cursor.execute("SELECT question_type FROM survey_question WHERE question_id = %s;", (questionID,))
+        (type, ) = cursor.fetchone()
+        if (type == 'single-response'):
+            cursor.execute("SELECT response FROM survey_question WHERE response_to = %s AND response_id = %s;", (questionID, responseID))
+            (value,) = cursor.fetchone()
+            return value
+        elif (type == 'free-response'):
+            cursor.execute("SELECT response FROM survey_long_form_response WHERE response_to = %s AND response_id = %s;", (questionID, responseID))
+            (value,) = cursor.fetchone()
+            return value
+        else:
+            cursor.execute("SELECT response FROM survey_multi_response WHERE response_to = %s AND response_id = %s;", (questionID, responseID))
+            (value,) = cursor.fetchone()
+            return value
