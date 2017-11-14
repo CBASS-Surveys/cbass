@@ -140,14 +140,14 @@ class Database:
         if (type == "single-response"):
             cursor.execute("SELECT true FROM survey_response_entry WHERE response_to = %s AND response_id = %s AND response = %s;",
             (question, id, response))
-            (value) = cursor.fetchone()
+            (value,) = cursor.fetchone()
             return value
         elif (type == 'free-response'):
             return False
         else:
             cursor.execute("SELECT response FROM survey_multi_response WHERE response_to = %s AND response_id = %s;",
                            (question, id))
-            values = cursor.fetchone()
+            (values,) = cursor.fetchone()
             return (response in values)
 
     def getQuestion(self, ID):
