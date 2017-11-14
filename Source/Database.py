@@ -180,6 +180,6 @@ class Database:
     def getSurveyName(self, surveyID):
         cursor = self._connection.cursor()
         cursor.execute("SELECT name FROM surveys WHERE id = %s;", (surveyID,))
-        (name) = cursor.fetchone()
+        (name,) = cursor.fetchone()
         cursor.close()
         return name
