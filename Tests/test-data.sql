@@ -49,8 +49,8 @@ INSERT INTO question_response (id, survey, question, value, description) VALUES
 
 -- Add some basic constraints
 INSERT INTO question_constraints (question_from, response_from, type, question_affected) VALUES
-       (1, 1, 'require', 3),    -- If question one has answer Foo, don't ask question 3
-       (1, 2, 'forbid', 3);     -- If question one has answer Bar, ask question 3 (should be done immediately)
+       (1, 1, 'require', 3),    -- If question one has answer Foo, Ask question 3
+       (1, 2, 'forbid', 3);     -- If question one has answer Bar, Don't ask question 3
 
 -- And add some modification constraints
 INSERT INTO question_constraint_modify (question_from, response_from, question_to, responses_discluded) VALUES

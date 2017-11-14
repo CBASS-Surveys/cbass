@@ -9,7 +9,8 @@ from Source.SurveyTakingController import Question, Response
 import uuid
 import json
 
-myDB = Database('test', 'localhost', 'postgres', 'WauPal69045!')
+myDB = Database('cbass_test', 'localhost', 'swflint', 'swflint')
+# myDB = Database('test', 'localhost', 'postgres', 'WauPal69045!')
 question = TestSuite("Question Testing")
 
 
@@ -106,6 +107,19 @@ def test_constraint(printer):
 
     question = svc.get_next_question()
     return True
+
+@TestCase(question, "Verify Forbids Constraints Works")
+def test_constraint_forbid(printer):
+    svc = SurveyTakingController(1)
+    session_id = "test " + str(uuid.uuid4())
+    svc.start_survey(session_id)
+    svc.send_response_v2('2')
+    response_id = svc.response_id
+    svc.get_next_question()
+    svc.send_response_v2('[4]')
+    svc.get_next_question()
+    
+    return svc.current_question.question_id == 4
 
 
 question.showReport()

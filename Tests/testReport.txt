@@ -1,0 +1,57 @@
+Running Tests for: User Authentication.
+ (1) Authentication W/ Valid Password -> Pass
+ (2) Authentication W/ Invalid Password -> Pass
+ (3) Authentication W/ Invalid Username -> Fail
+     Raises error: <type 'exceptions.TypeError'>
+ (4) User Creation -> Pass
+ (5) User password change -> Pass
+Report:
+  Total Test: 5
+  Passing Tests: 4, Rate: 80.00%
+  Failing Tests: 1, Rate: 20.00%
+
+Running Tests for: Survey Data and Contents.
+ (1) Returns Correct Name -> Fail
+     <type 'tuple'>
+ (2) Returns Correct Properties -> Pass
+ (3) Question Retrieved Correctly -> Pass
+ (4) Responses Retrieved Correctly -> Pass
+ (5) Normal Constraints Retrieved Correctly -> Pass
+ (6) Modify Constraints Retrieved Correctly -> Pass
+Report:
+  Total Test: 6
+  Passing Tests: 5, Rate: 83.33%
+  Failing Tests: 1, Rate: 16.67%
+
+Running Tests for: Survey Data Insertion/Survey Creation.
+No Tests defined.
+
+Running Tests for: Survey Response Insertion.
+ (1) Survey Response Insertion -> Pass
+ (2) Insert Single Response -> Fail
+     Raises error: <class 'psycopg2.IntegrityError'>
+ (3) Insert Multi Response -> Fail
+     Raises error: <class 'psycopg2.InternalError'>
+ (4) Insert Long Form Response -> Fail
+     Raises error: <class 'psycopg2.InternalError'>
+ (5) Check Single Response -> Fail
+     No method to get question single responses
+ (6) Check Mulit Response -> Fail
+     No method to get question multi responses
+Report:
+  Total Test: 6
+  Passing Tests: 1, Rate: 16.67%
+  Failing Tests: 5, Rate: 83.33%
+
+Running Tests for: Question Testing.
+ (1) Test if all Questions are loaded -> Pass
+ (2) Test if questions match DB -> Pass
+ (3) Verify answers for test questions -> Pass
+ (4) Verify single-response was recorded to DB -> Pass
+ (5) Verify multi-response was recorded to DB -> Fail
+ (6) Verify constraint-modify works -> Pass
+ (7) Verify Forbids Constraints Works -> Pass
+Report:
+  Total Test: 7
+  Passing Tests: 6, Rate: 85.71%
+  Failing Tests: 1, Rate: 14.29%
