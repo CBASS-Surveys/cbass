@@ -16,6 +16,7 @@ class SurveyCreationController:
     _database = None
     question_types = {'single-response', 'multi-choice-response', 'free-response'}
     constraint_standards = {'forbids','requires'}
+    survey_properties_types = {'before-text','after-text'}
     
     def __init__(self):
         
@@ -33,6 +34,7 @@ class SurveyCreationController:
         self._database = Database(db, hostname, username, password)
         
     def create_survey(self, name, authorName, **kwargs):
+        #TODO: verify survey properties in the kwargs
         self.survey_id=self._database.createSurvey(name, authorName, **kwargs)
         
     def create_survey_question(self, text, question_type):
