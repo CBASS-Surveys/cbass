@@ -18,13 +18,41 @@ var exampleQuestions = [
   }
 ]
 
+var startingProperties = {
+  "name": "Survey Name Not Currently Available",
+  "properties": {
+    "before_text":"none",
+    "after_text":"none"
+  }
+}
+
 var app = new Vue({
   el: "#app-4",
   data: {
     mode : "start",
     question : {},
     testCounter : 0,
-    selectedAnswers: []
+    selectedAnswers: [],
+    surveyProperies: {
+      "name": "Survey Name Not Currently Available",
+      "properties": {
+        "before_text":"none",
+        "after_text":"none"
+      }
+    }
+  },
+  created: function() {
+    var result = $.ajax({
+      type: 'GET',
+      url: '/get_properties',
+      success: function(data){
+        if(data.type != "error"){
+          console.log(data)
+          startingProperties = data
+          app.surveyProperies = data
+        }
+      }
+    })
   },
   computed: {
     isAnswered: function(){
@@ -99,8 +127,8 @@ var app = new Vue({
               self.mode = 'end';
             }
           }
-        }*/
-      })
+        }
+      }*/
     },
     getLastTestQuestion: function(){
       var self = this;
@@ -121,6 +149,7 @@ var app = new Vue({
 
       $.get('/get_next_question',
         function(data){
+          console.log(data)
           self.question = data;
           self.selectedAnswers = [];
           if(self.question.type === "end"){
@@ -128,13 +157,12 @@ var app = new Vue({
           }
       })
     },
-
     data: function() {
-    var data = $.ajax({
-        url : '/get_next_question',
-        type: 'GET'
-    });
-    this.question = data
+      var data = $.ajax({
+          url : '/get_next_question',
+          type: 'GET'
+      });
+      this.question = data
     }
   }
 })

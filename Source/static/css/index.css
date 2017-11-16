@@ -28,6 +28,37 @@ html, body{
   width: 60%;
 }
 
+#answerContainer label {
+    float:left;
+    width:100%;
+    background-color:#EFEFEF;
+    border-radius:4px;
+    border:1px solid #D0D0D0;
+    overflow:auto;
+
+}
+
+#answerContainer label span {
+    text-align:center;
+    font-size: 32px;
+    padding:13px 0px;
+    display:block;
+}
+
+#answerContainer label input {
+    position:absolute;
+    top:-20px;
+}
+
+#answerContainer label input {
+display: none;
+}
+
+#answerContainer input:checked + span {
+    background-color:#404040;
+    color:#F7F7F7;
+}
+
 .contentContainer{
   padding:10px;
   padding-bottom:60px;
