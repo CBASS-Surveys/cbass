@@ -3,15 +3,17 @@
 
 import logging
 import os
+import json
 
-from flask import Flask, request, jsonify
-from flask import render_template
+from flask import Flask, request, jsonify, redirect
+from flask import render_template, url_for
 from werkzeug.contrib.cache import SimpleCache
 
 import Config
 from Errors import NoResponse
 from SurveyProperties import SurveyProperties
 from SurveyTakingController import SurveyTakingController
+
 
 
 # Avoid jinja and vue conflict
@@ -49,20 +51,14 @@ router = Router()
 
 @app.route("/")
 def main_page():
-    survey_properties = SurveyProperties(2)
-    properties = survey_properties.get_survey_properties()
-    # Change this to get user's surveys later on
-    survey_name = survey_properties.get_survey_name()
-    print (survey_name)
     survey_id = 2
-    return jsonify(name=survey_name,
-                   properties=properties)
-    # return redirect(url_for('start_survey', survey_id=survey_id))
+    
+    return redirect(url_for('start_survey', survey_id=survey_id))
 
 
 @app.route("/survey_id=<survey_id>")
 def start_survey(survey_id):
-    # survey_id = request.form["surveyId"]
+    # 
     print("survey_id = " + survey_id)
     if survey_id:
         router.create_survey_taking_controller(survey_id)
@@ -72,6 +68,15 @@ def start_survey(survey_id):
     router.survey_taking_controller.start_survey()
     return render_template("vueQuestions/index.html")
 
+@app.route("/get_properties=<survey_id>")
+def get_properties(survey_id):
+    survey_id = json.loads(request.data)
+    survey_properties = SurveyProperties(2)
+    properties = survey_properties.get_survey_properties()
+    # Change this to get user's surveys later on
+    survey_name = survey_properties.get_survey_name()
+    return jsonify(name=survey_name,
+                   properties=properties)
 
 @app.route("/question_num=<question_num>", methods=['GET', 'POST'])
 def get_question(question_num):
