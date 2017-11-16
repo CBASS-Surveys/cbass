@@ -1,12 +1,15 @@
 #!/bin/python
 # coding: utf-8
-from Database import Database
-import yaml
-from Response import Response
-from Constraints import Constraint, ModifyConstraint
-from Question import Question
-from Utils import deprecated
+
 import json
+import uuid
+
+import yaml
+
+from Constraints import Constraint, ModifyConstraint
+from Database import Database
+from Question import Question
+from Response import Response
 
 
 class SurveyTakingController:
@@ -22,7 +25,7 @@ class SurveyTakingController:
         self.survey_id = survey_id
         self.survey_questions = []
 
-        with open("config-test.yml", 'r') as ymlfile:
+        with open("config.yml", 'r') as ymlfile:
             cfg = yaml.load(ymlfile)
         sql = cfg["mysql"]
         db = sql['database']
@@ -32,10 +35,14 @@ class SurveyTakingController:
         # dump(hostname, username, password)
         self._database = Database(db, hostname, username, password)
 
-    def start_survey(self, session_id):
+    def start_survey(self):
+
+        session_id = uuid.uuid4()
         response_struct = self._database.createSurveyResponse(self.survey_id, str(session_id))
+
         self.response_id = response_struct[0]
         self.get_survey_questions()
+        return session_id
 
     def send_response_v2(self, response):
         question_type = self.current_question.question_type
@@ -43,10 +50,10 @@ class SurveyTakingController:
         question_id = question.question_id
         answers = json.loads(response)
         if question_type == 'single-response':
-                self._database.insertSurveyQuestionResponse(self.response_id, question_id, answers)
+            self._database.insertSurveyQuestionResponse(self.response_id, question_id, answers)
         elif question_type == 'multi-choice-response':
-                    # "multi-response send all items selected
-                    self._database.insertSurveyQuestionMultiResponse(self.response_id, question_id, answers)
+            # "multi-response send all items selected
+            self._database.insertSurveyQuestionMultiResponse(self.response_id, question_id, answers)
         elif question_type == 'free-response':
             # send the text
             self._database.insertSurveyQuestionLongFormResponse(self.response_id, question_id, str(answers))

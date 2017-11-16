@@ -5,6 +5,7 @@ Created on Wed Nov  8 20:00:23 2017
 @author: hpollman
 """
 
+
 class NoResponse(Exception):
     status_code = 400
 

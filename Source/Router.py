@@ -1,16 +1,17 @@
 #!/bin/python
 # coding: utf-8
 
-import os
-from flask import Flask, request, jsonify, redirect
-from flask import render_template, url_for
-from werkzeug.contrib.cache import SimpleCache
 import logging
-from SurveyTakingController import SurveyTakingController
-import uuid
-from SurveyProperties import SurveyProperties
+import os
+
+from flask import Flask, request, jsonify
+from flask import render_template
+from werkzeug.contrib.cache import SimpleCache
+
 import Config
 from Errors import NoResponse
+from SurveyProperties import SurveyProperties
+from SurveyTakingController import SurveyTakingController
 
 
 # Avoid jinja and vue conflict
@@ -27,15 +28,11 @@ class CustomFlask(Flask):
 
 
 class Router:
-    
-    session_id = None
     survey_taking_controller = None
 
     # Future Controllers here
 
-    def __init__(self, session_id):
-        
-        self.session_id = session_id
+    def __init__(self):
         print("Starting Router...")
 
     def create_survey_taking_controller(self, survey_id):
@@ -47,19 +44,20 @@ logging.basicConfig(
 template_dir = os.path.abspath('public')
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
-
-session = uuid.uuid4()
-router = Router(session)
+router = Router()
 
 
 @app.route("/")
 def main_page():
-    properties = SurveyProperties(2)
+    survey_properties = SurveyProperties(2)
+    properties = survey_properties.get_survey_properties()
     # Change this to get user's surveys later on
-    survey_name = properties.get_survey_name()
+    survey_name = survey_properties.get_survey_name()
     print (survey_name)
     survey_id = 2
-    return redirect(url_for('start_survey', survey_id=survey_id))
+    return jsonify(name=survey_name,
+                   properties=properties)
+    # return redirect(url_for('start_survey', survey_id=survey_id))
 
 
 @app.route("/survey_id=<survey_id>")
@@ -70,14 +68,13 @@ def start_survey(survey_id):
         router.create_survey_taking_controller(survey_id)
     else:
         print("Error")
-    
-    router.survey_taking_controller.start_survey(router.session_id)
+
+    router.survey_taking_controller.start_survey()
     return render_template("vueQuestions/index.html")
 
 
 @app.route("/question_num=<question_num>", methods=['GET', 'POST'])
 def get_question(question_num):
-
     question = router.survey_taking_controller.get_question(question_num)
     answers = []
     for resp in question.answers:
@@ -90,7 +87,6 @@ def get_question(question_num):
 
 @app.route("/get_next_question", methods=['GET', 'POST'])
 def get_next_question():
-
     if request.method == 'POST':
         submit_response(request.data)
 
@@ -111,7 +107,6 @@ def get_next_question():
 
 @app.route("/get_prev_question", methods=['GET', 'POST'])
 def get_prev_question():
-
     if request.method == 'POST':
         submit_response(request.data)
 
@@ -136,7 +131,7 @@ def submit_response(response):
 def handle_no_response(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
-    return response        
+    return response
 
 
 @app.route("/testing")
