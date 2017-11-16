@@ -107,8 +107,9 @@ def get_next_question():
 
 @app.route("/get_prev_question", methods=['GET', 'POST'])
 def get_prev_question():
-    if request.method == 'POST':
-        submit_response(request.data)
+    # Future Implementation
+    # if request.method == 'POST':
+    #    submit_response(request.data)
 
     question = router.survey_taking_controller.get_prev_question()
     answers = []
