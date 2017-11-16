@@ -68,10 +68,11 @@ def start_survey(survey_id):
     router.survey_taking_controller.start_survey()
     return render_template("vueQuestions/index.html")
 
-@app.route("/get_properties=<survey_id>")
-def get_properties(survey_id):
-    survey_id = json.loads(request.data)
-    survey_properties = SurveyProperties(2)
+@app.route("/get_properties")
+def get_properties():
+    # survey_id = json.loads(request.data)
+    survey_id = 2
+    survey_properties = SurveyProperties(survey_id)
     properties = survey_properties.get_survey_properties()
     # Change this to get user's surveys later on
     survey_name = survey_properties.get_survey_name()
