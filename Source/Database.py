@@ -200,3 +200,28 @@ class Database:
             cursor.execute("SELECT response FROM survey_multi_response WHERE response_to = %s AND response_id = %s;", (questionID, responseID))
             (value,) = cursor.fetchone()
             return value
+
+    def changeQuestionText(self, question_id, new_text):
+        cursor = self._connection.cursor()
+        cursor.execute("UPDATE survey_question SET question_text = %s WHERE question_ID = %s", (new_text, question_id))
+        cursor.close()
+
+    def changeQuestionResponseDescription(self, question_response_id, question_response_description):
+        cursor = self._connection.cursor()
+        cursor.execute("UPDATE question_response SET description = %s WHERE id = %s", (question_response_description, question_response_id))
+        cursor.close()
+
+    def changeQuestionResponseValue(self, question_response_id, question_response_value):
+        cursor = self._connection.cursor()
+        cursor.execute("UPDATE question_respose SET value = %s WHERE id = %s", (question_response_value, question_response_id))
+        cursor.close()
+
+    def createNewSurveyProperty(self, surveyID, property_name, property_value):
+        cursor = self._connection.cursor()
+        cursor.execute("INSERT INTO survey_properties (survey_id, name, value) VALUES (%s, %s, %s)", (surveyID, property_name, property_value))
+        cursor.close()
+
+    def updateSurveyProperty(self, surveyID, property_name, property_value):
+        cursor = self._connection.cursor()
+        cursor.execute("UPDATE survey_properties SET value = %s WHERE survey_id = %s AND name = %s", (property_value, surveyID, property_name))
+        cursor.close()
