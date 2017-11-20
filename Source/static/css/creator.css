@@ -1,0 +1,53 @@
+body{
+  background: white;
+}
+
+input[type="text"]{
+    background: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: solid 2px #117069;
+}
+
+input[type="text"]:focus{
+  outline: none;
+}
+
+.question{
+  background: #edeec9;
+  margin-left: 2.5%;
+  margin-bottom: 10px;
+  width: 95%;
+}
+
+.questionTop{
+  background: #add6b6;
+  display: flex;
+  padding: 5px;
+}
+
+.answerContainer{
+  margin-left: 2.5%;
+  width: 95%
+}
+
+.answer{
+  margin-left: 2.5%;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  width: 95%;
+  display: flex;
+}
+
+.constraintContainer{
+  background: #2babbf;
+}
+
+.constraint{
+  margin-left: 2.5%;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  width: 95%;
+  display: flex;
+}
