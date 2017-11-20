@@ -3,7 +3,6 @@
 
 import logging
 import os
-import json
 
 from flask import Flask, request, jsonify, redirect
 from flask import render_template, url_for
@@ -13,7 +12,6 @@ import Config
 from Errors import NoResponse
 from SurveyProperties import SurveyProperties
 from SurveyTakingController import SurveyTakingController
-
 
 
 # Avoid jinja and vue conflict
@@ -68,6 +66,7 @@ def start_survey(survey_id):
     router.survey_taking_controller.start_survey()
     return render_template("vueQuestions/index.html")
 
+
 @app.route("/get_properties")
 def get_properties():
     # survey_id = json.loads(request.data)
@@ -78,6 +77,7 @@ def get_properties():
     survey_name = survey_properties.get_survey_name()
     return jsonify(name=survey_name,
                    properties=properties)
+
 
 @app.route("/question_num=<question_num>", methods=['GET', 'POST'])
 def get_question(question_num):

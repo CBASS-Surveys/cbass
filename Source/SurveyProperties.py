@@ -4,6 +4,8 @@ import yaml
 
 from Database import Database
 
+survey_properties_types = {'before-text', 'after-text'}
+
 
 class SurveyProperties:
     before_text = None
@@ -34,6 +36,22 @@ class SurveyProperties:
             return properties
         else:
             return None
+
+    def create_property(self, survey_id, property_name, property_value):
+        if property_name in survey_properties_types:
+            self._database.createNewSurveyProperty(survey_id, property_name, property_value)
+            return True
+        else:
+            print ("Error: property_name {%s} not found")
+            return False
+
+    def update_property(self, survey_id, property_name, property_value):
+        if property_name in survey_properties_types:
+            self._database.updateSurveyProperty(survey_id, property_name, property_value)
+            return True
+        else:
+            print ("Error: property_name {%s} not found")
+            return False
 
 
 if __name__ == "__main__":
