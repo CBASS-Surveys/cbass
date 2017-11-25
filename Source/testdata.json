@@ -1,0 +1,33 @@
+{
+  "survey_name": "Survey Name",
+  "survey_properties": {
+    "start": "start_text",
+    "end": "end_text"
+  },
+  "questions": {
+    "question1": {
+      "text": "What types of weather do you like?",
+      "type": "multi-choice-response",
+      "answers": [
+        "hot weather",
+        "warm weather",
+        "rainy weather",
+        "cool weather",
+        "windy weather"
+      ]
+    },
+    "question2": {
+      "text": "What is your favorite color?",
+      "type": "single-response",
+      "answers": [
+        "red",
+        "blue",
+        "green"
+      ]
+    },
+    "question3": {
+      "text": "What do you like most about animals?",
+      "type": "free-response"
+    }
+  }
+}

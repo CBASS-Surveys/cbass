@@ -17,12 +17,12 @@ class Question:
 
     def set_constraints(self, constraints):
         self.constraints = constraints
-    
+
     def add_constraint(self, constraint):
-        self.constraints+= [constraint]
-        
+        self.constraints += [constraint]
+
     def add_modify_constraint(self, modify_constraint):
-        self.modify_constraints+=[modify_constraint]
+        self.modify_constraints += [modify_constraint]
 
     def set_modify_constraints(self, modify_constraints):
         self.modify_constraints = modify_constraints
@@ -35,15 +35,16 @@ class Question:
 
     def add_response(self, response):
         self.response += [response]
-    
+
     def get_response_ids(self):
         response_ids = []
         for resp in self.responses:
-            response_ids+=resp.response_id
+            response_ids += resp.response_id
         return response_ids
-    
+
     def get_response_values(self):
-         response_values = []
-        for resp in self.responses:
-            response_values+=resp.response_value
-        return response_values
+        response_values = []
+
+    for resp in self.responses:
+        response_values += resp.response_value
+    return response_values

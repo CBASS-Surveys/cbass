@@ -1,6 +1,7 @@
 #!/bin/python
 # coding: utf-8
 
+import json
 import logging
 import os
 
@@ -9,7 +10,8 @@ from flask import render_template, url_for
 from werkzeug.contrib.cache import SimpleCache
 
 import Config
-from Errors import NoResponse
+from Errors import NoResponse, MalformedSurvey
+from SurveyCreationController import SurveyCreationController
 from SurveyProperties import SurveyProperties
 from SurveyTakingController import SurveyTakingController
 
@@ -29,6 +31,7 @@ class CustomFlask(Flask):
 
 class Router:
     survey_taking_controller = None
+    survey_creation_controller = None
 
     # Future Controllers here
 
@@ -37,6 +40,9 @@ class Router:
 
     def create_survey_taking_controller(self, survey_id):
         self.survey_taking_controller = SurveyTakingController(survey_id)
+
+    def create_survey_creation_controller(self):
+        self.survey_creation_controller = SurveyCreationController()
 
 
 logging.basicConfig(
@@ -50,7 +56,7 @@ router = Router()
 @app.route("/")
 def main_page():
     survey_id = 2
-    
+
     return redirect(url_for('start_survey', survey_id=survey_id))
 
 
@@ -141,10 +147,67 @@ def handle_no_response(error):
     return response
 
 
+@app.errorhandler(MalformedSurvey)
+def handled_malformed_survey(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
+
+
 @app.route("/testing")
 def testing():
     print ("Not much testing going on here")
     # you can put stuff here for quick tests
+
+
+@app.route("/create-question", methods=['POST'])
+def create_question(data=None):
+    # this function handles an iterate method for adding questions or a single create_question from the view
+    if data:
+        router.survey_creation_controller.create_survey_question(data[0], data[1])
+    else:
+        q_data = json.loads(request.data)
+        router.survey_creation_controller.create_survey_question(q_data[0], q_data[1])
+
+
+@app.route("/save_survey", methods=['POST'])
+def save():
+    # if survey not published AND survey doesn't exist yet
+    json_data = open("testdata.json").read()
+
+    data = json.loads(json_data)
+    try:
+        keys = data.keys()
+        survey_name = data["survey_name"]
+        if 'survey_properties' in keys:
+            survey_properties = data["survey_properties"]
+        for question in data['questions']:
+            question_type = str(question['type'])
+            question_id = router.survey_creation_controller.create_survey_question(question['text'], question_type)
+            if not question_type == 'free-response':
+                if 'answers' in keys:
+                    answers = question['answers']
+                    router.survey_creation_controller.create_multiple_answers(question_id, answers)
+                if 'constraint_standard' in keys:
+                    for const_standard in data['constraint_standard']:
+                        question_from = const_standard['question_from']
+                        # TODO: get response
+                        response = None
+                        const_type = const_standard['constraint_type']
+                        question_to = const_standard['question_to']
+                        router.survey_creation_controller.create_question_constraint_standard(question_from, response,
+                                                                                              const_type, question_to)
+                if 'constraint_modify' in keys:
+                    for const_mod in data['constraint_modify']:
+                        question_from = const_mod['question_from']
+                        # TODO: get response
+                        response = None
+                        question_to = const_mod['question_to']
+                        resp_discluded = const_mod['responses_discluded']
+                        router.survey_creation_controller.create_disclusion_constraint(question_from, response,
+                                                                                       question_to, resp_discluded)
+    except KeyError:
+        raise MalformedSurvey
 
 
 if __name__ == "__main__":

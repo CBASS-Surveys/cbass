@@ -12,6 +12,7 @@ class Constraint:
     def set_constraint_id(self, constraint_id):
         self.constraint_id = constraint_id
 
+
 class ModifyConstraint:
     modify_constraint_id = None
     question_from = None
@@ -22,6 +23,6 @@ class ModifyConstraint:
         self.question_from = question_from
         self.response_from = response_from
         self.response_discluded = response_discluded
-        
+
     def set_modify_constraint_id(self, modify_constraint_id):
         self.modify_constraint_id = modify_constraint_id

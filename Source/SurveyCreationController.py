@@ -2,7 +2,7 @@
 """
 Created on Wed Nov 15 20:58:28 2017
 
-@author: hpollman
+@author: hpollmann
 """
 
 import yaml
@@ -46,7 +46,7 @@ class SurveyCreationController:
             print("Either text is empty, or type isn't valid")
             return None
 
-    def create_question_response(self, question_id, value, description):
+    def create_question_answer(self, question_id, value, description):
         if not self.survey_questions[question_id]:
             print ("Error no question found")
         elif value and description:
@@ -56,9 +56,9 @@ class SurveyCreationController:
         else:
             print ("Error: either value or description were empty")
 
-    def create_multiple_responses(self, question_id, responses):
+    def create_multiple_answers(self, question_id, responses):
         for resp in responses:
-            self.create_question_response(question_id, resp[0], resp[1])
+            self.create_question_answer(question_id, str(resp), str(resp).lower())
 
     def create_question_constraint_standard(self, question_from_id, response_id, constraint_type, question_to_id):
         question_from = self.survey_questions[question_from_id]

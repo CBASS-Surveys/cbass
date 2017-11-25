@@ -1,17 +1,17 @@
 <!doctype html>
 <html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
 
-  <script src="/static/libs/vue.js"></script>
-  <script src="/static/libs/jquery-3.2.1.js"></script>
-  <link rel="stylesheet" href="/static/css/index.css">
+    <script src="/static/libs/vue.js"></script>
+    <script src="/static/libs/jquery-3.2.1.js"></script>
+    <link rel="stylesheet" href="/static/css/index.css">
 
 </head>
 
 <body>
 
-  <script type="text/x-template" id="question-block">
+<script type="text/x-template" id="question-block">
 
 </script>
 
@@ -20,64 +20,67 @@
 .notAnswered{
     border-bottom: red solid 5px;
 }
+
 </style>
 
 <div id="app-4">
-  <div v-if="mode === 'start'">
-    <div class="topTextContainer">
-      <p class="bigText">{{surveyProperies.name}}</p>
-      <p class="littleText">{{surveyProperies.properties.before_text}}</p>
-    </div>
-    <div class="buttonContainer">
-      <div class="navButton" style="background:blue;" v-on:click="startSurvey">START</div>
-    </div>
-  </div>
-  <div v-if="mode === 'survey'">
-
-    <div>
-      <div>
+    <div v-if="mode === 'start'">
         <div class="topTextContainer">
-          <p class="bigText" :class= "{ notAnswered: !isAnswered }"> {{ question.text }} </p>
+            <p class="bigText">{{surveyProperies.name}}</p>
+            <p class="littleText">{{surveyProperies.properties.before_text}}</p>
         </div>
-        <div id="answerContainer">
-
-          <div v-if="question.type ==='single-response'">
-            <template v-for="answer in question.answers">
-
-              <label class="littleText" :for="'response' + answer.response_id">
-                <input type="radio" :id="'response' + answer.response_id" :value="answer.response_id" name="answer" v-model="selectedAnswers">
-                <span>{{ answer.response_value }}</span>
-              </label>
-            </template>
-          </div>
-
-          <div v-else-if="question.type ==='multi-choice-response'">
-            <template v-for="answer in question.answers">
-              <label class="littleText" :for="'response' + answer.response_id">
-                <input type="checkbox" :id="'response' + answer.response_id" :value="answer.response_id" name="answer" v-model="selectedAnswers">
-                <span>{{ answer.response_value }}</span>
-              </label> <br>
-            </template>
-          </div>
-
-          <div v-else-if="question.type ==='free-response'">
-            <textarea v-model="selectedAnswers" name="name" rows="8" cols="80"></textarea>
-          </div>
-
-          <!-- <div v-on:load="killPony">This will keep THEM satisfied<\div> -->
+        <div class="buttonContainer">
+            <div class="navButton" style="background:blue;" v-on:click="startSurvey">START</div>
         </div>
-      </div>
     </div>
-    <div class="buttonContainer">
-      <div class="navButton" style="background:red;" v-on:click="getLastQuestion">BACK</div>
-      <div class="navButton" style="background:green" v-on:click="getNextQuestion">NEXT</div>
+    <div v-if="mode === 'survey'">
+
+        <div>
+            <div>
+                <div class="topTextContainer">
+                    <p class="bigText" :class="{ notAnswered: !isAnswered }"> {{ question.text }} </p>
+                </div>
+                <div id="answerContainer">
+
+                    <div v-if="question.type ==='single-response'">
+                        <template v-for="answer in question.answers">
+
+                            <label class="littleText" :for="'response' + answer.response_id">
+                                <input type="radio" :id="'response' + answer.response_id" :value="answer.response_id"
+                                       name="answer" v-model="selectedAnswers">
+                                <span>{{ answer.response_value }}</span>
+                            </label>
+                        </template>
+                    </div>
+
+                    <div v-else-if="question.type ==='multi-choice-response'">
+                        <template v-for="answer in question.answers">
+                            <label class="littleText" :for="'response' + answer.response_id">
+                                <input type="checkbox" :id="'response' + answer.response_id" :value="answer.response_id"
+                                       name="answer" v-model="selectedAnswers">
+                                <span>{{ answer.response_value }}</span>
+                            </label> <br>
+                        </template>
+                    </div>
+
+                    <div v-else-if="question.type ==='free-response'">
+                        <textarea v-model="selectedAnswers" name="name" rows="8" cols="80"></textarea>
+                    </div>
+
+                    <!-- <div v-on:load="killPony">This will keep THEM satisfied<\div> -->
+                </div>
+            </div>
+        </div>
+        <div class="buttonContainer">
+            <div class="navButton" style="background:red;" v-on:click="getLastQuestion">BACK</div>
+            <div class="navButton" style="background:green" v-on:click="getNextQuestion">NEXT</div>
+        </div>
     </div>
-  </div>
 
-  <div class="bigText" v-if="mode === 'end'">{{ surveyProperies.properties.after_text }}</div>
+    <div class="bigText" v-if="mode === 'end'">{{ surveyProperies.properties.after_text }}</div>
 
-  <div></div>
+    <div></div>
 </div>
-  <script src="/static/controller.js"></script>
+<script src="/static/controller.js"></script>
 </body>
 </html>
