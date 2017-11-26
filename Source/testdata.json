@@ -1,8 +1,9 @@
 {
   "survey_name": "Survey Name",
+  "author": "Author",
   "survey_properties": {
-    "start": "start_text",
-    "end": "end_text"
+    "start_text": "start_text",
+    "end_text": "end_text"
   },
   "questions": {
     "question1": {

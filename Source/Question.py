@@ -45,6 +45,6 @@ class Question:
     def get_response_values(self):
         response_values = []
 
-    for resp in self.responses:
-        response_values += resp.response_value
-    return response_values
+        for resp in self.responses:
+            response_values += resp.response_value
+        return response_values

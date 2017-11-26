@@ -33,9 +33,10 @@ class SurveyCreationController:
         # dump(hostname, username, password)
         self._database = Database(db, hostname, username, password)
 
-    def create_survey(self, name, author_name, **kwargs):
+    def create_survey(self, name, author_name, survey_properties=None):
         # TODO: verify survey properties in the kwargs
-        self.survey_id = self._database.createSurvey(name, author_name, **kwargs)
+
+        self.survey_id = self._database.createSurvey(name, author_name, **survey_properties)
 
     def create_survey_question(self, text, question_type):
         if text and question_type in self.question_types:

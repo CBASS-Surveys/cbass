@@ -170,20 +170,30 @@ def create_question(data=None):
         router.survey_creation_controller.create_survey_question(q_data[0], q_data[1])
 
 
-@app.route("/save_survey", methods=['POST'])
+# TODO: remove GET before production
+@app.route("/save_survey", methods=['POST', 'GET'])
 def save():
     # if survey not published AND survey doesn't exist yet
     json_data = open("testdata.json").read()
+
+    if not router.survey_creation_controller:
+        router.create_survey_creation_controller()
 
     data = json.loads(json_data)
     try:
         keys = data.keys()
         survey_name = data["survey_name"]
+        author = data["author"]
+
         if 'survey_properties' in keys:
             survey_properties = data["survey_properties"]
-        for question in data['questions']:
+        else:
+            survey_properties = None
+        router.survey_creation_controller.create_survey(survey_name, author, survey_properties)
+        for q in data['questions'].viewitems():
+            question = q[1]
             question_type = str(question['type'])
-            question_id = router.survey_creation_controller.create_survey_question(question['text'], question_type)
+            question_id = router.survey_creation_controller.create_survey_question(str(question['text']), question_type)
             if not question_type == 'free-response':
                 if 'answers' in keys:
                     answers = question['answers']
@@ -191,20 +201,19 @@ def save():
                 if 'constraint_standard' in keys:
                     for const_standard in data['constraint_standard']:
                         question_from = const_standard['question_from']
-                        # TODO: get response
-                        response = None
+                        response_from = const_standard['response_from']
                         const_type = const_standard['constraint_type']
                         question_to = const_standard['question_to']
-                        router.survey_creation_controller.create_question_constraint_standard(question_from, response,
+                        router.survey_creation_controller.create_question_constraint_standard(question_from,
+                                                                                              response_from,
                                                                                               const_type, question_to)
                 if 'constraint_modify' in keys:
                     for const_mod in data['constraint_modify']:
                         question_from = const_mod['question_from']
-                        # TODO: get response
-                        response = None
+                        response_from = const_mod['response_from']
                         question_to = const_mod['question_to']
                         resp_discluded = const_mod['responses_discluded']
-                        router.survey_creation_controller.create_disclusion_constraint(question_from, response,
+                        router.survey_creation_controller.create_disclusion_constraint(question_from, response_from,
                                                                                        question_to, resp_discluded)
     except KeyError:
         raise MalformedSurvey
