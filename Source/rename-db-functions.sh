@@ -16,6 +16,7 @@ sed -e 's/authenticateUser/authenticate_user/' \
     -e 's/getModifyConstraints/get_modify_constraints/' \
     -e 's/hasResponse/has_response/' \
     -e 's/getQuestion/get_question/' \
+    -e 's/getResponsesToSurvey/get_responses_to_survey/' \
     -e 's/getResponses/get_responses/' \
     -e 's/getSurveyQuestions/get_survey_questions/' \
     -e 's/getSurveyProperties/get_survey_properties/' \

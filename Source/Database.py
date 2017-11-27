@@ -175,6 +175,11 @@ class Database:
         cursor.execute("SELECT id, value, description FROM question_response WHERE question = %s;", (questionID,))
         return cursor
 
+    def getResponsesToSurvey(self, survey_id):
+        cursor = self._connection.cursor()
+        cursor.execute("SELECT id FROM survey_response WHERE survey = %s;", (survey_id,))
+        return cursor
+
     def getSurveyQuestions(self, surveyID):
         cursor = self._connection.cursor()
         cursor.execute("SELECT question_id FROM survey_question WHERE survey = %s;", (surveyID,))
