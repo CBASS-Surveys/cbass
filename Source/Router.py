@@ -37,7 +37,7 @@ class Router:
 
     # Future Controllers here
 
-    def __init__(self):
+    def __init__(self, *args):
         print("Starting Router...")
 
     def create_survey_taking_controller(self, survey_id):
