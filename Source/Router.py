@@ -10,7 +10,9 @@ from flask import render_template, url_for
 from werkzeug.contrib.cache import SimpleCache
 
 import Config
-from Errors import NoResponse, MalformedSurvey
+# from Errors import NoResponse, MalformedSurvey
+from MalformedSurvey import MalformedSurvey
+from NoResponse import NoResponse
 from SurveyCreationController import SurveyCreationController
 from SurveyProperties import SurveyProperties
 from SurveyTakingController import SurveyTakingController
