@@ -38,6 +38,11 @@ var app = new Vue({
       }
     ]
   },
+  computed:{
+    surveyLength : function(){
+      return this.survey.questions.length;
+    }
+  },
   methods:{
     addQuestion: function(){
       this.survey.questions.push({

@@ -17,7 +17,7 @@ input[type="text"]:focus{
 .question{
   background: #edeec9;
   margin-left: 2.5%;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   width: 95%;
 }
 
@@ -41,7 +41,15 @@ input[type="text"]:focus{
 }
 
 .constraintContainer{
+  margin-left: 2.5%;
+  margin-bottom: 10px;
+  width: 95%;
   background: #2babbf;
+}
+
+.addButton{
+  background-color: #117069;
+  border: none;
 }
 
 .constraint{

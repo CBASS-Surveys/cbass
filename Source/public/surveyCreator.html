@@ -18,11 +18,14 @@
 
         <div class="question" v-for="(question, qIndex) in survey.questions">
             <div class="questionTop">
+                <div style="width:5%">
+                    {{ qIndex + 1 }}
+                </div>
                 <div style="width:70%">
                     <div>Title:</div>
                     <input style="width:95%; margin-left:2.5%" type="text" v-model="question.text"></input>
                 </div>
-                <div style="width:30%">
+                <div style="width:25%">
                     <div>Question Type:</div>
                     <select style="width:95%; margin-left:2.5%" v-model="question.type">
                         <option v-for="type in questionTypes" v-bind:value="type.value">
@@ -45,32 +48,60 @@
                     <input style="width:20%" type="text" class="answerDescriptionInput"
                            v-model="question.answers[aIndex].description"></input>
                 </div>
-                <button v-on:click="addAnswer(qIndex)">New Answer</button>
+                <button class="addButton" v-on:click="addAnswer(qIndex)">+</button>
             </div>
 
-            <div class="constraintContainer" v-if="question.type != 'free-response'">
+            <div class="constraintContainer" v-if="question.type != 'free-response' && (qIndex + 1) != surveyLength">
                 <div class="constraint">
                     <div style="width:5%"></div>
-                    <div style="width:70%;margin-right:5%">Answer Text</div>
-                    <div style="width:20%"> Export Value</div>
+                    <div style="width:17.5%;margin-left:2.5%">Constraint Type</div>
+                    <div style="width:17.5%;margin-left:2.5%">Constrained Question</div>
+                    <div style="width:17.5%;margin-left:2.5%">Constraining Response</div>
+                    <div style="width:17.5%;margin-left:2.5%">Discluded responses</div>
                 </div>
                 <div class="constraint" v-for="(constraint, cIndex) in question.constraints">
                     <div style="width:5%">{{ cIndex + 1 }}</div>
                     <div style="width:20%">
-                        <select style="width:95%; margin-left:2.5%" v-model="question.constraints[cIndex].type">
-                            <option v-for="type in constraintTypes" v-bind:value="type.value">
-                                {{ type.text }}
+                      <select style="width:95%; margin-left:2.5%" v-model="question.constraints[cIndex].type">
+                        <option v-for="type in constraintTypes" v-bind:value="type.value">
+                          {{ type.text }}
+                        </option>
+                      </select>
+                    </div>
+                    <div style="width:20%">
+                      <select style="width:95%; margin-left:2.5%" v-model="question.constraints[cIndex].question_to">
+                        <option v-for="n in (surveyLength-(qIndex+1))" v-bind:value="n+(qIndex)">
+                          {{ n+(qIndex+1)  }}
+                        </option>
+                      </select>
+                    </div>
+                    <div style="width:20%">
+                      <select style="width:95%; margin-left:2.5%" v-model="question.constraints[cIndex].response_from">
+                        <option v-for="(answer, aIndex) in question.answers" v-bind:value="aIndex">
+                          {{ aIndex + 1 }}
+                        </option>
+                      </select>
+                    </div>
+                    <div v-if="constraint.type == 'modify'" style="width:20%">
+                      <div v-if="constraint.question_to > 0">
+                        <select multiple style="width:95%; margin-left:2.5%" v-model="question.constraints[cIndex].responses_discluded">
+                            <option v-for="(answer, aIndex) in survey.questions[constraint.question_to].answers" v-bind:value="aIndex">
+                              {{ aIndex + 1 }}
                             </option>
                         </select>
+                      </div>
+                      <div v-else>
+                        Enter Constrained Question
+                      </div>
                     </div>
                 </div>
-                <button v-on:click="addConstraint(qIndex)">New Constraint</button>
+                <button class="addButton" v-on:click="addConstraint(qIndex)">+</button>
             </div>
 
         </div>
     </div>
 
-    <button v-on:click="addQuestion">New Question</button>
+    <button class="addButton" v-on:click="addQuestion">+</button>
 </div>
 
 <script src="creator.js"></script>

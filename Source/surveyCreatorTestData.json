@@ -1,0 +1,85 @@
+{
+  "surveyTitle": "",
+  "questions": [
+    {
+      "text": "Question One",
+      "type": "single-response",
+      "answers": [
+        {
+          "value": "Red",
+          "description": "Q1R3"
+        },
+        {
+          "value": "Blue",
+          "description": "Q1R2"
+        },
+        {
+          "value": "Green",
+          "description": "Q1R3"
+        }
+      ],
+      "constraints": [
+        {
+          "question_from": 0,
+          "response_from": 0,
+          "type": "modify",
+          "question_to": 2,
+          "responses_discluded": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "question_from": 0,
+          "response_from": 1,
+          "type": "modify",
+          "question_to": 2,
+          "responses_discluded": [
+            3
+          ]
+        },
+        {
+          "question_from": 0,
+          "response_from": 2,
+          "type": "forbids",
+          "question_to": 1,
+          "responses_discluded": []
+        }
+      ]
+    },
+    {
+      "text": "Question Two",
+      "type": "free-response",
+      "answers": [],
+      "constraints": []
+    },
+    {
+      "text": "Question Three",
+      "type": "multi-choice-response",
+      "answers": [
+        {
+          "value": "Snakes",
+          "description": "Q3R1"
+        },
+        {
+          "value": "Spiders",
+          "description": "Q3R2"
+        },
+        {
+          "value": "Frogs",
+          "description": "Q3R3"
+        },
+        {
+          "value": "Lizard",
+          "description": "Q3R4"
+        }
+      ],
+      "constraints": []
+    }
+  ],
+  "surveyProperies": {
+    "before_text": "",
+    "after_text": ""
+  }
+}
