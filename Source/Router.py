@@ -5,7 +5,7 @@ import json
 import logging
 import os
 
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify, redirect, send_from_directory
 from flask import render_template, url_for
 from werkzeug.contrib.cache import SimpleCache
 
@@ -233,6 +233,10 @@ def save():
         raise MalformedSurvey
 
 
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
+    
 if __name__ == "__main__":
     app.config.from_object(Config.DevelopmentConfig)
     app.run(host='127.0.0.1', port=8000)
