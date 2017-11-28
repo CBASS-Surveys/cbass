@@ -253,7 +253,7 @@ def save():
 #     return send_from_directory('static', path)
 
 @app.route('/static/<path:path>')
-def static(path):
+def do_static(path):
     print path
     return send_from_directory('static', path)
 
