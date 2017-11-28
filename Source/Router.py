@@ -52,7 +52,7 @@ logging.basicConfig(
 
 # template_dir = os.path.abspath('public')
 template_dir = os.path.dirname(__file__) + "/public"
-app = CustomFlask("CBASS", template_folder=template_dir, static_folder='static', static_url_path='/static')
+app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
 router = Router()
 
