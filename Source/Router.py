@@ -49,7 +49,9 @@ class Router:
 
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
-template_dir = os.path.abspath('public')
+
+#template_dir = os.path.abspath('public')
+template_dir = os.path.dirname(__file__) + "/public"
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
 router = Router()
@@ -61,9 +63,11 @@ def main_page():
 
     return redirect(url_for('start_survey', survey_id=survey_id))
 
+
 @app.route("/create_survey", methods=['GET'])
 def create_survey():
     return render_template('surveyCreator.html')
+
 
 @app.route("/survey_id=<survey_id>")
 def start_survey(survey_id):
@@ -178,48 +182,53 @@ def create_question(data=None):
 # TODO: remove GET before production
 @app.route("/save_survey", methods=['POST', 'GET'])
 def save():
-    # if survey not published AND survey doesn't exist yet
-    json_data = open("testdata.json").read()
 
-    if not router.survey_creation_controller:
+    if request.method == 'POST':
+        data = json.loads(request.data)
+    else:
+        json_data = open("surveyCreatorTestData.json").read()
+        data = json.loads(json_data)
+
+    if router.survey_creation_controller is None:
         router.create_survey_creation_controller()
 
-    data = json.loads(json_data)
+
     try:
         keys = data.keys()
-        survey_name = data["survey_name"]
-        author = data["author"]
+        survey_name = data["survey_title"]
+        author = "Author"
 
         if 'survey_properties' in keys:
             survey_properties = data["survey_properties"]
         else:
             survey_properties = None
         router.survey_creation_controller.create_survey(survey_name, author, survey_properties)
-        for q in data['questions'].viewitems():
-            question = q[1]
+        for question in data['questions']:
+            q_keys = question.keys()
             question_type = str(question['type'])
             question_id = router.survey_creation_controller.create_survey_question(str(question['text']), question_type)
             if not question_type == 'free-response':
-                if 'answers' in keys:
+                if 'answers' in q_keys:
                     answers = question['answers']
                     router.survey_creation_controller.create_multiple_answers(question_id, answers)
-                if 'constraint_standard' in keys:
-                    for const_standard in data['constraint_standard']:
-                        question_from = const_standard['question_from']
-                        response_from = const_standard['response_from']
-                        const_type = const_standard['constraint_type']
-                        question_to = const_standard['question_to']
-                        router.survey_creation_controller.create_question_constraint_standard(question_from,
-                                                                                              response_from,
-                                                                                              const_type, question_to)
-                if 'constraint_modify' in keys:
-                    for const_mod in data['constraint_modify']:
-                        question_from = const_mod['question_from']
-                        response_from = const_mod['response_from']
-                        question_to = const_mod['question_to']
-                        resp_discluded = const_mod['responses_discluded']
-                        router.survey_creation_controller.create_disclusion_constraint(question_from, response_from,
-                                                                                       question_to, resp_discluded)
+                if 'constraints' in q_keys:
+                    for const in question['constraints']:
+                        const_type = str(const['type'])
+                        if const_type == 'modify':
+                            question_from = const['question_from']
+                            response_from = const['response_from']
+                            question_to = const['question_to']
+                            resp_discluded = const['responses_discluded']
+                            router.survey_creation_controller.create_question_constraint_standard(question_from,
+                                                                                                  response_from,
+                                                                                                  const_type,
+                                                                                                  question_to)
+                        elif const_type == 'forbids':
+                            question_from = const['question_from']
+                            response_from = const['response_from']
+                            question_to = const['question_to']
+                            router.survey_creation_controller.create_disclusion_constraint(question_from, response_from,
+                                                                                           question_to, resp_discluded)
     except KeyError:
         raise MalformedSurvey
 
