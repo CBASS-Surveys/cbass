@@ -50,7 +50,7 @@ class Router:
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
 
-#template_dir = os.path.abspath('public')
+# template_dir = os.path.abspath('public')
 template_dir = os.path.dirname(__file__) + "/public"
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
@@ -182,7 +182,7 @@ def create_question(data=None):
 # TODO: remove GET before production
 @app.route("/save_survey", methods=['POST', 'GET'])
 def save():
-
+    global resp_discluded
     if request.method == 'POST':
         data = json.loads(request.data)
     else:
@@ -191,7 +191,6 @@ def save():
 
     if router.survey_creation_controller is None:
         router.create_survey_creation_controller()
-
 
     try:
         keys = data.keys()
