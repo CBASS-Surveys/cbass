@@ -1,5 +1,5 @@
 var test1 = {
-  "surveyTitle": "Test Survey",
+  "survey_title": "Test Survey",
   "questions": [
     {
       "text": "Question One",
@@ -78,7 +78,7 @@ var test1 = {
       "constraints": []
     }
   ],
-  "surveyProperies": {
+  "survey_properties": {
     "before_text": "Hello, please take the survey",
     "after_text": "Goodbye"
   }
@@ -88,9 +88,9 @@ var app = new Vue({
   el:"#vueApp",
   data:{
     survey:{
-      "surveyTitle":"",
+      "survey_title":"",
       "questions":[],
-      "surveyProperies":{
+      "survey_properies":{
         "before_text":"",
         "after_text":""
       }
@@ -170,6 +170,6 @@ var app = new Vue({
     }
   },
   mounted: function(){
-    this.getSavedJSON(test1);
+    //this.getSavedJSON(test1);
   }
 })

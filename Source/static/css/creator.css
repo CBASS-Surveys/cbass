@@ -18,9 +18,12 @@ input[type="text"]:focus{
   background: #6DDBAB;
   margin-left: 2.5%;
   margin-bottom: 20px;
-  width: 95%;
+  width: 90%;
   border-radius: 10px;
-  padding: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 2.5%;
+  padding-right: 2.5%;
 }
 
 .surveyProperiesLine{
