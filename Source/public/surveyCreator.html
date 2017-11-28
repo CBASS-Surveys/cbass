@@ -14,29 +14,33 @@
 
 <div id="vueApp">
 
-  <div id="surveyProperies">
-    <div class="surveyProperiesLine">
+  <button v-on:click="saveSurvey">SAVE</button>
+
+  <div id="surveyProperties">
+    <div class="surveyPropertiesLine">
       <div style="width:25%">
         Survey Title
       </div>
       <input style="width:70%;margin-right:5%" type="text" v-model="survey.survey_title"></input>
     </div>
     <br>
-    <div class="surveyProperiesLine">
+    <div class="surveyPropertiesLine">
       <div style="width:25%">
         Text at Beginning of Survey
       </div>
-      <input style="width:70%;margin-right:5%" type="text" v-model="survey.survey_properies.before_text"></input>
+      <input style="width:70%;margin-right:5%" type="text" v-model="survey.survey_properties.before_text"></input>
     </div>
-    <div class="surveyProperiesLine">
+    <div class="surveyPropertiesLine">
       <div style="width:25%">
         Text at End of Survey
       </div>
-      <input style="width:70%;margin-right:5%" type="text" v-model="survey.survey_properies.after_text"></input>
+      <input style="width:70%;margin-right:5%" type="text" v-model="survey.survey_properties.after_text"></input>
     </div>
   </div>
 
     <div id="questionContainer">
+
+
 
         <div class="question" v-for="(question, qIndex) in survey.questions">
             <div class="questionTop">
@@ -45,7 +49,7 @@
                 </div>
                 <div style="width:70%">
                     <div>Title:</div>
-                    <input style="width:95%; margin-left:2.5%" type="text" v-model="question.text"></input>
+                    <input style="width:95%; margin-left:2.5%; color: white" type="text" v-model="question.text"></input>
                 </div>
                 <div style="width:25%">
                     <div>Question Type:</div>
@@ -55,6 +59,7 @@
                         </option>
                     </select>
                 </div>
+                <button class="removeButton" v-on:click="deleteQuestion(qIndex)">X</button>
             </div>
 
             <div class="answerContainer" v-if="question.type != 'free-response'">
@@ -69,6 +74,7 @@
                            v-model="question.answers[aIndex].value"></input>
                     <input style="width:20%" type="text" class="answerDescriptionInput"
                            v-model="question.answers[aIndex].description"></input>
+                           <button class="removeButton" v-on:click="deleteAnswer(qIndex, aIndex)">X</button>
                 </div>
                 <button class="addButton" v-on:click="addAnswer(qIndex)">+</button>
             </div>
@@ -116,6 +122,7 @@
                         Enter Constrained Question
                       </div>
                     </div>
+                    <button class="removeButton" v-on:click="deleteConstraint(qIndex, cIndex)">X</button>
                 </div>
                 <button class="addButton" v-on:click="addConstraint(qIndex)">+</button>
             </div>
