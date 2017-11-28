@@ -61,6 +61,9 @@ def main_page():
 
     return redirect(url_for('start_survey', survey_id=survey_id))
 
+@app.route("/create_survey", methods=['GET'])
+def create_survey():
+    return render_template('surveyCreator.html')
 
 @app.route("/survey_id=<survey_id>")
 def start_survey(survey_id):
