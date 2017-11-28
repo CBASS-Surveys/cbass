@@ -50,7 +50,8 @@ class Router:
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
 
-template_dir = os.path.abspath('public')
+#template_dir = os.path.abspath('public')
+template_dir = os.path.dirname(__file__) + "/public"
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
 router = Router()
