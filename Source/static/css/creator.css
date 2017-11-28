@@ -14,16 +14,19 @@ input[type="text"]:focus{
   outline: none;
 }
 
-#surveyProperies{
-  background: #6DDBAB;
+#surveyProperties{
+  background: #9AD1D4;
   margin-left: 2.5%;
   margin-bottom: 20px;
-  width: 95%;
+  width: 90%;
   border-radius: 10px;
-  padding: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 2.5%;
+  padding-right: 2.5%;
 }
 
-.surveyProperiesLine{
+.surveyPropertiesLine{
   display: flex;
 }
 
@@ -63,8 +66,14 @@ input[type="text"]:focus{
   border-radius: 10px;
 }
 
+.removeButton{
+  background-color: #e27878;
+  border: none;
+}
+
 .addButton{
   background-color: #117069;
+  color: white;
   border: none;
 }
 

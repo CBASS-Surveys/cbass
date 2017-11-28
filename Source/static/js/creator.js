@@ -1,5 +1,5 @@
 var test1 = {
-  "surveyTitle": "Test Survey",
+  "survey_title": "Test Survey",
   "questions": [
     {
       "text": "Question One",
@@ -78,7 +78,7 @@ var test1 = {
       "constraints": []
     }
   ],
-  "surveyProperies": {
+  "survey_properties": {
     "before_text": "Hello, please take the survey",
     "after_text": "Goodbye"
   }
@@ -88,21 +88,21 @@ var app = new Vue({
   el:"#vueApp",
   data:{
     survey:{
-      "surveyTitle":"",
+      "survey_title":"",
       "questions":[],
-      "surveyProperies":{
+      "survey_properties":{
         "before_text":"",
         "after_text":""
       }
     },
     questionTypes:[
       {
-        "value":"multi-choice-response",
-        "text": "Multiple Select"
-      },
-      {
         "value": "single-response",
         "text": "Single Select"
+      },
+      {
+        "value":"multi-choice-response",
+        "text": "Multiple Select"
       },
       {
         "value": "free-response",
@@ -133,11 +133,7 @@ var app = new Vue({
     addQuestion: function(){
       this.survey.questions.push({
         "text":"",
-        "type":
-          {
-            "value": "single-response",
-            "text": "Single Select"
-          },
+        "type": this.questionTypes[0],
         "answers":[],
         "constraints":[]
       })
@@ -157,6 +153,18 @@ var app = new Vue({
         "responses_discluded":[]
       })
     },
+
+    //Caution: Deletion of data can cause problems with constraint referencing.
+    //Look into solutions to this problem
+    deleteQuestion: function(qIndex){
+        this.survey.questions.splice(qIndex, 1);
+    },
+    deleteAnswer: function(qIndex, aIndex){
+      this.survey.questions[qIndex].answers.splice(aIndex, 1);
+    },
+    deleteConstraint: function(qIndex, cIndex){
+      this.survey.questions[qIndex].constraints.splice(cIndex, 1);
+    },
     getSavedJSON: function(json){
       //A check to implement for correctness
       var isCorrect = true;
@@ -165,8 +173,17 @@ var app = new Vue({
         this.survey = json;
       }
     },
-    postJSON: function(){
-
+    saveSurvey: function(){
+      $.ajax({
+        url:'/save_survey',
+        type: "POST",
+        data: JSON.stringify(this.survey),
+        dataType: "JSON",
+        contentType: "application/json; charset=utf-8",
+        success: function(data){
+          console.log(data)
+        }
+      })
     }
   },
   mounted: function(){

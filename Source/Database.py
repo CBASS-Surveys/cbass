@@ -153,8 +153,10 @@ class Database:
             cursor.execute(
                 "SELECT true FROM survey_response_entry WHERE response_to = %s AND response_id = %s AND response = %s;",
                 (question, id, response))
-            (value,) = cursor.fetchone()
-            return value
+            if cursor.rowcount == 0:
+                return False
+            else:
+                return True
         elif (type == 'free-response'):
             return False
         else:
