@@ -49,6 +49,7 @@ class Router:
 
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
+
 template_dir = os.path.abspath('public')
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
@@ -180,12 +181,17 @@ def create_question(data=None):
 # TODO: remove GET before production
 @app.route("/save_survey", methods=['POST', 'GET'])
 def save():
-    json_data = open("surveyCreatorTestData.json").read()
+
+    if request.method == 'POST':
+        data = json.loads(request.data)
+    else:
+        json_data = open("surveyCreatorTestData.json").read()
+        data = json.loads(json_data)
 
     if router.survey_creation_controller is None:
         router.create_survey_creation_controller()
 
-    data = json.loads(json_data)
+
     try:
         keys = data.keys()
         survey_name = data["survey_title"]
