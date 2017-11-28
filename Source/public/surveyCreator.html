@@ -14,6 +14,28 @@
 
 <div id="vueApp">
 
+  <div id="surveyProperies">
+    <div class="surveyProperiesLine">
+      <div style="width:25%">
+        Survey Title
+      </div>
+      <input style="width:70%;margin-right:5%" type="text" v-model="survey.surveyTitle"></input>
+    </div>
+    <br>
+    <div class="surveyProperiesLine">
+      <div style="width:25%">
+        Text at Beginning of Survey
+      </div>
+      <input style="width:70%;margin-right:5%" type="text" v-model="survey.surveyProperies.before_text"></input>
+    </div>
+    <div class="surveyProperiesLine">
+      <div style="width:25%">
+        Text at End of Survey
+      </div>
+      <input style="width:70%;margin-right:5%" type="text" v-model="survey.surveyProperies.after_text"></input>
+    </div>
+  </div>
+
     <div id="questionContainer">
 
         <div class="question" v-for="(question, qIndex) in survey.questions">
@@ -104,7 +126,7 @@
     <button class="addButton" v-on:click="addQuestion">+</button>
 </div>
 
-<script src="creator.js"></script>
+<script src="../static/js/creator.js"></script>
 
 </body>
 </html>

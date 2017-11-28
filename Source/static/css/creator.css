@@ -1,5 +1,5 @@
 body{
-  background: white;
+  background: #CCDBDC;
 }
 
 input[type="text"]{
@@ -14,17 +14,32 @@ input[type="text"]:focus{
   outline: none;
 }
 
-.question{
-  background: #edeec9;
+#surveyProperies{
+  background: #6DDBAB;
   margin-left: 2.5%;
   margin-bottom: 20px;
   width: 95%;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.surveyProperiesLine{
+  display: flex;
+}
+
+.question{
+  background: #9AD1D4;
+  margin-left: 2.5%;
+  margin-bottom: 20px;
+  width: 95%;
+  border-radius: 10px;
 }
 
 .questionTop{
-  background: #add6b6;
+  background: #007EA7;
   display: flex;
   padding: 5px;
+  color: white;
 }
 
 .answerContainer{
@@ -44,7 +59,8 @@ input[type="text"]:focus{
   margin-left: 2.5%;
   margin-bottom: 10px;
   width: 95%;
-  background: #2babbf;
+  background: #6DDBAB;
+  border-radius: 10px;
 }
 
 .addButton{
