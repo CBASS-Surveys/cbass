@@ -252,16 +252,16 @@ def save():
 # def send_static(path):
 #     return send_from_directory('static', path)
 
-app.url_for('static', 'controller.js')
-app.url_for('static', 'favicon.ico')
-app.url_for('static', 'css/creator.css')
-app.url_for('static', 'css/index.css')
-app.url_for('static', 'js/app.js')
-app.url_for('static', 'js/creator.js')
-app.url_for('static', 'libs/jquery-3.2.1.js')
-app.url_for('static', 'libs/vue.js')
-app.url_for('static', 'media/flask.png')
-app.url_for('static', 'media/vuejs.png')
+url_for('static', 'controller.js')
+url_for('static', 'favicon.ico')
+url_for('static', 'css/creator.css')
+url_for('static', 'css/index.css')
+url_for('static', 'js/app.js')
+url_for('static', 'js/creator.js')
+url_for('static', 'libs/jquery-3.2.1.js')
+url_for('static', 'libs/vue.js')
+url_for('static', 'media/flask.png')
+url_for('static', 'media/vuejs.png')
     
 if __name__ == "__main__":
     app.config.from_object(Config.DevelopmentConfig)
