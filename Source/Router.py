@@ -233,19 +233,19 @@ def save():
 
 
 @app.route('/static/js/<path:path>')
-def send_static(path):
+def send_static_js(path):
     return send_from_directory('static/js', path)
 
 @app.route('/static/css/<path:path>')
-def send_static(path):
+def send_static_css(path):
     return send_from_directory('static/css', path)
 
 @app.route('/static/libs/<path:path>')
-def send_static(path):
+def send_static_libs(path):
     return send_from_directory('static/libs', path)
 
 @app.route('/static/media/<path:path>')
-def send_static(path):
+def send_static_media(path):
     return send_from_directory('static/media', path)
     
 @app.route('/static/<path:path>')
