@@ -1,5 +1,5 @@
 {
-  "surveyTitle": "",
+  "survey_title": "",
   "questions": [
     {
       "text": "Question One",
@@ -7,7 +7,7 @@
       "answers": [
         {
           "value": "Red",
-          "description": "Q1R3"
+          "description": "Q1R1"
         },
         {
           "value": "Blue",
@@ -78,7 +78,7 @@
       "constraints": []
     }
   ],
-  "surveyProperies": {
+  "survey_properties": {
     "before_text": "",
     "after_text": ""
   }
