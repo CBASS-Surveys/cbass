@@ -252,4 +252,8 @@ class Database:
         cursor = self._connection.cursor()
         cursor.execute("UPDATE survey_properties SET value = %s WHERE survey_id = %s AND name = %s",
                        (property_value, surveyID, property_name))
+        if cursor.statusmessage == 'UPDATE 0':
+            return False
+        else:
+            return True
         cursor.close()

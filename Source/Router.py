@@ -182,7 +182,6 @@ def create_question(data=None):
 # TODO: remove GET before production
 @app.route("/save_survey", methods=['POST', 'GET'])
 def save():
-    global resp_discluded
     if request.method == 'POST':
         data = json.loads(request.data)
     else:
