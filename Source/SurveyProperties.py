@@ -48,7 +48,7 @@ class SurveyProperties:
         if property_name in survey_properties_types:
             return self._database.updateSurveyProperty(survey_id, property_name, property_value)
         else:
-            print ("Error: property_name {%s} not found")
+            print ("Error: property_name {%s} not found", property_name)
             return False
 
     def publish(self, survey_id):

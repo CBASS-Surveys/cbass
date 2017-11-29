@@ -1,6 +1,7 @@
 #!/bin/python
 # coding: utf-8
 
+
 class MalformedSurvey(Exception):
     status_code = 402
 

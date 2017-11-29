@@ -5,7 +5,7 @@ import json
 import logging
 import os
 
-from flask import Flask, request, jsonify, redirect, send_from_directory
+from flask import Flask, request, jsonify, redirect
 from flask import render_template, url_for
 from werkzeug.contrib.cache import SimpleCache
 
@@ -229,6 +229,40 @@ def save():
                                                                                            question_to, resp_discluded)
     except KeyError:
         raise MalformedSurvey
+
+
+@app.route("/load_survey=<survey_id>", methods=['GET'])
+def load(survey_id):
+    property_manager = SurveyProperties()
+    survey_name = property_manager.get_survey_name(survey_id)
+    properties = property_manager.get_survey_properties(survey_id)
+    router.create_survey_taking_controller(survey_id)
+    router.survey_taking_controller.get_survey_questions()
+    questions = router.survey_taking_controller.survey_questions
+    json_questions = []
+    counter = 1
+    for question in questions[1:]:
+        answers = []
+        if question.answers:
+            for resp in question.answers:
+                answers += [{"value": resp.response_value, "description": resp.response_description}]
+
+        constraints = []
+        if question.constraints:
+            for const in question.constraints:
+                constraints += [
+                    {"question_from": const.question_from, "response_from": const.response_from, "question_to": counter,
+                     "type": const.type}]
+        if question.modify_constraints:
+            for const in question.modify_constraints:
+                constraints += [
+                    {"question_from": const.question_from, "response_from": const.response_from, "question_to": counter,
+                     "type": "modify", "responses_discluded": const.response_discluded}]
+        json_questions += [{"text": question.question_text, "type": question.question_type, "answers": answers,
+                            "constraints": constraints}]
+        counter += 1
+    return jsonify(survey_name=survey_name, questions=json_questions, **properties)
+
 
 if __name__ == "__main__":
     app.config.from_object(Config.DevelopmentConfig)
