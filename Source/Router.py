@@ -89,7 +89,7 @@ def get_properties():
     survey_properties = SurveyProperties()
     properties = survey_properties.get_survey_properties(survey_id)
     # Change this to get user's surveys later on
-    survey_name = survey_properties.get_survey_name()
+    survey_name = survey_properties.get_survey_name(survey_id)
     return jsonify(name=survey_name,
                    properties=properties)
 
