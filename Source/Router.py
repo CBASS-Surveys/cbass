@@ -86,8 +86,8 @@ def start_survey(survey_id):
 def get_properties():
     # survey_id = json.loads(request.data)
     survey_id = 2
-    survey_properties = SurveyProperties(survey_id)
-    properties = survey_properties.get_survey_properties()
+    survey_properties = SurveyProperties()
+    properties = survey_properties.get_survey_properties(survey_id)
     # Change this to get user's surveys later on
     survey_name = survey_properties.get_survey_name()
     return jsonify(name=survey_name,
