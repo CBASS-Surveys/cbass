@@ -4,8 +4,6 @@
 import json
 
 import yaml
-from flask.json import JSONEncoder
-from SurveyTakingEncoder import CustomEncoder, STCDecoder
 from Constraints import Constraint, ModifyConstraint
 from Database import Database
 from Question import Question
@@ -141,11 +139,3 @@ class SurveyTakingController:
         cursor_mod.close()
         question.set_constraints(constraints)
         question.set_modify_constraints(modify_constraints)
-
-
-if __name__ == "__main__":
-    stc = SurveyTakingController(2)
-    stc.get_survey_questions()
-    test = json.dumps(stc, cls=CustomEncoder)
-    print test
-    json.loads(test, cls=STCDecoder)
