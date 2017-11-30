@@ -50,6 +50,7 @@ var app = new Vue({
           console.log(data)
           startingProperties = data
           app.surveyProperies = data
+          document.title = data.name;
         }
       }
     })

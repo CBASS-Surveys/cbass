@@ -84,6 +84,16 @@ var test1 = {
   }
 };
 
+var trimConstraints = function(json){
+  var constraints = [];
+  for(var i = 0; i < json.questions.length; i++){
+    constraints.concat(json.questions.constraints);
+  }
+  var result = JSON.parse(JSON.stringify(json));
+  result.constraints = constraints;
+  return result;
+}
+
 var app = new Vue({
   el:"#vueApp",
   data:{
@@ -183,13 +193,12 @@ var app = new Vue({
           console.log(data)
         }
       })
-    }
-    ,
+    },
     publishSurvey: function(){
       $.ajax({
         url:'/save_survey',
         type: "POST",
-        data: JSON.stringify(this.survey),
+        data: JSON.stringify(trimConstraints(this.survey)),
         dataType: "JSON",
         contentType: "application/json; charset=utf-8",
         success: function(data){
