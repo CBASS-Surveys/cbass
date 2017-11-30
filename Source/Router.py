@@ -261,7 +261,13 @@ def load(survey_id):
         json_questions += [{"text": question.question_text, "type": question.question_type, "answers": answers,
                             "constraints": constraints}]
         counter += 1
-    return jsonify(survey_name=survey_name, questions=json_questions, properties=properties)
+    return jsonify(title=survey_name, questions=json_questions, properties=properties)
+
+
+app.route("/publish=<survey_id>", methods=['POST'])
+def publish(survey_id):
+    property_manager = SurveyProperties()
+    property_manager.publish(survey_id)
 
 
 if __name__ == "__main__":
