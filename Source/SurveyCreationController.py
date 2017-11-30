@@ -22,6 +22,7 @@ class SurveyCreationController:
 
         self.survey_id = None
         self.survey_questions = {}
+        self.zero_index = []
 
         with open("config.yml", 'r') as ymlfile:
             cfg = yaml.load(ymlfile)
@@ -40,8 +41,9 @@ class SurveyCreationController:
 
     def create_survey_question(self, text, question_type):
         if text and question_type in self.question_types:
-            question_id = self._database.createSurveyQuestion(self.survey_id, text, question_type)
+            (question_id,) = self._database.createSurveyQuestion(self.survey_id, text, question_type)
             self.survey_questions[question_id] = Question(question_id, text, question_type)
+            self.zero_index.append(Question(question_id, text, question_type))
             return question_id
         else:
             print("Either text is empty, or type isn't valid")
@@ -51,7 +53,7 @@ class SurveyCreationController:
         if not self.survey_questions[question_id]:
             print ("Error no question found")
         elif value and description:
-            response_id = self._database.createSurveyQuestionResponse(question_id, value, description)
+            (response_id,) = self._database.createSurveyQuestionResponse(question_id, value, description)
             response = Response(response_id, value, description)
             self.survey_questions[question_id].add_response(response)
         else:
@@ -59,11 +61,12 @@ class SurveyCreationController:
 
     def create_multiple_answers(self, question_id, responses):
         for resp in responses:
-            self.create_question_answer(question_id, str(resp), str(resp).lower())
+            print(str(question_id) + " " + str(resp) + " " + str(resp).lower())
+            self.create_question_answer(question_id, str(resp['value']), str(resp['description']))
 
     def create_question_constraint_standard(self, question_from_id, response_id, constraint_type, question_to_id):
-        question_from = self.survey_questions[question_from_id]
-        question_to = self.survey_questions[question_to_id]
+        question_from = self.zero_index[question_from_id]
+        question_to = self.zero_index[question_to_id]
         if not question_from:
             print ("Error no question_from found")
         elif not question_to:
@@ -81,8 +84,8 @@ class SurveyCreationController:
             question_to.add_constraint(const)
 
     def create_disclusion_constraint(self, question_from_id, response_from, question_to_id, responses_discluded):
-        question_from = self.survey_questions[question_from_id]
-        question_to = self.survey_questions[question_to_id]
+        question_from = self.zero_index[question_from_id]
+        question_to = self.zero_index[question_to_id]
         if not question_from:
             print ("Error no question_from found")
         elif not question_to:
