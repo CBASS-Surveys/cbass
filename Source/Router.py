@@ -6,7 +6,7 @@ import logging
 import os
 
 from flask import Flask, request, jsonify, redirect
-from flask import render_template, url_for
+from flask import render_template, url_for, session
 from werkzeug.contrib.cache import SimpleCache
 
 import Config
@@ -56,6 +56,7 @@ app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
 router = Router()
 
+app.secret_key = '7\xe81\x8a\x84\xd5\xc8\xf1vw\xde\x97\xaa\x8a\xf3"A\x14.\x0e~l\xa5\xd4+\x9b\x06Sf\x81\xdcJ'
 
 @app.route("/")
 def main_page():
@@ -74,11 +75,11 @@ def start_survey(survey_id):
     # 
     print("survey_id = " + survey_id)
     if survey_id:
-        router.create_survey_taking_controller(survey_id)
+        session['router'].create_survey_taking_controller(survey_id)
     else:
         print("Error")
 
-    router.survey_taking_controller.start_survey()
+    session['router'].survey_taking_controller.start_survey()
     return render_template("vueQuestions/index.html")
 
 
@@ -96,7 +97,7 @@ def get_properties():
 
 @app.route("/question_num=<question_num>", methods=['GET', 'POST'])
 def get_question(question_num):
-    question = router.survey_taking_controller.get_question(question_num)
+    question = session['router'].survey_taking_controller.get_question(question_num)
     answers = []
     for resp in question.answers:
         answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
@@ -111,7 +112,7 @@ def get_next_question():
     if request.method == 'POST':
         submit_response(request.data)
 
-    question = router.survey_taking_controller.get_next_question()
+    question = session['router'].survey_taking_controller.get_next_question()
 
     if question.question_type == "end":
         return jsonify(text=question.question_text,
@@ -132,7 +133,7 @@ def get_prev_question():
     # if request.method == 'POST':
     #    submit_response(request.data)
 
-    question = router.survey_taking_controller.get_prev_question()
+    question = session['router'].survey_taking_controller.get_prev_question()
     answers = []
     for resp in question.answers:
         answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
@@ -144,7 +145,7 @@ def get_prev_question():
 
 def submit_response(response):
     try:
-        router.survey_taking_controller.send_response_v2(response)
+        session['router'].survey_taking_controller.send_response_v2(response)
     except Exception:
         raise NoResponse('No response to submit', status_code=410)
 
@@ -173,10 +174,10 @@ def testing():
 def create_question(data=None):
     # this function handles an iterate method for adding questions or a single create_question from the view
     if data:
-        router.survey_creation_controller.create_survey_question(data[0], data[1])
+        session['router'].survey_creation_controller.create_survey_question(data[0], data[1])
     else:
         q_data = json.loads(request.data)
-        router.survey_creation_controller.create_survey_question(q_data[0], q_data[1])
+        session['router'].survey_creation_controller.create_survey_question(q_data[0], q_data[1])
 
 
 # TODO: remove GET before production
@@ -188,8 +189,8 @@ def save():
         json_data = open("surveyCreatorTestData.json").read()
         data = json.loads(json_data)
 
-    if router.survey_creation_controller is None:
-        router.create_survey_creation_controller()
+    if session['router'].survey_creation_controller is None:
+        session['router'].create_survey_creation_controller()
 
     try:
         keys = data.keys()
@@ -200,15 +201,15 @@ def save():
             survey_properties = data["survey_properties"]
         else:
             survey_properties = None
-        router.survey_creation_controller.create_survey(survey_name, author, survey_properties)
+        session['router'].survey_creation_controller.create_survey(survey_name, author, survey_properties)
         for question in data['questions']:
             q_keys = question.keys()
             question_type = str(question['type'])
-            question_id = router.survey_creation_controller.create_survey_question(str(question['text']), question_type)
+            question_id = session['router'].survey_creation_controller.create_survey_question(str(question['text']), question_type)
             if not question_type == 'free-response':
                 if 'answers' in q_keys:
                     answers = question['answers']
-                    router.survey_creation_controller.create_multiple_answers(question_id, answers)
+                    session['router'].survey_creation_controller.create_multiple_answers(question_id, answers)
                 if 'constraints' in q_keys:
                     for const in question['constraints']:
                         const_type = str(const['type'])
@@ -217,7 +218,7 @@ def save():
                             response_from = const['response_from']
                             question_to = const['question_to']
                             resp_discluded = const['responses_discluded']
-                            router.survey_creation_controller.create_question_constraint_standard(question_from,
+                            session['router'].survey_creation_controller.create_question_constraint_standard(question_from,
                                                                                                   response_from,
                                                                                                   const_type,
                                                                                                   question_to)
@@ -225,7 +226,7 @@ def save():
                             question_from = const['question_from']
                             response_from = const['response_from']
                             question_to = const['question_to']
-                            router.survey_creation_controller.create_disclusion_constraint(question_from, response_from,
+                            session['router'].survey_creation_controller.create_disclusion_constraint(question_from, response_from,
                                                                                            question_to, resp_discluded)
     except KeyError:
         raise KeyError
@@ -237,9 +238,9 @@ def load(survey_id):
     property_manager = SurveyProperties()
     survey_name = property_manager.get_survey_name(survey_id)
     properties = property_manager.get_survey_properties(survey_id)
-    router.create_survey_taking_controller(survey_id)
-    router.survey_taking_controller.get_survey_questions()
-    questions = router.survey_taking_controller.survey_questions
+    session['router'].create_survey_taking_controller(survey_id)
+    session['router'].survey_taking_controller.get_survey_questions()
+    questions = session['router'].survey_taking_controller.survey_questions
     json_questions = []
     counter = 1
     for question in questions[1:]:
