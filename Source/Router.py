@@ -73,14 +73,13 @@ def create_survey():
 @app.route("/survey_id=<survey_id>")
 def start_survey(survey_id):
     #
-    session['router'] = Router()
     print("survey_id = " + survey_id)
     if survey_id:
-        session['router'].create_survey_taking_controller(survey_id)
+        session['survey'] = SurveyTakingController(survey_id)
     else:
         print("Error")
 
-    session['router'].survey_taking_controller.start_survey()
+    session['survey'].start_survey()
     return render_template("vueQuestions/index.html")
 
 
@@ -98,7 +97,7 @@ def get_properties():
 
 @app.route("/question_num=<question_num>", methods=['GET', 'POST'])
 def get_question(question_num):
-    question = session['router'].survey_taking_controller.get_question(question_num)
+    question = session['survey'].get_question(question_num)
     answers = []
     for resp in question.answers:
         answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
@@ -113,7 +112,7 @@ def get_next_question():
     if request.method == 'POST':
         submit_response(request.data)
 
-    question = session['router'].survey_taking_controller.get_next_question()
+    question = session['survey'].get_next_question()
 
     if question.question_type == "end":
         return jsonify(text=question.question_text,
@@ -134,7 +133,7 @@ def get_prev_question():
     # if request.method == 'POST':
     #    submit_response(request.data)
 
-    question = session['router'].survey_taking_controller.get_prev_question()
+    question = session['survey'].get_prev_question()
     answers = []
     for resp in question.answers:
         answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
@@ -146,7 +145,7 @@ def get_prev_question():
 
 def submit_response(response):
     try:
-        session['router'].survey_taking_controller.send_response_v2(response)
+        session['survey'].send_response_v2(response)
     except Exception:
         raise NoResponse('No response to submit', status_code=410)
 
@@ -239,9 +238,9 @@ def load(survey_id):
     property_manager = SurveyProperties()
     survey_name = property_manager.get_survey_name(survey_id)
     properties = property_manager.get_survey_properties(survey_id)
-    session['router'].create_survey_taking_controller(survey_id)
-    session['router'].survey_taking_controller.get_survey_questions()
-    questions = session['router'].survey_taking_controller.survey_questions
+    session['survey'] = SurveyTakingController(survey_id)
+    session['survey'].get_survey_questions()
+    questions = session['survey'].survey_questions
     json_questions = []
     counter = 1
     for question in questions[1:]:
