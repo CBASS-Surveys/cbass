@@ -122,10 +122,10 @@ def get_next_question():
     if question.question_type == "end":
         return jsonify(text=question.question_text,
                        type=question.question_type)
-
     answers = []
-    for resp in question.answers:
-        answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
+    if question.answers:
+        for resp in question.answers:
+            answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
 
     session['survey'] = json.dumps(survey, cls=CustomEncoder)
     return jsonify(text=question.question_text,
