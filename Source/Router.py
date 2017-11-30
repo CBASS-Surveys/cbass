@@ -8,6 +8,7 @@ import os
 from flask import Flask, request, jsonify, redirect
 from flask import render_template, url_for, session
 from werkzeug.contrib.cache import SimpleCache
+from flask.ext.session import Session
 
 import uuid
 import Config
@@ -53,9 +54,12 @@ logging.basicConfig(
 
 # template_dir = os.path.abspath('public')
 template_dir = os.path.dirname(__file__) + "/public"
+SESSION_TYPE='filesystem'
+SESSION_USE_SIGNER=True
+SESSION_DIRECTORY='/var/www/sessions/'
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
-
+Session(app)
 
 app.secret_key = '7\xe81\x8a\x84\xd5\xc8\xf1vw\xde\x97\xaa\x8a\xf3"A\x14.\x0e~l\xa5\xd4+\x9b\x06Sf\x81\xdcJ'
 
