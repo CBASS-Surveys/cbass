@@ -26,8 +26,8 @@
 <div id="app-4">
     <div v-if="mode === 'start'">
         <div class="topTextContainer">
-            <p class="bigText">{{surveyProperies.name}}</p>
-            <p class="littleText">{{surveyProperies.properties.before_text}}</p>
+            <div class="bigText">{{surveyProperies.name}}</div>
+            <div class="littleText">{{surveyProperies.properties.before_text}}</div>
         </div>
         <div class="buttonContainer">
             <div class="navButton" style="background:blue;" v-on:click="startSurvey">START</div>
@@ -38,7 +38,7 @@
         <div>
             <div>
                 <div class="topTextContainer">
-                    <p class="bigText" :class="{ notAnswered: !isAnswered }"> {{ question.text }} </p>
+                    <div class="bigText" :class="{ notAnswered: !isAnswered }"> {{ question.text }} </div>
                 </div>
                 <div id="answerContainer">
 
