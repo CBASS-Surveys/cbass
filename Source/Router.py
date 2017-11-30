@@ -54,7 +54,7 @@ logging.basicConfig(
 template_dir = os.path.dirname(__file__) + "/public"
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
-router = Router()
+
 
 app.secret_key = '7\xe81\x8a\x84\xd5\xc8\xf1vw\xde\x97\xaa\x8a\xf3"A\x14.\x0e~l\xa5\xd4+\x9b\x06Sf\x81\xdcJ'
 
@@ -72,7 +72,8 @@ def create_survey():
 
 @app.route("/survey_id=<survey_id>")
 def start_survey(survey_id):
-    # 
+    #
+    session['router'] = Router()
     print("survey_id = " + survey_id)
     if survey_id:
         session['router'].create_survey_taking_controller(survey_id)
