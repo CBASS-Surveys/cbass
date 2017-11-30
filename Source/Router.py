@@ -17,7 +17,7 @@ from NoResponse import NoResponse
 from SurveyCreationController import SurveyCreationController
 from SurveyProperties import SurveyProperties
 from SurveyTakingController import SurveyTakingController
-
+from SurveyTakingEncoder import CustomEncoder, from_json
 
 # Avoid jinja and vue conflict
 class CustomFlask(Flask):
@@ -73,14 +73,15 @@ def create_survey():
 
 @app.route("/survey_id=<survey_id>")
 def start_survey(survey_id):
-    #
+    survey = None
     print("survey_id = " + survey_id)
     if survey_id:
-        session['survey'] = SurveyTakingController(survey_id)
+        survey = SurveyTakingController(survey_id)
     else:
         print("Error")
     session['session_id'] = uuid.uuid4()
-    session['survey'].start_survey(session['session_id'])
+    survey.start_survey(session['session_id'])
+    session['survey'] = json.dumps(survey, cls=CustomEncoder)
     return render_template("vueQuestions/index.html")
 
 
@@ -98,7 +99,9 @@ def get_properties():
 
 @app.route("/question_num=<question_num>", methods=['GET', 'POST'])
 def get_question(question_num):
-    question = session['survey'].get_question(question_num)
+    survey = from_json(session['survey'])
+    question = survey.get_question(question_num)
+    session['survey'] = json.dumps(survey, cls=CustomEncoder)
     answers = []
     for resp in question.answers:
         answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
@@ -110,10 +113,11 @@ def get_question(question_num):
 
 @app.route("/get_next_question", methods=['GET', 'POST'])
 def get_next_question():
+    survey = from_json(session['survey'])
     if request.method == 'POST':
         submit_response(request.data)
 
-    question = session['survey'].get_next_question()
+    question = survey.get_next_question()
 
     if question.question_type == "end":
         return jsonify(text=question.question_text,
@@ -123,6 +127,7 @@ def get_next_question():
     for resp in question.answers:
         answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
 
+    session['survey'] = json.dumps(survey, cls=CustomEncoder)
     return jsonify(text=question.question_text,
                    type=question.question_type,
                    answers=answers)
@@ -133,12 +138,13 @@ def get_prev_question():
     # Future Implementation
     # if request.method == 'POST':
     #    submit_response(request.data)
-
+    survey = from_json(session['survey'])
     question = session['survey'].get_prev_question()
     answers = []
     for resp in question.answers:
         answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
 
+    session['survey'] = json.dumps(survey, cls=CustomEncoder)
     return jsonify(text=question.question_text,
                    type=question.question_type,
                    answers=answers)
@@ -146,7 +152,9 @@ def get_prev_question():
 
 def submit_response(response):
     try:
-        session['survey'].send_response_v2(response)
+        survey = from_json(session['survey'])
+        survey.send_response_v2(response)
+        session['survey'] = json.dumps(survey, cls=CustomEncoder)
     except Exception:
         raise NoResponse('No response to submit', status_code=410)
 
