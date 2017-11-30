@@ -2,10 +2,10 @@
 # coding: utf-8
 
 import json
-import uuid
 
 import yaml
-
+from flask.json import JSONEncoder
+from SurveyTakingEncoder import CustomEncoder, STCDecoder
 from Constraints import Constraint, ModifyConstraint
 from Database import Database
 from Question import Question
@@ -142,28 +142,10 @@ class SurveyTakingController:
         question.set_constraints(constraints)
         question.set_modify_constraints(modify_constraints)
 
-    def to_json(self):
-        json_questions = []
-        for question in self.survey_questions:
-            answers = []
-            if question.answers:
-                for resp in question.answers:
-                    answers += [{"value": resp.response_value, "description": resp.response_description}]
-            constraints = []
-            if question.constraints:
-                for const in question.constraints:
-                    constraints += [
-                        {"question_from": const.question_from, "response_from": const.response_from,
-                         "question_to": const.question_to,
-                         "type": const.type}]
-            if question.modify_constraints:
-                for const in question.modify_constraints:
-                    constraints += [
-                        {"question_from": const.question_from, "response_from": const.response_from,
-                         "question_to": const.question_to,
-                         "type": "modify", "responses_discluded": const.response_discluded}]
-            json_questions += [{"text": question.question_text, "type": question.question_type, "answers": answers,
-                                "constraints": constraints}]
-        json_STC = {"response_id": self.response_id, "current_question": self.current_question,
-                    "question_number": self.question_number, "survey_id": self.survey_id, "questions": json_questions}
-        return json.dumps(json_STC)
+
+if __name__ == "__main__":
+    stc = SurveyTakingController(2)
+    stc.get_survey_questions()
+    test = json.dumps(stc, cls=CustomEncoder)
+    print test
+    json.loads(test, cls=STCDecoder)

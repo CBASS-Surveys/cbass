@@ -9,6 +9,7 @@ from flask import Flask, request, jsonify, redirect
 from flask import render_template, url_for, session
 from werkzeug.contrib.cache import SimpleCache
 
+import uuid
 import Config
 # from Errors import NoResponse, MalformedSurvey
 from MalformedSurvey import MalformedSurvey
@@ -78,8 +79,8 @@ def start_survey(survey_id):
         session['survey'] = SurveyTakingController(survey_id)
     else:
         print("Error")
-
-    session['survey'].start_survey(session.sid)
+    session['session_id'] = uuid.uuid4()
+    session['survey'].start_survey(session['session_id'])
     return render_template("vueQuestions/index.html")
 
 
