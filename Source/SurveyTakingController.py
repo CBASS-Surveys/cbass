@@ -147,7 +147,6 @@ class SurveyTakingController:
         json_questions = []
         for question in self.survey_questions:
             answers = []
-            i = 0
             if question.answers:
                 for resp in question.answers:
                     answers += [{"value": resp.response_value, "description": resp.response_description}]
@@ -155,12 +154,14 @@ class SurveyTakingController:
             if question.constraints:
                 for const in question.constraints:
                     constraints += [
-                        {"question_from": const.question_from, "response_from": const.response_from, "question_to": const.question_to,
+                        {"question_from": const.question_from, "response_from": const.response_from,
+                         "question_to": const.question_to,
                          "type": const.type}]
             if question.modify_constraints:
                 for const in question.modify_constraints:
                     constraints += [
-                        {"question_from": const.question_from, "response_from": const.response_from, "question_to": const.question_to,
+                        {"question_from": const.question_from, "response_from": const.response_from,
+                         "question_to": const.question_to,
                          "type": "modify", "responses_discluded": const.response_discluded}]
             json_questions += [{"text": question.question_text, "type": question.question_type, "answers": answers,
                                 "constraints": constraints}]
