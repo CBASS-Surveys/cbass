@@ -1,5 +1,5 @@
 var test1 = {
-  "survey_title": "Test Survey",
+  "title": "Test Survey",
   "questions": [
     {
       "text": "Question One",
@@ -78,7 +78,7 @@ var test1 = {
       "constraints": []
     }
   ],
-  "survey_properties": {
+  "properties": {
     "before_text": "Hello, please take the survey",
     "after_text": "Goodbye"
   }
@@ -88,9 +88,9 @@ var app = new Vue({
   el:"#vueApp",
   data:{
     survey:{
-      "survey_title":"",
+      "title":"",
       "questions":[],
-      "survey_properties":{
+      "properties":{
         "before_text":"",
         "after_text":""
       }
@@ -153,7 +153,6 @@ var app = new Vue({
         "responses_discluded":[]
       })
     },
-
     //Caution: Deletion of data can cause problems with constraint referencing.
     //Look into solutions to this problem
     deleteQuestion: function(qIndex){
@@ -185,8 +184,28 @@ var app = new Vue({
         }
       })
     }
+    ,
+    publishSurvey: function(){
+      $.ajax({
+        url:'/save_survey',
+        type: "POST",
+        data: JSON.stringify(this.survey),
+        dataType: "JSON",
+        contentType: "application/json; charset=utf-8",
+        success: function(data){
+          console.log(data)
+        }
+      })
+    }
   },
   mounted: function(){
-    this.getSavedJSON(test1);
+    /*$.ajax({
+      url:'/load_survey=2',
+      type: "GET",
+      contentType: "application/json; charset=utf-8",
+      success: function(data){
+        app.getSavedJSON(data);
+      }
+    })*/
   }
 })
