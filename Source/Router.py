@@ -79,7 +79,7 @@ def start_survey(survey_id):
     else:
         print("Error")
 
-    session['survey'].start_survey()
+    session['survey'].start_survey(session.sid)
     return render_template("vueQuestions/index.html")
 
 

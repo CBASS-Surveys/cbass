@@ -35,9 +35,8 @@ class SurveyTakingController:
         # dump(hostname, username, password)
         self._database = Database(db, hostname, username, password)
 
-    def start_survey(self):
+    def start_survey(self, session_id):
 
-        session_id = uuid.uuid4()
         response_struct = self._database.createSurveyResponse(self.survey_id, str(session_id))
 
         self.response_id = response_struct[0]
@@ -143,7 +142,7 @@ class SurveyTakingController:
         question.set_constraints(constraints)
         question.set_modify_constraints(modify_constraints)
 
-    def serialize(self):
+    def to_json(self):
         json_questions = []
         for question in self.survey_questions:
             answers = []
@@ -165,4 +164,6 @@ class SurveyTakingController:
                          "type": "modify", "responses_discluded": const.response_discluded}]
             json_questions += [{"text": question.question_text, "type": question.question_type, "answers": answers,
                                 "constraints": constraints}]
-        return json.dumps(json_questions)
+        json_STC = {"response_id": self.response_id, "current_question": self.current_question,
+                    "question_number": self.question_number, "survey_id": self.survey_id, "questions": json_questions}
+        return json.dumps(json_STC)
