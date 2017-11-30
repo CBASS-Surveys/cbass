@@ -228,9 +228,10 @@ def save():
                             router.survey_creation_controller.create_disclusion_constraint(question_from, response_from,
                                                                                            question_to, resp_discluded)
     except KeyError:
-        raise MalformedSurvey
+        raise KeyError
 
 
+# TODO: Not working currently
 @app.route("/load_survey=<survey_id>", methods=['GET'])
 def load(survey_id):
     property_manager = SurveyProperties()
@@ -243,20 +244,26 @@ def load(survey_id):
     counter = 1
     for question in questions[1:]:
         answers = []
+        ids = {}
+        i = 0
         if question.answers:
             for resp in question.answers:
                 answers += [{"value": resp.response_value, "description": resp.response_description}]
-
+                ids[resp.response_id] = i
+                i += 1
         constraints = []
         if question.constraints:
             for const in question.constraints:
+                response_from = ids[const.response_from]
                 constraints += [
-                    {"question_from": const.question_from, "response_from": const.response_from, "question_to": counter,
+                    {"question_from": const.question_from, "response_from": response_from, "question_to": counter,
                      "type": const.type}]
         if question.modify_constraints:
             for const in question.modify_constraints:
+                response_from = ids[const.response_from]
+                # TODO load responses discluded
                 constraints += [
-                    {"question_from": const.question_from, "response_from": const.response_from, "question_to": counter,
+                    {"question_from": const.question_from, "response_from": response_from, "question_to": counter,
                      "type": "modify", "responses_discluded": const.response_discluded}]
         json_questions += [{"text": question.question_text, "type": question.question_type, "answers": answers,
                             "constraints": constraints}]
@@ -265,6 +272,8 @@ def load(survey_id):
 
 
 app.route("/publish=<survey_id>", methods=['POST'])
+
+
 def publish(survey_id):
     property_manager = SurveyProperties()
     property_manager.publish(survey_id)

@@ -34,7 +34,7 @@ class Question:
         return len(self.modify_constraints)
 
     def add_response(self, response):
-        self.response += [response]
+        self.responses += [response]
 
     def get_response_ids(self):
         response_ids = []
