@@ -290,11 +290,11 @@ def publish(survey_id):
     property_manager.publish(survey_id)
 
 
-@app.route("/qr_code/<path>", methods=['GET'])
-def get_qrcode(path):
+@app.route("/qr_code/<survey_id>", methods=['GET'])
+def get_qrcode(survey_id):
     # please get /qrcode?data=<qrcode_data>
     return send_file(
-        qrcode(path, mode='raw'),
+        qrcode(url_for('start_survey', survey_id=survey_id, _external=True), mode='raw'),
         mimetype='image/png'
     )
 
