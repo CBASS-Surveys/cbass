@@ -186,7 +186,7 @@ var app = new Vue({
       $.ajax({
         url:'/save_survey',
         type: "POST",
-        data: JSON.stringify(this.survey),
+        data: JSON.stringify(trimConstraints(this.survey)),
         dataType: "JSON",
         contentType: "application/json; charset=utf-8",
         success: function(data){
