@@ -221,7 +221,7 @@ def save():
                 if 'answers' in q_keys:
                     answers = question['answers']
                     survey_creator.create_multiple_answers(question_id, answers)
-        for const in question['constraints']:
+        for const in data['constraints']:
             const_type = str(const['type'])
             if const_type == 'modify':
                 question_from = const['question_from']
