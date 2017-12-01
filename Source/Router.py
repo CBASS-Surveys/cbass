@@ -207,6 +207,7 @@ def save():
         keys = data.keys()
         survey_name = data["title"]
         author = "Author"
+        print keys
 
         if 'properties' in keys:
             survey_properties = data["properties"]
