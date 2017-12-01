@@ -155,7 +155,7 @@
     - To reduce the percentage of the grade allocated to exams
     - To reduce the percentage of the grade allocated to the project
     - To reduce the percentage of the grade allocated to in-class activities
-13. Regarding in-class exercises, should there be:
+13. Regarding in-class exercises, should there be: -- Single
     1. More than we did
     2. About the same number that we did
     3. Fewer than we did
