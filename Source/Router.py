@@ -235,7 +235,6 @@ def save():
                 survey_creator.create_disclusion_constraint(question_from, response_from, question_to, resp_discluded)
     except KeyError:
         raise KeyError
-        print("wha")
         return jsonify(flag=False)
     print (str(survey_creator.survey_id))
     return jsonify(flag=True, survey_id=survey_creator.survey_id)
@@ -281,9 +280,7 @@ def load(survey_id):
     return jsonify(title=survey_name, questions=json_questions, properties=properties)
 
 
-app.route("/publish=<survey_id>", methods=['POST'])
-
-
+@app.route("/publish=<survey_id>", methods=['POST'])
 def publish(survey_id):
     property_manager = SurveyProperties()
     property_manager.publish(survey_id)
