@@ -128,7 +128,7 @@ def get_next_question():
     answers = []
     if question.answers:
         for resp in question.answers:
-            answers += [{"response_id": resp.response_id, "response_value": resp.response_value}]
+            answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
 
     session['survey'] = json.dumps(survey, cls=CustomEncoder)
     return jsonify(text=question.question_text,
@@ -240,7 +240,7 @@ def save():
         return jsonify(flag=False)
     print (str(survey_creator.survey_id))
     path = ("\"localhost:8000/survey/{0}\"".format(str(survey_creator.survey_id)))
-    return redirect(url_for('get_qrcode', path=path))
+    return redirect(url_for('get_qrcode', survey_id=survey_creator.survey_id))
     # return jsonify(flag=True, survey_id=survey_creator.survey_id)
 
 

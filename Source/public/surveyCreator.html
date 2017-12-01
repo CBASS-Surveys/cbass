@@ -70,9 +70,9 @@
                 </div>
                 <div class="answer" v-for="(answer, aIndex) in question.answers">
                     <div style="width:5%">{{ aIndex + 1 }}</div>
-                    <input style="width:20%" type="text" class="answerDescriptionInput"
+                    <input style="width:70%;margin-right:5%" type="text" class="answerDescriptionInput"
                            v-model="question.answers[aIndex].description"></input>
-                    <input style="width:70%;margin-right:5%" type="text" class="answerValueInput"
+                    <input style="width:20%" type="text" class="answerValueInput"
                            v-model="question.answers[aIndex].value"></input>
                            <button class="removeButton" v-on:click="deleteAnswer(qIndex, aIndex)">X</button>
                 </div>
