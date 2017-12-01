@@ -126,7 +126,7 @@ def get_next_question():
     answers = []
     if question.answers:
         for resp in question.answers:
-            answers += [{"response_id": resp.response_id, "response_value": resp.response_description}]
+            answers += [{"response_id": resp.response_id, "response_value": resp.response_value}]
 
     session['survey'] = json.dumps(survey, cls=CustomEncoder)
     return jsonify(text=question.question_text,
@@ -219,29 +219,26 @@ def save():
                 if 'answers' in q_keys:
                     answers = question['answers']
                     survey_creator.create_multiple_answers(question_id, answers)
-                if 'constraints' in q_keys:
-                    for const in question['constraints']:
-                        const_type = str(const['type'])
-                        if const_type == 'modify':
-                            question_from = const['question_from']
-                            response_from = const['response_from']
-                            question_to = const['question_to']
-                            survey_creator.create_question_constraint_standard(
-                                question_from,
-                                response_from,
-                                const_type,
-                                question_to)
-                        elif const_type == 'forbids':
-                            question_from = const['question_from']
-                            response_from = const['response_from']
-                            question_to = const['question_to']
-                            resp_discluded = const['responses_discluded']
-                            survey_creator.create_disclusion_constraint(question_from,
-                                                                        response_from,
-                                                                        question_to,
-                                                                        resp_discluded)
+        for const in question['constraints']:
+            const_type = str(const['type'])
+            if const_type == 'modify':
+                question_from = const['question_from']
+                response_from = const['response_from']
+                question_to = const['question_to']
+                survey_creator.create_question_constraint_standard(question_from, response_from, const_type,
+                                                                   question_to)
+            elif const_type == 'forbids':
+                question_from = const['question_from']
+                response_from = const['response_from']
+                question_to = const['question_to']
+                resp_discluded = const['responses_discluded']
+                survey_creator.create_disclusion_constraint(question_from, response_from, question_to, resp_discluded)
     except KeyError:
         raise KeyError
+        print("wha")
+        return jsonify(flag=False)
+    print (str(survey_creator.survey_id))
+    return jsonify(flag=True, survey_id=survey_creator.survey_id)
 
 
 # TODO: Not working currently

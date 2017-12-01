@@ -71,7 +71,7 @@ class SurveyTakingController:
             self.get_constraints_for_question(question)
             self.survey_questions.insert(qId, question)
 
-        self.question_number = 1
+        self.question_number = 0
         # load up the first question
         self.current_question = self.survey_questions[1]
 

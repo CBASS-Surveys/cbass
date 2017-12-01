@@ -61,7 +61,6 @@ class SurveyCreationController:
 
     def create_multiple_answers(self, question_id, responses):
         for resp in responses:
-            print(str(question_id) + " " + str(resp) + " " + str(resp).lower())
             self.create_question_answer(question_id, str(resp['value']), str(resp['description']))
 
     def create_question_constraint_standard(self, question_from_id, response_id, constraint_type, question_to_id):
