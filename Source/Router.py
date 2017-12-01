@@ -209,6 +209,7 @@ def save():
         author = "Author"
         print keys
 
+        constraints = []
         if 'properties' in keys:
             survey_properties = data["properties"]
         else:
@@ -218,12 +219,14 @@ def save():
             q_keys = question.keys()
             question_type = str(question['type'])
             question_id = survey_creator.create_survey_question(str(question['text']), question_type)
+            if 'constraints' in q_keys:
+                constraints += question['constraints']
             if not question_type == 'free-response':
                 if 'answers' in q_keys:
                     answers = question['answers']
                     survey_creator.create_multiple_answers(question_id, answers)
-        print data['constraints']
-        for const in data['constraints']:
+        print constraints
+        for const in constraints:
             print const
             const_type = str(const['type'])
             if const_type == 'modify':
