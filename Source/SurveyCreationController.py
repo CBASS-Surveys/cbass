@@ -72,7 +72,7 @@ class SurveyCreationController:
             print ("Error no question_to found")
         elif constraint_type not in self.constraint_standards:
             print("Error no constraint of that type found")
-        elif response_id not in question_from.get_response_ids:
+        elif response_id not in question_from.get_response_ids():
             print("Error no response id found in the question_form")
         # All good, lets make a constraint!
         else:
@@ -89,9 +89,9 @@ class SurveyCreationController:
             print ("Error no question_from found")
         elif not question_to:
             print ("Error not question_to found")
-        elif response_from not in question_from.get_response_values:
+        elif response_from not in question_from.get_response_values():
             print("Error no response value found in the question_form")
-        elif responses_discluded not in question_to.get_response_values:
+        elif responses_discluded not in question_to.get_response_values():
             print("Error one or many or many responses_discluded do not exist")
         # Wow this a good looking constraint, lets send it!
         else:
