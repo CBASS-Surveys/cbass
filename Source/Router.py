@@ -19,6 +19,7 @@ from SurveyProperties import SurveyProperties
 from SurveyTakingController import SurveyTakingController
 from SurveyTakingEncoder import CustomEncoder, from_json
 
+
 # Avoid jinja and vue conflict
 class CustomFlask(Flask):
     jinja_options = Flask.jinja_options.copy()
@@ -56,13 +57,13 @@ template_dir = os.path.dirname(__file__) + "/public"
 app = CustomFlask("CBASS", template_folder=template_dir)
 cache = SimpleCache()
 
-
 app.secret_key = '7\xe81\x8a\x84\xd5\xc8\xf1vw\xde\x97\xaa\x8a\xf3"A\x14.\x0e~l\xa5\xd4+\x9b\x06Sf\x81\xdcJ'
+
 
 @app.route("/")
 def main_page():
     survey_id = 2
-
+    session['survey_id'] = survey_id
     return redirect(url_for('start_survey', survey_id=survey_id))
 
 
@@ -71,8 +72,9 @@ def create_survey():
     return render_template('surveyCreator.html')
 
 
-@app.route("/survey_id=<survey_id>")
+@app.route("/survey/<survey_id>")
 def start_survey(survey_id):
+    session['survey_id'] = survey_id
     survey = None
     print("survey_id = " + survey_id)
     if survey_id:
@@ -87,8 +89,7 @@ def start_survey(survey_id):
 
 @app.route("/get_properties")
 def get_properties():
-    # survey_id = json.loads(request.data)
-    survey_id = 2
+    survey_id = session['survey_id']
     survey_properties = SurveyProperties()
     properties = survey_properties.get_survey_properties(survey_id)
     # Change this to get user's surveys later on
@@ -198,27 +199,26 @@ def save():
         json_data = open("surveyCreatorTestData.json").read()
         data = json.loads(json_data)
 
-    if session['router'].survey_creation_controller is None:
-        session['router'].create_survey_creation_controller()
+    survey_creator = SurveyCreationController()
 
     try:
         keys = data.keys()
-        survey_name = data["survey_title"]
+        survey_name = data["title"]
         author = "Author"
 
-        if 'survey_properties' in keys:
-            survey_properties = data["survey_properties"]
+        if 'properties' in keys:
+            survey_properties = data["properties"]
         else:
-            survey_properties = None
-        session['router'].survey_creation_controller.create_survey(survey_name, author, survey_properties)
+            survey_properties = []
+        survey_creator.create_survey(survey_name, author, survey_properties)
         for question in data['questions']:
             q_keys = question.keys()
             question_type = str(question['type'])
-            question_id = session['router'].survey_creation_controller.create_survey_question(str(question['text']), question_type)
+            question_id = survey_creator.create_survey_question(str(question['text']), question_type)
             if not question_type == 'free-response':
                 if 'answers' in q_keys:
                     answers = question['answers']
-                    session['router'].survey_creation_controller.create_multiple_answers(question_id, answers)
+                    survey_creator.create_multiple_answers(question_id, answers)
                 if 'constraints' in q_keys:
                     for const in question['constraints']:
                         const_type = str(const['type'])
@@ -226,17 +226,20 @@ def save():
                             question_from = const['question_from']
                             response_from = const['response_from']
                             question_to = const['question_to']
-                            resp_discluded = const['responses_discluded']
-                            session['router'].survey_creation_controller.create_question_constraint_standard(question_from,
-                                                                                                  response_from,
-                                                                                                  const_type,
-                                                                                                  question_to)
+                            survey_creator.create_question_constraint_standard(
+                                question_from,
+                                response_from,
+                                const_type,
+                                question_to)
                         elif const_type == 'forbids':
                             question_from = const['question_from']
                             response_from = const['response_from']
                             question_to = const['question_to']
-                            session['router'].survey_creation_controller.create_disclusion_constraint(question_from, response_from,
-                                                                                           question_to, resp_discluded)
+                            resp_discluded = const['responses_discluded']
+                            survey_creator.create_disclusion_constraint(question_from,
+                                                                        response_from,
+                                                                        question_to,
+                                                                        resp_discluded)
     except KeyError:
         raise KeyError
 
