@@ -110,6 +110,7 @@ var app = new Vue({
     },
     //Change to "previous" question
     getLastQuestion: function(){
+      alert("Ha Ha! ...no...")
       /*
 
       TODO: Implement previous question functionality

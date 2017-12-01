@@ -15,14 +15,6 @@
 
 </script>
 
-<style>
-
-.notAnswered{
-    border-bottom: red solid 5px;
-}
-
-</style>
-
 <div id="app-4">
     <div v-if="mode === 'start'">
         <div class="topTextContainer">
@@ -30,7 +22,7 @@
             <div class="littleText">{{surveyProperies.properties.before_text}}</div>
         </div>
         <div class="buttonContainer">
-            <div class="navButton" style="background:blue;" v-on:click="startSurvey">START</div>
+            <div class="navButton" style="background:#007EA7;" v-on:click="startSurvey">START</div>
         </div>
     </div>
     <div v-if="mode === 'survey'">
@@ -38,7 +30,7 @@
         <div>
             <div>
                 <div class="topTextContainer">
-                    <div class="bigText" :class="{ notAnswered: !isAnswered }"> {{ question.text }} </div>
+                    <div class="bigText" id="questionContainer" :class="{ notAnswered: !isAnswered }"> {{ question.text }} </div>
                 </div>
                 <div id="answerContainer">
 
@@ -72,8 +64,8 @@
             </div>
         </div>
         <div class="buttonContainer">
-            <div class="navButton" style="background:red;" v-on:click="getLastQuestion">BACK</div>
-            <div class="navButton" style="background:green" v-on:click="getNextQuestion">NEXT</div>
+            <div class="navButton" style="background:#e27878;" v-on:click="getLastQuestion">BACK</div>
+            <div class="navButton" style="background:#117069" v-on:click="getNextQuestion">NEXT</div>
         </div>
     </div>
 

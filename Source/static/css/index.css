@@ -2,6 +2,7 @@ html, body{
   margin:0;
   padding:0;
   height:100%;
+  background: #CCDBDC;
 }
 
 #app-4 {
@@ -34,9 +35,9 @@ html, body{
     float:left;
     width:95%;
     margin-left: 2.5%;
-    background-color:#EFEFEF;
+    background-color:#9AD1D4;
     border-radius:4px;
-    border:1px solid #D0D0D0;
+    border:1px solid #117069;
     overflow:auto;
 
 }
@@ -82,4 +83,12 @@ display: none;
   width: 100%;
   position:absolute;
   bottom:0;
+}
+
+#questionContainer{
+  border-bottom:  #117069 solid 5px;
+}
+
+.notAnswered{
+    border-bottom: #e27878 solid 5px !important;
 }
