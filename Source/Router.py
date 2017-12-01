@@ -5,7 +5,8 @@ import json
 import logging
 import os
 
-from flask import Flask, request, jsonify, redirect
+from flask_qrcode import QRcode
+from flask import Flask, request, jsonify, redirect, send_file
 from flask import render_template, url_for, session
 from werkzeug.contrib.cache import SimpleCache
 
@@ -55,6 +56,7 @@ logging.basicConfig(
 # template_dir = os.path.abspath('public')
 template_dir = os.path.dirname(__file__) + "/public"
 app = CustomFlask("CBASS", template_folder=template_dir)
+qrcode = QRcode(app)
 cache = SimpleCache()
 
 app.secret_key = '7\xe81\x8a\x84\xd5\xc8\xf1vw\xde\x97\xaa\x8a\xf3"A\x14.\x0e~l\xa5\xd4+\x9b\x06Sf\x81\xdcJ'
@@ -237,7 +239,9 @@ def save():
         raise KeyError
         return jsonify(flag=False)
     print (str(survey_creator.survey_id))
-    return jsonify(flag=True, survey_id=survey_creator.survey_id)
+    path = ("\"localhost:8000/survey/{0}\"".format(str(survey_creator.survey_id)))
+    return redirect(url_for('get_qrcode', path=path))
+    # return jsonify(flag=True, survey_id=survey_creator.survey_id)
 
 
 # TODO: Not working currently
@@ -284,6 +288,15 @@ def load(survey_id):
 def publish(survey_id):
     property_manager = SurveyProperties()
     property_manager.publish(survey_id)
+
+
+@app.route("/qr_code/<survey_id>", methods=['GET'])
+def get_qrcode(survey_id):
+    # please get /qrcode?data=<qrcode_data>
+    return send_file(
+        qrcode(url_for('start_survey', survey_id=survey_id, _external=True), mode='raw'),
+        mimetype='image/png'
+    )
 
 
 if __name__ == "__main__":
