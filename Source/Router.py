@@ -5,7 +5,8 @@ import json
 import logging
 import os
 
-from flask import Flask, request, jsonify, redirect
+from flask_qrcode import QRcode
+from flask import Flask, request, jsonify, redirect, send_file
 from flask import render_template, url_for, session
 from werkzeug.contrib.cache import SimpleCache
 
@@ -55,6 +56,7 @@ logging.basicConfig(
 # template_dir = os.path.abspath('public')
 template_dir = os.path.dirname(__file__) + "/public"
 app = CustomFlask("CBASS", template_folder=template_dir)
+qrcode = QRcode(app)
 cache = SimpleCache()
 
 app.secret_key = '7\xe81\x8a\x84\xd5\xc8\xf1vw\xde\x97\xaa\x8a\xf3"A\x14.\x0e~l\xa5\xd4+\x9b\x06Sf\x81\xdcJ'
@@ -235,10 +237,11 @@ def save():
                 survey_creator.create_disclusion_constraint(question_from, response_from, question_to, resp_discluded)
     except KeyError:
         raise KeyError
-        print("wha")
         return jsonify(flag=False)
     print (str(survey_creator.survey_id))
-    return jsonify(flag=True, survey_id=survey_creator.survey_id)
+    path = ("\"localhost:8000/survey/{0}\"".format(str(survey_creator.survey_id)))
+    return redirect(url_for('get_qrcode', path=path))
+    # return jsonify(flag=True, survey_id=survey_creator.survey_id)
 
 
 # TODO: Not working currently
@@ -281,12 +284,19 @@ def load(survey_id):
     return jsonify(title=survey_name, questions=json_questions, properties=properties)
 
 
-app.route("/publish=<survey_id>", methods=['POST'])
-
-
+@app.route("/publish=<survey_id>", methods=['POST'])
 def publish(survey_id):
     property_manager = SurveyProperties()
     property_manager.publish(survey_id)
+
+
+@app.route("/qr_code/<path>", methods=['GET'])
+def get_qrcode(path):
+    # please get /qrcode?data=<qrcode_data>
+    return send_file(
+        qrcode(path, mode='raw'),
+        mimetype='image/png'
+    )
 
 
 if __name__ == "__main__":
