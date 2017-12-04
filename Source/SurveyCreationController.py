@@ -66,40 +66,43 @@ class SurveyCreationController:
     def create_question_constraint_standard(self, question_from_id, response_id, constraint_type, question_to_id):
         question_from = self.zero_index[question_from_id]
         question_to = self.zero_index[question_to_id]
+        response_absolute = question_to.get_response_values()[response_id]
         if not question_from:
             print ("Error no question_from found")
         elif not question_to:
             print ("Error no question_to found")
-        # Error, Local V Absolute
-        # elif constraint_type not in self.constraint_standards:
-        #     print("Error no constraint of that type found")
-        # elif response_id not in question_from.get_response_ids():
-        #     print("Error no response id found in the question_form")
+        elif constraint_type not in self.constraint_standards:
+            print("Error no constraint of that type found")
+        elif response_id not in question_from.get_response_ids():
+            print("Error no response id found in the question_form")
         # All good, lets make a constraint!
         else:
-            constraint_id = self._database.createQuestionConstraintStandard(question_from_id, response_id,
-                                                                            constraint_type, question_to_id)
-            const = Constraint(question_from_id, response_id, constraint_type)
+            constraint_id = self._database.createQuestionConstraintStandard(question_from.question_id, response_absolute,
+                                                                            constraint_type, question_to.question_id)
+            const = Constraint(question_from.question_id, response_absolute, constraint_type)
             const.set_constraint_id(constraint_id)
             question_to.add_constraint(const)
 
     def create_disclusion_constraint(self, question_from_id, response_from, question_to_id, responses_discluded):
         question_from = self.zero_index[question_from_id]
         question_to = self.zero_index[question_to_id]
+        response_from_id = question_from.get_response_values()[response_from]
+        responses_discluded_ids = []
+        question_to_values = question_to.get_response_values()
+        for discluded in responses_discluded:
+            responses_discluded.append(question_to_values[discluded])
         if not question_from:
             print ("Error no question_from found")
         elif not question_to:
             print ("Error not question_to found")
-        # Error, Local V Absolute
-        # elif response_from not in question_from.get_response_values():
-        #     print("Error no response value found in the question_from")
-        # elif responses_discluded not in question_to.get_response_values():
-        #     print("Error one or many or many responses_discluded do not exist")
+        
+        elif responses_discluded not in question_to.get_response_values():
+            print("Error one or many or many responses_discluded do not exist")
         # Wow this a good looking constraint, lets send it!
         else:
-            constraint_modify_id = self._database.createDisclusionConstraint(question_from_id, response_from,
-                                                                             question_to_id, responses_discluded)
-            mod_const = ModifyConstraint(question_from_id, response_from, responses_discluded)
+            constraint_modify_id = self._database.createDisclusionConstraint(question_from.question_id, response_from_id,
+                                                                             question_to.question_id, responses_discluded_ids)
+            mod_const = ModifyConstraint(question_from.question_id, response_from_id, responses_discluded)
             mod_const.set_modify_constraint_id(constraint_modify_id)
             question_to.add_modify_constraint(mod_const)
 
