@@ -72,12 +72,10 @@ class SurveyCreationController:
             print ("Error no question_from found")
         elif not question_to:
             print ("Error no question_to found")
-        elif constraint_type not in self.constraint_standards:
-            print("Error no constraint of that type found")
         # All good, lets make a constraint!
         else:
             constraint_id = self._database.createQuestionConstraintStandard(question_from.question_id, response_absolute,
-                                                                            constraint_type, question_to.question_id)
+                                                                            str(constraint_type), question_to.question_id)
             const = Constraint(question_from.question_id, response_absolute, constraint_type)
             const.set_constraint_id(constraint_id)
             question_to.add_constraint(const)
