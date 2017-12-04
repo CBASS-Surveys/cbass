@@ -255,9 +255,9 @@ def load(survey_id):
     property_manager = SurveyProperties()
     survey_name = property_manager.get_survey_name(survey_id)
     properties = property_manager.get_survey_properties(survey_id)
-    session['survey'] = SurveyTakingController(survey_id)
-    session['survey'].get_survey_questions()
-    questions = session['survey'].survey_questions
+    temp_controller = SurveyTakingController(survey_id)
+    temp_controller.get_survey_questions()
+    questions = temp_controller.survey_questions
     json_questions = []
     counter = 1
     for question in questions[1:]:
@@ -279,7 +279,9 @@ def load(survey_id):
         if question.modify_constraints:
             for const in question.modify_constraints:
                 response_from = ids[const.response_from]
-                # TODO load responses discluded
+                discluded = []
+                for resp_id in const.response_discluded:
+                    discluded.append(ids[resp_id])
                 constraints += [
                     {"question_from": const.question_from, "response_from": response_from, "question_to": counter,
                      "type": "modify", "responses_discluded": const.response_discluded}]
