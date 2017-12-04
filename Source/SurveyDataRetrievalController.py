@@ -77,7 +77,7 @@ class SurveyDataRetrievalController:
                 response[quest.question_id] = self._database.getIndividualResponseToQuestion(quest.question_id, resp)
             json_responses += [
                 {"response_id": resp, "response": response}]
-        json_full = {"survey_id": self.survey_id, "responses": json_responses}
+        json_full = {"survey_id": self.survey_id, "responses": json_responses, 'survey_description': self._database.surveyToDict(self.survey_id)}
         return json_full
         
     
