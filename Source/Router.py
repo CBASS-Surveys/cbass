@@ -243,8 +243,7 @@ def save():
         raise KeyError
         return jsonify(flag=False)
     print (str(survey_creator.survey_id))
-    path = ("\"localhost:8000/survey/{0}\"".format(str(survey_creator.survey_id)))
-    return redirect(url_for('get_qrcode', survey_id=survey_creator.survey_id))
+    return jsonify(survey_creator.survey_id)
     # return jsonify(flag=True, survey_id=survey_creator.survey_id)
 
 
