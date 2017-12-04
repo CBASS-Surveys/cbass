@@ -306,7 +306,7 @@ def get_qrcode(survey_id):
 @app.route("/export/<survey_id>/json")
 def export_json(survey_id):
 	exporter = SurveyDataRetrievalController(survey_id)
-	return jsonify(exporter.export_json())
+	return jsonify(data=exporter.export_json())
 
 if __name__ == "__main__":
     app.config.from_object(Config.DevelopmentConfig)
