@@ -19,6 +19,7 @@ from SurveyCreationController import SurveyCreationController
 from SurveyProperties import SurveyProperties
 from SurveyTakingController import SurveyTakingController
 from SurveyTakingEncoder import CustomEncoder, from_json
+from SurveyDataRetrievalController import SurveyDataRetrievalController
 
 
 # Avoid jinja and vue conflict
@@ -301,6 +302,10 @@ def get_qrcode(survey_id):
         mimetype='image/png'
     )
 
+@app.route("/export/<survey_id>/json")
+def export_json(survey_id):
+	exporter = SurveyDataRetrievalController(survey_id)
+	return jsonify(exporter.export_json())
 
 if __name__ == "__main__":
     app.config.from_object(Config.DevelopmentConfig)

@@ -30,6 +30,7 @@ class SurveyDataRetrievalController:
     def get_questions(self, survey_id):
         survey_questions = []
         cursor = self._database.getSurveyQuestions(survey_id)
+
         question_ids = cursor.fetchall()
         cursor.close()
         for (qId,) in question_ids:
@@ -95,20 +96,3 @@ class SurveyDataRetrievalController:
         responses_to_survey = self.getResponsesToSurvey(survey_id) 
         survey_questions = self.get_questions(survey_id)
         #next: sql format output for all responses
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
