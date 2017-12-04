@@ -64,8 +64,10 @@ class SurveyCreationController:
             self.create_question_answer(question_id, str(resp['value']), str(resp['description']))
 
     def create_question_constraint_standard(self, question_from_id, response_id, constraint_type, question_to_id):
-        question_from = self.zero_index[question_from_id]
-        question_to = self.zero_index[question_to_id]
+        question_absolute_from = self.zero_index[question_from_id].question_id
+        question_from = self.survey_questions[question_absolute_from]
+        question_absolute_to = self.zero_index[question_to_id].question_id
+        question_to = self.survey_questions[question_absolute_to]
         print ("question_from response ids" + str(question_from.get_response_ids()))
         response_absolute = question_to.get_response_ids()[response_id]
         if not question_from:
@@ -81,8 +83,10 @@ class SurveyCreationController:
             question_to.add_constraint(const)
 
     def create_disclusion_constraint(self, question_from_id, response_from, question_to_id, responses_discluded):
-        question_from = self.zero_index[question_from_id]
-        question_to = self.zero_index[question_to_id]
+        question_absolute_from = self.zero_index[question_from_id].question_id
+        question_from = self.survey_questions[question_absolute_from]
+        question_absolute_to = self.zero_index[question_to_id].question_id
+        question_to = self.survey_questions[question_absolute_to]
         response_from_id = question_from.get_response_ids()[response_from]
         responses_discluded_ids = []
         question_to_ids = question_to.get_response_ids()
