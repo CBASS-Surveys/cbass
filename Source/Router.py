@@ -267,6 +267,7 @@ def load(survey_id):
         if question.responses:
             for resp in question.responses:
                 responses += [{"value": resp.response_value, "description": resp.response_description}]
+                print (str(resp.response_id))
                 ids[resp.response_id] = i
                 i += 1
         constraints = []
@@ -278,6 +279,7 @@ def load(survey_id):
                      "type": const.type}]
         if question.modify_constraints:
             for const in question.modify_constraints:
+                print (str(ids))
                 response_from = ids[const.response_from]
                 discluded = []
                 for resp_id in const.response_discluded:
