@@ -243,8 +243,8 @@ def save():
     except KeyError:
         raise KeyError
         return jsonify(flag=False)
-    survey_url = url_for('start_survey', survey_id=survey_creator.survey_id)
-    qr_code_url = url_for('get_qrcode',survey_id=survey_creator.survey_id )
+    survey_url = url_for('start_survey', survey_id=survey_creator.survey_id, _external=True)
+    qr_code_url = url_for('get_qrcode',survey_id=survey_creator.survey_id, _external=True)
     return jsonify(survey_url=survey_url, qr_code_url=qr_code_url)
     # return jsonify(flag=True, survey_id=survey_creator.survey_id)
 
@@ -261,12 +261,12 @@ def load(survey_id):
     json_questions = []
     counter = 1
     for question in questions[1:]:
-        answers = []
+        responses = []
         ids = {}
         i = 0
-        if question.answers:
-            for resp in question.answers:
-                answers += [{"value": resp.response_value, "description": resp.response_description}]
+        if question.responses:
+            for resp in question.responses:
+                responses += [{"value": resp.response_value, "description": resp.response_description}]
                 ids[resp.response_id] = i
                 i += 1
         constraints = []
@@ -285,7 +285,7 @@ def load(survey_id):
                 constraints += [
                     {"question_from": const.question_from, "response_from": response_from, "question_to": counter,
                      "type": "modify", "responses_discluded": const.response_discluded}]
-        json_questions += [{"text": question.question_text, "type": question.question_type, "answers": answers,
+        json_questions += [{"text": question.question_text, "type": question.question_type, "answers": responses,
                             "constraints": constraints}]
         counter += 1
     return jsonify(title=survey_name, questions=json_questions, properties=properties)
