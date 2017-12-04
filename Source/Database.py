@@ -214,21 +214,39 @@ class Database:
         cursor.execute("SELECT question_type FROM survey_question WHERE question_id = %s;", (questionID,))
         (type,) = cursor.fetchone()
         if (type == 'single-response'):
-            cursor.execute("SELECT response FROM survey_question WHERE response_to = %s AND response_id = %s;",
+            cursor.execute("SELECT response FROM survey_response_entry WHERE response_to = %s AND response_id = %s;",
                            (questionID, responseID))
-            (value,) = cursor.fetchone()
-            return value
+            value = cursor.fetchone()
+            if value == None:
+                return value
+            else:
+                TheValue = value[0]
+                cursor.execute("SELECT value FROM question_response WHERE id = %s", (TheValue,))
+                (value,) = cursor.fetchone()
+                return value
         elif (type == 'free-response'):
             cursor.execute(
                 "SELECT response FROM survey_long_form_response WHERE response_to = %s AND response_id = %s;",
                 (questionID, responseID))
-            (value,) = cursor.fetchone()
-            return value
+            value = cursor.fetchone()
+            if value == None:
+                return value
+            else:
+                return value[0]
         else:
             cursor.execute("SELECT response FROM survey_multi_response WHERE response_to = %s AND response_id = %s;",
                            (questionID, responseID))
-            (value,) = cursor.fetchone()
-            return value
+            value = cursor.fetchone()
+            if value == None:
+                return value
+            else:
+                values = value[0]
+                retVals = []
+                for rid in values:
+                    cursor.execute("SELECT value FROM question_response WHERE id = %s", (rid,))
+                    (rval,) = cursor.fetchone()
+                    retVals.append(rval)
+                return retVals
 
     def changeQuestionText(self, question_id, new_text):
         cursor = self._connection.cursor()
@@ -262,3 +280,20 @@ class Database:
         else:
             return True
         cursor.close()
+
+    def surveyToDict(self, surveyID):
+        questionValues = {}
+        questions = self._connection.cursor()
+        questions.execute("SELECT question_id, question_text, question_type FROM survey_question WHERE survey = %s", (surveyID,))
+        for question in questions:
+            (id, questionText, questionType) = question
+            questionValues[id] = {'text': questionText, 'type': questionType}
+            if questionType in ('single-response', 'multi-choice-response'):
+                responseVals = {}
+                responses = self._connection.cursor()
+                responses.execute("SELECT id, value, description FROM question_response WHERE question = %s", (id,))
+                for response in responses:
+                    (rID, val, description) = response
+                    responseVals[rID] = {'description': description, 'export_value': val}
+                questionValues[id]['responses'] = responseVals
+        return questionValues

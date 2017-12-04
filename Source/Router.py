@@ -243,8 +243,8 @@ def save():
     except KeyError:
         raise KeyError
         return jsonify(flag=False)
-    survey_url = url_for('start_survey', survey_id=survey_creator.survey_id)
-    qr_code_url = url_for('get_qrcode',survey_id=survey_creator.survey_id )
+    survey_url = url_for('start_survey', survey_id=survey_creator.survey_id, _external=True)
+    qr_code_url = url_for('get_qrcode',survey_id=survey_creator.survey_id, _external=True)
     return jsonify(survey_url=survey_url, qr_code_url=qr_code_url)
     # return jsonify(flag=True, survey_id=survey_creator.survey_id)
 
@@ -255,18 +255,19 @@ def load(survey_id):
     property_manager = SurveyProperties()
     survey_name = property_manager.get_survey_name(survey_id)
     properties = property_manager.get_survey_properties(survey_id)
-    session['survey'] = SurveyTakingController(survey_id)
-    session['survey'].get_survey_questions()
-    questions = session['survey'].survey_questions
+    temp_controller = SurveyTakingController(survey_id)
+    temp_controller.get_survey_questions()
+    questions = temp_controller.survey_questions
     json_questions = []
     counter = 1
     for question in questions[1:]:
-        answers = []
+        responses = []
         ids = {}
         i = 0
         if question.answers:
             for resp in question.answers:
-                answers += [{"value": resp.response_value, "description": resp.response_description}]
+                responses += [{"value": resp.response_value, "description": resp.response_description}]
+                print (str(resp.response_id))
                 ids[resp.response_id] = i
                 i += 1
         constraints = []
@@ -278,12 +279,15 @@ def load(survey_id):
                      "type": const.type}]
         if question.modify_constraints:
             for const in question.modify_constraints:
+                print (str(ids))
                 response_from = ids[const.response_from]
-                # TODO load responses discluded
+                discluded = []
+                for resp_id in const.response_discluded:
+                    discluded.append(ids[resp_id])
                 constraints += [
                     {"question_from": const.question_from, "response_from": response_from, "question_to": counter,
                      "type": "modify", "responses_discluded": const.response_discluded}]
-        json_questions += [{"text": question.question_text, "type": question.question_type, "answers": answers,
+        json_questions += [{"text": question.question_text, "type": question.question_type, "answers": responses,
                             "constraints": constraints}]
         counter += 1
     return jsonify(title=survey_name, questions=json_questions, properties=properties)
@@ -306,7 +310,7 @@ def get_qrcode(survey_id):
 @app.route("/export/<survey_id>/json")
 def export_json(survey_id):
 	exporter = SurveyDataRetrievalController(survey_id)
-	return jsonify(exporter.export_json())
+	return jsonify(data=exporter.export_json())
 
 if __name__ == "__main__":
     app.config.from_object(Config.DevelopmentConfig)
