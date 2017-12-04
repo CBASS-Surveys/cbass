@@ -207,7 +207,6 @@ def save():
         keys = data.keys()
         survey_name = data["title"]
         author = "Author"
-        print keys
 
         constraints = []
         if 'properties' in keys:
@@ -225,17 +224,15 @@ def save():
                 if 'answers' in q_keys:
                     answers = question['answers']
                     survey_creator.create_multiple_answers(question_id, answers)
-        print constraints
         for const in constraints:
-            print const
             const_type = str(const['type'])
-            if const_type == 'modify':
+            if const_type == 'forbids':
                 question_from = const['question_from']
                 response_from = const['response_from']
                 question_to = const['question_to']
                 survey_creator.create_question_constraint_standard(question_from, response_from, const_type,
                                                                    question_to)
-            elif const_type == 'forbids':
+            elif const_type == 'modify':
                 question_from = const['question_from']
                 response_from = const['response_from']
                 question_to = const['question_to']

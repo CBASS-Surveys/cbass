@@ -34,12 +34,12 @@ class Question:
         return len(self.modify_constraints)
 
     def add_response(self, response):
-        self.responses += [response]
+        self.responses.append(response)
 
     def get_response_ids(self):
         response_ids = []
         for resp in self.responses:
-            response_ids += resp.response_id
+            response_ids.append(resp.response_id)
         return response_ids
 
     def get_response_values(self):

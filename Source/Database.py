@@ -87,6 +87,11 @@ class Database:
         return constraintID
 
     def createDisclusionConstraint(self, questionFrom, responseFrom, questionTo, responsesDiscluded):
+        print("values sent in")
+        print(questionFrom)
+        print(responseFrom)
+        print(questionTo)
+        print(responsesDiscluded)
         cursor = self._connection.cursor()
         cursor.execute(
             "INSERT INTO question_constraint_modify (question_from, response_from, question_to, responses_discluded) VALUES (%s, %s, %s, %s) RETURNING id;",
