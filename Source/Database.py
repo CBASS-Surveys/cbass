@@ -220,7 +220,10 @@ class Database:
             if value == None:
                 return value
             else:
-                return value[0]
+                TheValue = value[0]
+                cursor.execute("SELECT value FROM question_response WHERE id = %s", (TheValue,))
+                (value,) = cursor.fetchone()
+                return value
         elif (type == 'free-response'):
             cursor.execute(
                 "SELECT response FROM survey_long_form_response WHERE response_to = %s AND response_id = %s;",
@@ -237,7 +240,13 @@ class Database:
             if value == None:
                 return value
             else:
-                return value[0]
+                values = value[0]
+                retVals = []
+                for rid in values:
+                    cursor.execute("SELECT value FROM question_response WHERE id = %s", (rid,))
+                    (rval,) = cursor.fetchone()
+                    retVals.append(rval)
+                return retVals
 
     def changeQuestionText(self, question_id, new_text):
         cursor = self._connection.cursor()
