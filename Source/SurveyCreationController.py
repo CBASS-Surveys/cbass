@@ -75,7 +75,7 @@ class SurveyCreationController:
         # All good, lets make a constraint!
         else:
             constraint_id = self._database.createQuestionConstraintStandard(question_from.question_id, response_absolute,
-                                                                            str(constraint_type), question_to.question_id)
+                                                                            "forbid", question_to.question_id)
             const = Constraint(question_from.question_id, response_absolute, constraint_type)
             const.set_constraint_id(constraint_id)
             question_to.add_constraint(const)
