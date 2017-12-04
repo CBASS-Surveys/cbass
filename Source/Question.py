@@ -11,6 +11,7 @@ class Question:
         self.question_id = question_id
         self.question_text = question_text
         self.question_type = question_type
+        self.responses = []
 
     def set_answers(self, answers):
         self.answers = list(answers)
