@@ -264,8 +264,8 @@ def load(survey_id):
         responses = []
         ids = {}
         i = 0
-        if question.responses:
-            for resp in question.responses:
+        if question.answers:
+            for resp in question.answers:
                 responses += [{"value": resp.response_value, "description": resp.response_description}]
                 print (str(resp.response_id))
                 ids[resp.response_id] = i

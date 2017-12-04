@@ -2,12 +2,12 @@ class Constraint:
     constraint_id = None
     question_from = None
     response_from = None
-    const_type = None
+    type = None
 
     def __init__(self, question_from, response_from, constraint_type):
         self.question_from = question_from
         self.response_from = response_from
-        self.const_type = constraint_type
+        self.type = constraint_type
 
     def set_constraint_id(self, constraint_id):
         self.constraint_id = constraint_id
