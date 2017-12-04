@@ -216,19 +216,28 @@ class Database:
         if (type == 'single-response'):
             cursor.execute("SELECT response FROM survey_response_entry WHERE response_to = %s AND response_id = %s;",
                            (questionID, responseID))
-            (value,) = cursor.fetchone()
-            return value
+            value = cursor.fetchone()
+            if value == None:
+                return value
+            else:
+                return value[0]
         elif (type == 'free-response'):
             cursor.execute(
                 "SELECT response FROM survey_long_form_response WHERE response_to = %s AND response_id = %s;",
                 (questionID, responseID))
-            (value,) = cursor.fetchone()
-            return value
+            value = cursor.fetchone()
+            if value == None:
+                return value
+            else:
+                return value[0]
         else:
             cursor.execute("SELECT response FROM survey_multi_response WHERE response_to = %s AND response_id = %s;",
                            (questionID, responseID))
-            (value,) = cursor.fetchone()
-            return value
+            value = cursor.fetchone()
+            if value == None:
+                return value
+            else:
+                return value[0]
 
     def changeQuestionText(self, question_id, new_text):
         cursor = self._connection.cursor()
