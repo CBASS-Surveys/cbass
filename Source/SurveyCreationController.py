@@ -55,7 +55,7 @@ class SurveyCreationController:
         elif value and description:
             (response_id,) = self._database.createSurveyQuestionResponse(question_id, value, description)
             response = Response(response_id, value, description)
-            print ("question_id: " + str(question_id) + " value: " + str(value))
+            # print ("question_id: " + str(question_id) + " value: " + str(value))
             self.survey_questions[question_id].add_response(response)
         else:
             print ("Error: either value or description were empty")

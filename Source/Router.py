@@ -223,6 +223,7 @@ def save():
             if not question_type == 'free-response':
                 if 'answers' in q_keys:
                     answers = question['answers']
+                    print ("question id: " + str(question_id) + "answers: " + str(answers))
                     survey_creator.create_multiple_answers(question_id, answers)
         for const in constraints:
             const_type = str(const['type'])
