@@ -50,11 +50,13 @@ class SurveyCreationController:
             return None
 
     def create_question_answer(self, question_id, value, description):
+        question_absolute = self.zero_index[question_id].question_id
         if not self.survey_questions[question_id]:
             print ("Error no question found")
         elif value and description:
-            (response_id,) = self._database.createSurveyQuestionResponse(question_id, value, description)
+            (response_id,) = self._database.createSurveyQuestionResponse(question_absolute, value, description)
             response = Response(response_id, value, description)
+            print ("question_id: " + str(question_absolute) + " value: " + str(value))
             self.survey_questions[question_id].add_response(response)
         else:
             print ("Error: either value or description were empty")

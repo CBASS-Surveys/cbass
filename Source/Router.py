@@ -225,7 +225,6 @@ def save():
                     answers = question['answers']
                     survey_creator.create_multiple_answers(question_id, answers)
         for const in constraints:
-            print const
             const_type = str(const['type'])
             if const_type == 'forbids':
                 question_from = const['question_from']
