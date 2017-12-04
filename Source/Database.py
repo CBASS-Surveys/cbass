@@ -214,7 +214,7 @@ class Database:
         cursor.execute("SELECT question_type FROM survey_question WHERE question_id = %s;", (questionID,))
         (type,) = cursor.fetchone()
         if (type == 'single-response'):
-            cursor.execute("SELECT response FROM survey_question WHERE response_to = %s AND response_id = %s;",
+            cursor.execute("SELECT response FROM survey_response_entry WHERE response_to = %s AND response_id = %s;",
                            (questionID, responseID))
             (value,) = cursor.fetchone()
             return value
