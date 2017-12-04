@@ -83,12 +83,13 @@ class SurveyCreationController:
     def create_disclusion_constraint(self, question_from_id, response_from, question_to_id, responses_discluded):
         question_from = self.zero_index[question_from_id]
         question_to = self.zero_index[question_to_id]
-        print ("question_from response ids" + str(question_from.get_response_ids()))
         response_from_id = question_from.get_response_ids()[response_from]
         responses_discluded_ids = []
         question_to_ids = question_to.get_response_ids()
+        print ("question_from response ids " + str(question_from.get_response_ids()))
+        print ("responses_discluded: " + str(responses_discluded))
         for discluded in responses_discluded:
-            responses_discluded.append(question_to_ids[discluded])
+            responses_discluded_ids.append(question_to_ids[discluded])
         if not question_from:
             print ("Error no question_from found")
         elif not question_to:
