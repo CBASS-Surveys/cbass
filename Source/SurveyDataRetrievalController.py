@@ -78,7 +78,7 @@ class SurveyDataRetrievalController:
             json_responses += [
                 {"response_id": resp, "response": response}]
         json_full = {"survey_id": self.survey_id, "responses": json_responses}
-        return json.dumps(json_full)
+        return json_full
         
     
     def export_csv(self):
