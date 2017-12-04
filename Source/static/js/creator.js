@@ -132,7 +132,10 @@ var app = new Vue({
         "value": "modify",
         "text": "Modify"
       }
-    ]
+    ],
+    surveyURL:"",
+    QRImgURL:"",
+    showShareMessage:false
   },
   computed:{
     surveyLength : function(){
@@ -190,6 +193,9 @@ var app = new Vue({
         dataType: "JSON",
         contentType: "application/json; charset=utf-8",
         success: function(data){
+          app.surveyURL = data.survey_url;
+          app.QRImgURL = data.qr_code_url;
+          app.showShareMessage = true;
           console.log(data)
         }
       })
