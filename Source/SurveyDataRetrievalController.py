@@ -69,7 +69,7 @@ class SurveyDataRetrievalController:
     
     def export_json(self):
         responses_to_survey = self._database.getResponsesToSurvey(self.survey_id)
-        survey_questions = self.get_questions(self.survey_id)
+        survey_questions = self.get_questions()
         json_responses = []
         for resp in responses_to_survey:
             response = {}

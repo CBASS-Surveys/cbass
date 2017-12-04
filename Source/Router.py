@@ -243,8 +243,9 @@ def save():
     except KeyError:
         raise KeyError
         return jsonify(flag=False)
-    print (str(survey_creator.survey_id))
-    return jsonify(survey_creator.survey_id)
+    survey_url = url_for('start_survey', survey_id=survey_creator.survey_id)
+    qr_code_url = url_for('get_qrcode',survey_id=survey_creator.survey_id )
+    return jsonify(survey_url=survey_url, qr_code_url=qr_code_url)
     # return jsonify(flag=True, survey_id=survey_creator.survey_id)
 
 
