@@ -87,6 +87,7 @@ class Database:
         return constraintID
 
     def createDisclusionConstraint(self, questionFrom, responseFrom, questionTo, responsesDiscluded):
+        print("values sent in")
         print(questionFrom)
         print(responseFrom)
         print(questionTo)

@@ -87,6 +87,7 @@ class SurveyCreationController:
         responses_discluded_ids = []
         question_to_ids = question_to.get_response_ids()
         print ("question_from response ids " + str(question_from.get_response_ids()))
+        print ("question_to response ids " + str(question_to.get_response_ids()))
         print ("responses_discluded: " + str(responses_discluded))
         for discluded in responses_discluded:
             responses_discluded_ids.append(question_to_ids[discluded])
