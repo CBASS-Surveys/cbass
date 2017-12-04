@@ -280,3 +280,20 @@ class Database:
         else:
             return True
         cursor.close()
+
+    def surveyToDict(self, surveyID):
+        questionValues = {}
+        questions = self._connection.cursor()
+        questions.execute("SELECT question_id, question_text, question_type FROM survey_question WHERE survey = %s", (surveyID,))
+        for question in questions:
+            (id, questionText, questionType) = question
+            questionValues[id] = {'text': questionText, 'type': questionType}
+            if questionType in ('single-response', 'multi-choice-response'):
+                responseVals = {}
+                responses = self._connection.cursor()
+                responses.execute("SELECT id, value, description FROM question_response WHERE question = %s", (id,))
+                for response in responses:
+                    (rID, val, description) = response
+                    responseVals[rID] = {'description': description, 'export_value': val}
+                questionValues[id]['responses'] = responseVals
+        return questionValues
